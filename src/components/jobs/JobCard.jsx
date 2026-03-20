@@ -4,29 +4,34 @@ import { AuthContext } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import api from '../../utils/api';
 import styles from './JobCard.module.css';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, differenceInDays } from 'date-fns';
 
 const JobCard = ({ job, onUnsave, isSaved, onToggleSave, hidePostedDate, actionSlot }) => {
   const { user } = useContext(AuthContext);
   const { addToast } = useToast();
   const navigate = useNavigate();
 
-  // MAPPING BACKEND DATA TO UI
   const displayJob = {
       id: job._id || job.id,
       title: job.title,
-      company: job.companyId?.name || 'Company',
-      logo: job.companyId?.logoUrl, // Backend field
+      company: job.companyId?.name || 'Unknown Company',
+      logo: job.companyId?.logoUrl,
       location: job.location,
       type: job.type,
       salary: job.salaryRange,
-      postedTime: job.postedAt ? formatDistanceToNow(new Date(job.postedAt), { addSuffix: true }) : 'Recently',
-      description: job.description || '',
-      skills: job.skillsRequired || []
+      postedAt: job.postedAt,
+      isNew: job.postedAt ? differenceInDays(new Date(), new Date(job.postedAt)) <= 7 : false,
   };
 
+  // Generate initials for company logo fallback
+  const initials = displayJob.company
+    .split(' ')
+    .map(w => w[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+
   const toggleSave = async (e) => {
-    // ... same toggleSave logic ...
     e.stopPropagation();
     if (!user) {
         addToast('Please login to save jobs', 'info');
@@ -39,12 +44,10 @@ const JobCard = ({ job, onUnsave, isSaved, onToggleSave, hidePostedDate, actionS
 
     try {
         if (onUnsave) {
-            // "Saved Jobs" view: unsave
             await api.delete(`/candidate/saved-jobs/${displayJob.id}`);
             addToast('Job removed from saved items', 'success');
             onUnsave(displayJob.id);
         } else {
-            // "All Jobs" view: toggle based on isSaved prop
             if (isSaved) {
                 await api.delete(`/candidate/saved-jobs/${displayJob.id}`);
                 addToast('Job removed from saved items', 'default');
@@ -70,54 +73,42 @@ const JobCard = ({ job, onUnsave, isSaved, onToggleSave, hidePostedDate, actionS
   };
 
   return (
-    <div className={styles.card} onClick={handleCardClick} role="button" tabIndex={0} style={{cursor: 'pointer'}}>
-      <div className={styles.header}>
-        <div className={styles.companyIcon} style={{backgroundColor: '#fff'}}>
-           {displayJob.logo ? (
-             <img src={displayJob.logo} alt={displayJob.company} style={{width:'100%', height:'100%', objectFit:'contain'}} />
-           ) : (
-             <i className="fas fa-building" style={{color: '#666'}}></i>
-           )}
-        </div>
-        <div className={styles.jobInfo}>
-            <h3 className={styles.title}>{displayJob.title}</h3>
-            <p className={styles.company}>
-                {displayJob.company} <span className={styles.dot}>•</span> <span>{displayJob.location}</span>
-            </p>
-        </div>
-        <div className={styles.bookmark} onClick={toggleSave}>
-            <i className={`${(onUnsave || isSaved) ? 'fas' : 'far'} fa-bookmark`} style={{color: (onUnsave || isSaved) ? '#fbbf24' : 'inherit'}}></i>
-        </div>
-      </div>
-
-      <div className={styles.tags}>
-        <span className={`${styles.tag} ${styles.fulltime}`}>{displayJob.type}</span>
-        {displayJob.skills.slice(0, 2).map((skill, index) => (
-            <span key={index} className={styles.tag}>{skill}</span>
-        ))}
-        {displayJob.skills.length > 2 && <span className={styles.tag}>+{displayJob.skills.length - 2}</span>}
-      </div>
-
-      <p className={styles.description} style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-        {displayJob.description.replace(/<[^>]+>/g, '')}
-      </p>
-
-      <div className={styles.footer}>
-        <div className={styles.salary}>
-            {displayJob.salary}
-        </div>
-        
-        {actionSlot ? (
-            <div className="prevent-nav">
-                {actionSlot}
-            </div>
+    <div className={styles.card} onClick={handleCardClick} role="button" tabIndex={0}>
+      {/* Circular company logo */}
+      <div className={styles.companyIcon}>
+        {displayJob.logo ? (
+          <img src={displayJob.logo} alt={displayJob.company} />
         ) : (
-            !hidePostedDate && (
-                <div className={styles.posted}>
-                    <i className="far fa-clock"></i> {displayJob.postedTime}
-                </div>
-            )
+          <span>{initials}</span>
         )}
+      </div>
+
+      {/* Info block */}
+      <div className={styles.jobInfo}>
+        <div className={styles.topRow}>
+          <span className={styles.title}>{displayJob.title}</span>
+          {displayJob.isNew && <span className={styles.newBadge}>New</span>}
+        </div>
+        <div className={styles.company}>{displayJob.company}</div>
+        <div className={styles.metaRow}>
+          <span className={styles.metaItem}>
+            <i className="fas fa-map-marker-alt"></i> {displayJob.location}
+          </span>
+          <span className={styles.metaItem}>
+            <i className="fas fa-briefcase"></i> {displayJob.type}
+          </span>
+          {displayJob.salary && (
+            <span className={styles.metaItem}>
+              <i className="fas fa-money-bill-wave"></i> {displayJob.salary}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Bookmark */}
+      <div className={styles.bookmark} onClick={toggleSave}>
+        <i className={`${(onUnsave || isSaved) ? 'fas' : 'far'} fa-bookmark`}
+           style={{ color: (onUnsave || isSaved) ? '#fbbf24' : 'inherit' }}></i>
       </div>
     </div>
   );

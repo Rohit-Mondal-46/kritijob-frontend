@@ -39,6 +39,7 @@ const Navbar = () => {
             <>
               <li><Link to="/jobs" onClick={toggleMenu}>Find Jobs</Link></li>
               <li><Link to="/companies" onClick={toggleMenu}>Companies</Link></li>
+              {/* <li><Link to="/salary-guide" onClick={toggleMenu}>Salary Guide</Link></li> */}
               <li><Link to="/about" onClick={toggleMenu}>About</Link></li>
             </>
           )}
@@ -60,7 +61,7 @@ const Navbar = () => {
                     <Link to="/login" onClick={toggleMenu}>
                         <Button variant="outline" className={styles.loginBtn}>Login</Button>
                     </Link>
-                    <Link to="/signup" onClick={toggleMenu}>
+                    <Link to="/role-selection" onClick={toggleMenu}>
                         <Button variant="cta">Register</Button>
                     </Link>
                   </>
@@ -72,7 +73,7 @@ const Navbar = () => {
         <div className={styles.navActions}>
           {token ? (
               <div className={styles.userControls}>
-                  <NotificationDropdown />
+                   
                   
                   <div 
                       className={styles.userProfile} 
@@ -99,7 +100,7 @@ const Navbar = () => {
                   <Link to="/login">
                     <Button variant="outline" className={styles.loginBtn}>Login</Button>
                   </Link>
-                  <Link to="/signup">
+                  <Link to="/role-selection">
                     <Button variant="cta">Register</Button>
                   </Link>
               </>

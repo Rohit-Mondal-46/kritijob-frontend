@@ -64,8 +64,8 @@ const JobListing = () => {
     const fetchJobsAndSavedState = async () => {
       try {
         setLoading(true);
-        // Force limit = 12
-        const query = searchParams.toString() + '&limit=12';
+        // Force limit = 9
+        const query = searchParams.toString() + '&limit=9';
         const { data } = await api.get(`/jobs?${query}`);
         if (data.success) {
           setJobs(data.data);
@@ -115,61 +115,73 @@ const JobListing = () => {
 
   return (
     <>
-      <div className={`focused-container ${styles.pageContainer}`}>
-        <h1 className={styles.pageTitle}>Let's Find You a Job</h1>
-        
-        <JobFilterBar 
-            filters={initialFilters} 
-            onFilterChange={handleFilterChange} 
-        /> 
+      <div className={styles.pageContainer}>
+        {/* Two Column Layout containing Sidebar and Feed */}
+        <div className={styles.layoutGrid}>
+            <aside className={styles.sidebarColumn}>
+                <JobFilterBar 
+                    filters={initialFilters} 
+                    onFilterChange={handleFilterChange} 
+                />
+            </aside>
+            
+            <main className={styles.feedColumn}>
+                <div className={styles.resultsHeader}>
+                    <div className={styles.resultsTitleArea}>
+                        <h2 className={styles.sectionTitle}>Job Listings</h2>
+                        <p className={styles.sectionSubtitle}>Explore opportunities tailored to your preferences.</p>
+                    </div>
+                </div>
 
-        <div className={styles.resultsHeader}>
-          <h2 className={styles.sectionTitle}>
-             {jobs.length > 0 ? `Showing ${jobs.length} Jobs` : 'No Jobs Found'}
-          </h2>
-          <SortDropdown />
-        </div>
-
-        <div className={styles.jobsGrid} style={{ opacity: loading ? 0.5 : 1, transition: 'opacity 0.2s' }}>
-          {jobs.map(job => (
-              <JobCard 
-                key={job._id} 
-                job={job} 
-                isSaved={savedJobIds.includes(job._id)}
-                onToggleSave={() => handleToggleSave(job._id)}
-              />
-          ))}
-          {jobs.length === 0 && !loading && (
-              <div style={{color: '#888', gridColumn: '1/-1', textAlign: 'center', padding: '40px'}}>
-                  No jobs found matching your criteria.
-              </div>
-          )}
-        </div>
-
-        {/* Pagination Controls */}
-        {pagination.totalPages > 1 && (
-            <div className={styles.pagination}>
-                <button 
-                    className={styles.pageBtn}
-                    onClick={() => handlePageChange(pagination.page - 1)}
-                    disabled={pagination.page === 1}
-                >
-                    <i className="fas fa-chevron-left"></i> Previous
-                </button>
+                <div className={styles.jobsGrid} style={{ opacity: loading ? 0.5 : 1, transition: 'opacity 0.2s' }}>
+                  {jobs.map(job => (
+                      <JobCard 
+                        key={job._id} 
+                        job={job} 
+                        isSaved={savedJobIds.includes(job._id)}
+                        onToggleSave={() => handleToggleSave(job._id)}
+                      />
+                  ))}
+                  {jobs.length === 0 && !loading && (
+                      <div className={styles.emptyState}>
+                          <div className={styles.emptyIcon}>
+                              <i className="fas fa-search"></i>
+                          </div>
+                          <h3 className={styles.emptyTitle}>No jobs found</h3>
+                          <p className={styles.emptyDesc}>We couldn't find any jobs matching your current criteria. Try adjusting your filters or search terms.</p>
+                          <button className={styles.emptyButton} onClick={() => handleFilterChange({})}>Clear Filters</button>
+                      </div>
+                  )}
+                </div>
                 
-                <span className={styles.pageInfo}>
-                    Page {pagination.page} of {pagination.totalPages}
-                </span>
+                {/* Pagination Controls */}
+                {pagination.totalPages > 1 && (
+                    <div className={styles.pagination}>
+                        <button 
+                            className={styles.pageBtn}
+                            onClick={() => handlePageChange(pagination.page - 1)}
+                            disabled={pagination.page === 1}
+                        >
+                            <i className="fas fa-chevron-left"></i> Previous
+                        </button>
+                        
+                        <span className={styles.pageInfo}>
+                            Page {pagination.page} of {pagination.totalPages}
+                        </span>
 
-                <button 
-                    className={styles.pageBtn}
-                    onClick={() => handlePageChange(pagination.page + 1)}
-                    disabled={pagination.page === pagination.totalPages}
-                >
-                    Next <i className="fas fa-chevron-right"></i>
-                </button>
-            </div>
-        )}
+                        <button 
+                            className={styles.pageBtn}
+                            onClick={() => handlePageChange(pagination.page + 1)}
+                            disabled={pagination.page === pagination.totalPages}
+                        >
+                            Next <i className="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                )}
+            </main>
+        </div>
+
+
       </div>
       <Footer />
     </>

@@ -33,7 +33,7 @@
 .input:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(1, 65, 163, 0.1);
+    box-shadow: 0 0 0 3px rgba(10, 102, 194, 0.1);
 }
 
 .input::placeholder {

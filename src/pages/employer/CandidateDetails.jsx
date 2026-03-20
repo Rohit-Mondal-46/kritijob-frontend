@@ -34,18 +34,8 @@ const CandidateDetails = () => {
         }
     }, [id, navigate, addToast]);
 
-    const handleMessage = async () => {
-        if (!candidate?.user?._id) return;
-        
-        try {
-            const res = await api.post('/chat', { userId: candidate.user._id });
-            if (res.data.success) {
-                navigate(`/dashboard/chat/${res.data.data._id}`);
-            }
-        } catch (err) {
-            console.error(err);
-            addToast('Failed to start conversation', 'error');
-        }
+    const handleMessage = () => {
+        addToast('Messaging feature coming soon!', 'info');
     };
 
     if (loading) {

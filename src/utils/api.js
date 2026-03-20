@@ -1,9 +1,11 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ? 'https://kriti-job-backend.vercel.app/api': 'https://kriti-job-backend.vercel.app/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://kriti-job-backend.vercel.app/api',
+  timeout: 8000,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Connection': 'keep-alive'
   }
 });
 

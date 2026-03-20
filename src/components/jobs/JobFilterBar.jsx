@@ -1,302 +1,135 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './JobFilterBar.module.css';
-import JobFilterDropdown from './JobFilterDropdown';
+import { politicalCategories } from '../../data/politicalCategories';
 
 const JobFilterBar = ({ filters, onFilterChange }) => {
-    // Local state for UI responsiveness, synced with props
     const [localFilters, setLocalFilters] = useState(filters || {
         keyword: '',
-        category: [],
-        location: [],
-        experienceLevel: [],
-        type: [],
-        minSalary: 0,
-        maxSalary: 5000000 // 50 LPA default
+        location: '',
+        category: '',
+        type: '',
+        experienceLevel: ''
     });
 
-    // Sync props to local state when URL changes (external change)
     useEffect(() => {
         if (filters) {
-            setLocalFilters(prev => ({
-                ...prev,
-                ...filters,
-                // Ensure arrays
-                category: Array.isArray(filters.category) ? filters.category : filters.category ? [filters.category] : [],
-                location: Array.isArray(filters.location) ? filters.location : filters.location ? [filters.location] : [],
-                experienceLevel: Array.isArray(filters.experienceLevel) ? filters.experienceLevel : filters.experienceLevel ? [filters.experienceLevel] : [],
-                type: Array.isArray(filters.type) ? filters.type : filters.type ? [filters.type] : [],
-                // Ensure defaults if missing in filters
-                minSalary: filters.minSalary !== undefined ? filters.minSalary : 0,
-                maxSalary: filters.maxSalary !== undefined ? filters.maxSalary : 5000000
-            }));
+            setLocalFilters({
+                keyword: filters.keyword || '',
+                location: Array.isArray(filters.location) && filters.location.length > 0 ? filters.location[0] : (filters.location || ''),
+                category: Array.isArray(filters.category) && filters.category.length > 0 ? filters.category[0] : (filters.category || ''),
+                type: Array.isArray(filters.type) && filters.type.length > 0 ? filters.type[0] : (filters.type || ''),
+                experienceLevel: Array.isArray(filters.experienceLevel) && filters.experienceLevel.length > 0 ? filters.experienceLevel[0] : (filters.experienceLevel || ''),
+            });
         }
     }, [filters]);
 
-    // Active Dropdown State
-    const [activeDropdown, setActiveDropdown] = useState(null);
-
-    // Refs for outside click detection
-    const barRef = useRef(null);
-
-    // Options Data
-    const options = {
-        titles: ["Designer", "Developer", "Product Manager", "Marketing Specialist", "Data Analyst", "Sales Executive"],
-        categories: ["Digital Marketing", "Web Developer", "Arts & Design", "UI-UX Designer", "Content Writing", "Data Entry", "Customer Support", "Finance", "IT Jobs", "Non-IT"],
-        locations: ["Delhi", "New York", "San Francisco", "London", "Berlin", "Tokyo"],
-        experience: ["Entry Level", "Intermediate", "Expert"],
-        types: ["Full-Time", "Part-Time", "Contract", "Freelance", "Internship"]
+    const handleChange = (field, value) => {
+        setLocalFilters(prev => ({ ...prev, [field]: value }));
     };
 
-    const toggleDropdown = (name) => {
-        setActiveDropdown(activeDropdown === name ? null : name);
-    };
-
-    const notifyChange = (newFilters) => {
+    const handleApply = () => {
         if (onFilterChange) {
-            onFilterChange(newFilters);
+            onFilterChange({
+                ...localFilters,
+                location: localFilters.location ? [localFilters.location] : [],
+                category: localFilters.category ? [localFilters.category] : [],
+                type: localFilters.type ? [localFilters.type] : [],
+                experienceLevel: localFilters.experienceLevel ? [localFilters.experienceLevel] : []
+            });
         }
     };
 
-    const handleSelection = (field, item) => {
-        let newList;
-        if (localFilters[field].includes(item)) {
-            newList = localFilters[field].filter(i => i !== item);
-        } else {
-            newList = [...localFilters[field], item];
-        }
-        
-        const newFilters = { ...localFilters, [field]: newList };
-        setLocalFilters(newFilters);
-        notifyChange(newFilters);
-    };
-    
-    // Special handler for Title/Keyword which is single select in UI but acts as search
-    const handleTitleSelection = (item) => {
-        // Toggle behavior for title tags
-        const currentKeywords = localFilters.keyword ? localFilters.keyword.split(',') : [];
-        let newKeywords;
-        if (currentKeywords.includes(item)) {
-            newKeywords = currentKeywords.filter(k => k !== item);
-        } else {
-            newKeywords = [...currentKeywords, item];
-        }
-        
-        const newFilters = { ...localFilters, keyword: newKeywords.join(',') };
-        setLocalFilters(newFilters);
-        notifyChange(newFilters);
-    };
-
-
-    const handleClickOutside = (event) => {
-        if (barRef.current && !barRef.current.contains(event.target)) {
-            setActiveDropdown(null);
+    const handleClear = () => {
+        const empty = { keyword: '', location: '', category: '', type: '', experienceLevel: '' };
+        setLocalFilters(empty);
+        if (onFilterChange) {
+            onFilterChange({ keyword: '', location: [], category: [], type: [], experienceLevel: [] });
         }
     };
 
-    useEffect(() => {
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
-
-    // Helper to render input content (Pills or Placeholder)
-    const renderInputContent = (selected, placeholder) => {
-        if (!selected || selected.length === 0) return <span className={styles.placeholder}>{placeholder}</span>;
-        
-        // Show first item + count if more than 1
-        return (
-            <div className={styles.pillsContainer}>
-                <span className={styles.pill}>
-                    {selected[0]} <i className="fas fa-times" onClick={(e) => {
-                        e.stopPropagation();
-                        // Determine field based on placeholder
-                        const field = placeholder === "Category" ? "category" :
-                                      placeholder === "Experience" ? "experienceLevel" : 
-                                      placeholder === "Job Type" ? "type" : 
-                                      placeholder === "Location" ? "location" : "keyword";
-                                      
-                        if (field === "keyword") {
-                             handleTitleSelection(selected[0]);
-                        } else {
-                             handleSelection(field, selected[0]);
-                        }
-                    }}></i>
-                </span>
-                {selected.length > 1 && (
-                    <span className={styles.moreCount}>+{selected.length - 1} more</span>
-                )}
+    return (
+        <div className={styles.sidebarCard}>
+            <div className={styles.sidebarHeader}>
+                <i className="fas fa-filter"></i>
+                <span>Filters</span>
             </div>
-        );
-    };
-    
-    // Debounce keyword and salary updates
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if (filters) {
-                const keywordChanged = localFilters.keyword !== (filters.keyword || '');
-                const minSalChanged = localFilters.minSalary !== filters.minSalary;
-                const maxSalChanged = localFilters.maxSalary !== filters.maxSalary;
 
-                if (keywordChanged || minSalChanged || maxSalChanged) {
-                     notifyChange(localFilters);
-                }
-            }
-        }, 500);
-        return () => clearTimeout(timer);
-    }, [localFilters.keyword, localFilters.minSalary, localFilters.maxSalary]);
+            <div className={styles.formGroup}>
+                <label>Keyword or Title</label>
+                <input 
+                    type="text" 
+                    placeholder="e.g. React Developer" 
+                    value={localFilters.keyword}
+                    onChange={(e) => handleChange('keyword', e.target.value)}
+                    className={styles.inputField}
+                />
+            </div>
 
-    const handleSalaryChange = (index, value) => {
-        const val = Number(value);
-        let newMin = localFilters.minSalary;
-        let newMax = localFilters.maxSalary;
-        
-        if (index === 0) newMin = val;
-        else newMax = val;
-        
-        // Prevent crossover
-        if (newMin > newMax) {
-            if (index === 0) newMin = newMax;
-            else newMax = newMin;
-        }
-        
-        setLocalFilters(prev => ({ ...prev, minSalary: newMin, maxSalary: newMax }));
-    };
+            <div className={styles.formGroup}>
+                <label>Location</label>
+                <input 
+                    type="text" 
+                    placeholder="e.g. Remote, New York" 
+                    value={localFilters.location}
+                    onChange={(e) => handleChange('location', e.target.value)}
+                    className={styles.inputField}
+                />
+            </div>
 
-  return (
-    <div className={styles.filterBar} ref={barRef}>
-      
-      {/* 1. Search / Job Title */}
-      <div className={styles.filterGroup}>
-        <i className="fas fa-search"></i>
-        <div className={styles.inputArea} style={{ width: '100%' }}>
-            <input 
-                 type="text" 
-                 placeholder="Search job title or keyword..." 
-                 value={localFilters.keyword || ''}
-                 onChange={(e) => {
-                     const val = e.target.value;
-                     setLocalFilters(prev => ({ ...prev, keyword: val }));
-                 }}
-                 style={{ border: 'none', outline: 'none', background: 'transparent', width: '100%', fontSize: '0.95rem', color: 'var(--color-text-main)' }}
-            />
+            <div className={styles.formGroup}>
+                <label>Category</label>
+                <select 
+                    value={localFilters.category}
+                    onChange={(e) => handleChange('category', e.target.value)}
+                    className={styles.selectField}
+                >
+                    <option value="">All Categories</option>
+                    {politicalCategories.map((cat) => (
+                        <option key={cat.id} value={cat.name}>{cat.name}</option>
+                    ))}
+                </select>
+            </div>
+
+            <div className={styles.formGroup}>
+                <label>Job Type</label>
+                <select 
+                    value={localFilters.type}
+                    onChange={(e) => handleChange('type', e.target.value)}
+                    className={styles.selectField}
+                >
+                    <option value="">All Job Types</option>
+                    <option value="Full-Time">Full-Time</option>
+                    <option value="Part-Time">Part-Time</option>
+                    <option value="Contract">Contract</option>
+                    <option value="Freelance">Freelance</option>
+                    <option value="Internship">Internship</option>
+                </select>
+            </div>
+
+            <div className={styles.formGroup}>
+                <label>Experience Level</label>
+                <select 
+                    value={localFilters.experienceLevel}
+                    onChange={(e) => handleChange('experienceLevel', e.target.value)}
+                    className={styles.selectField}
+                >
+                    <option value="">All Experience Levels</option>
+                    <option value="Entry Level">Entry Level</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Expert">Expert</option>
+                </select>
+            </div>
+
+            <button className={styles.applyButton} onClick={handleApply}>
+                Show Results
+            </button>
+
+            <button className={styles.clearButton} onClick={handleClear}>
+                <i className="fas fa-redo" style={{ marginRight: '6px' }}></i>
+                Clear all filters
+            </button>
         </div>
-      </div>
-
-      <div className={styles.divider}></div>
-
-      {/* Categories */}
-      <div className={styles.filterGroup} onClick={() => toggleDropdown('category')}>
-        <i className="fas fa-layer-group"></i>
-        <div className={styles.inputArea}>
-            {renderInputContent(localFilters.category, "Category")}
-        </div>
-        <i className={`fas fa-chevron-down ${styles.chevron}`}></i>
-        <JobFilterDropdown 
-            title="Category"
-            options={options.categories}
-            selected={localFilters.category || []}
-            onChange={(item) => handleSelection('category', item)}
-            isOpen={activeDropdown === 'category'}
-            onClose={() => setActiveDropdown(null)}
-        />
-      </div>
-
-      <div className={styles.divider}></div>
-
-      {/* 2. Location */}
-      <div className={styles.filterGroup} onClick={() => toggleDropdown('location')}>
-        <i className="fas fa-map-marker-alt"></i>
-        <div className={styles.inputArea}>
-            {renderInputContent(localFilters.location, "Location")}
-        </div>
-        <i className={`fas fa-chevron-down ${styles.chevron}`}></i>
-        <JobFilterDropdown 
-            title="Location"
-            options={options.locations}
-            selected={localFilters.location || []}
-            onChange={(item) => handleSelection('location', item)}
-            isOpen={activeDropdown === 'location'}
-            onClose={() => setActiveDropdown(null)}
-        />
-      </div>
-
-      <div className={styles.divider}></div>
-
-      {/* 3. Experience */}
-      <div className={styles.filterGroup} onClick={() => toggleDropdown('experience')}>
-        <i className="fas fa-briefcase"></i>
-        <div className={styles.inputArea}>
-             {renderInputContent(localFilters.experienceLevel, "Experience")}
-        </div>
-        <i className={`fas fa-chevron-down ${styles.chevron}`}></i>
-        <JobFilterDropdown 
-            title="Experience"
-            options={options.experience}
-            selected={localFilters.experienceLevel || []}
-            onChange={(item) => handleSelection('experienceLevel', item)}
-            isOpen={activeDropdown === 'experience'}
-            onClose={() => setActiveDropdown(null)}
-        />
-      </div>
-
-      <div className={styles.divider}></div>
-
-      {/* 4. Job Type */}
-      <div className={styles.filterGroup} onClick={() => toggleDropdown('type')}>
-        <i className="fas fa-bolt"></i>
-        <div className={styles.inputArea}>
-            {renderInputContent(localFilters.type, "Job Type")}
-        </div>
-        <i className={`fas fa-chevron-down ${styles.chevron}`}></i>
-        <JobFilterDropdown 
-            title="Job Type"
-            options={options.types}
-            selected={localFilters.type || []}
-            onChange={(item) => handleSelection('type', item)}
-            isOpen={activeDropdown === 'type'}
-            onClose={() => setActiveDropdown(null)}
-        />
-      </div>
-
-      <div className={styles.divider}></div>
-
-      {/* 5. Salary Slider (Dual) */}
-      <div className={styles.salaryGroup}>
-        <div className={styles.salaryHeader}>
-            <span>Salary</span>
-            <span className={styles.salaryValue}>₹{localFilters.minSalary} - ₹{localFilters.maxSalary}</span>
-        </div>
-        <div className={styles.sliderContainer}>
-             <div 
-                className={styles.sliderTrack} 
-                style={{
-                    left: `${((localFilters.minSalary - 0) / (5000000 - 0)) * 100}%`,
-                    width: `${((localFilters.maxSalary - localFilters.minSalary) / (5000000 - 0)) * 100}%`
-                }}
-             ></div>
-             <input 
-                type="range" 
-                min="0" 
-                max="5000000" 
-                step="10000"
-                value={localFilters.minSalary} 
-                onChange={(e) => handleSalaryChange(0, e.target.value)}
-                className={styles.sliderInput} 
-             />
-             <input 
-                type="range" 
-                min="0" 
-                max="5000000" 
-                step="10000"
-                value={localFilters.maxSalary} 
-                onChange={(e) => handleSalaryChange(1, e.target.value)}
-                className={styles.sliderInput} 
-             />
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default JobFilterBar;

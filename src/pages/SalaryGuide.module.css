@@ -1,0 +1,185 @@
+.container {
+    padding: 120px 20px 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 80vh;
+}
+
+.hero {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.title {
+    font-size: 2.5rem;
+    color: var(--color-text-main);
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    max-width: 600px;
+    margin: 0 auto 30px;
+}
+
+.searchContainer {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    gap: 12px;
+    background: #fff;
+    padding: 8px;
+    border-radius: 50px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-border);
+}
+
+.searchInputWrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    gap: 10px;
+}
+
+.searchInputWrapper i {
+    color: var(--color-text-muted);
+}
+
+.searchInput {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 1rem;
+    color: var(--color-text-main);
+}
+
+.searchButton {
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.searchButton:hover {
+    background: #084c8d;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.card {
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 24px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary);
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.roleTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+}
+
+.category {
+    font-size: 0.8rem;
+    color: var(--color-primary);
+    background: rgba(10, 102, 194, 0.1);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.salaryRange {
+    margin-bottom: 20px;
+}
+
+.salaryLabel {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: 8px;
+}
+
+.salaryValue {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    border-top: 1px solid var(--color-border);
+    padding-top: 15px;
+}
+
+.statItem {
+    display: flex;
+    flex-direction: column;
+}
+
+.statLabel {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin-bottom: 4px;
+}
+
+.statValue {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text-main);
+}
+
+.noResults {
+    text-align: center;
+    grid-column: 1 / -1;
+    padding: 60px;
+    color: var(--color-text-muted);
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding-top: 100px;
+    }
+    .title {
+        font-size: 2rem;
+    }
+    .searchContainer {
+        border-radius: 12px;
+        flex-direction: column;
+        padding: 15px;
+    }
+    .searchButton {
+        width: 100%;
+        border-radius: 8px;
+    }
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}

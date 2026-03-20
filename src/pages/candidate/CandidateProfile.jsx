@@ -167,7 +167,7 @@ const CandidateProfile = () => {
                 <div className={styles.profileHeader}>
                     <div className={styles.avatarWrapper}>
                         <img 
-                            src={avatarPreview || formData.avatarUrl || "https://ui-avatars.com/api/?name=" + (formData.name || 'User') + "&background=0D8ABC&color=fff&size=128"} 
+                            src={avatarPreview || formData.avatarUrl || "https://ui-avatars.com/api/?name=" + (formData.name || 'User') + "&background=0A66C2&color=fff&size=128"} 
                             alt="Profile" 
                             className={styles.avatar} 
                         />

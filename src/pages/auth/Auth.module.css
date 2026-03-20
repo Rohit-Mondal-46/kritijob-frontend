@@ -4,10 +4,7 @@
     justify-content: center;
     align-items: center;
     padding: 20px;
-    background-color: var(--color-secondary);
-    background-image:
-        radial-gradient(circle at 10% 20%, rgba(1, 65, 163, 0.05) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+    background-color: #f3f2ef; /* Clean linkedin-style background */
 }
 
 .authCard {
@@ -21,8 +18,8 @@
 }
 
 .authCard h2 {
-    font-size: 2rem;
-    margin-bottom: 10px;
+    font-size: 1.5rem;
+    margin-bottom: 8px;
     text-align: center;
     color: var(--color-primary);
 }
@@ -30,7 +27,8 @@
 .subtitle {
     color: var(--color-text-muted);
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 24px;
+    font-size: 0.9rem;
 }
 
 .submitBtn {
@@ -118,4 +116,152 @@
 .forgotLink:hover {
     color: var(--color-primary-dark);
     text-decoration: underline;
+}
+
+/* Role Selection Specific */
+.backButtonContainer {
+    position: absolute;
+    top: 30px;
+    left: 40px;
+}
+
+.backButtonCircle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    color: #4a5568;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+    font-size: 1.1rem;
+}
+
+.backButtonCircle:hover {
+    background-color: #f1f5f9;
+    color: var(--color-primary);
+}
+
+.roleHeader {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 32px;
+    padding-top: 0;
+}
+
+.roleHeader h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 10px;
+}
+
+.roleHeader p {
+    font-size: 0.95rem;
+    color: #718096;
+}
+
+.roleGridWrapper {
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.roleGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    max-width: 780px;
+    margin: 0 auto;
+}
+
+.roleCard {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 40px 30px;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-height: 280px;
+}
+
+.roleCard:hover {
+    border-color: #0a66c2;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+}
+
+.roleCard:hover .iconCircle {
+    transform: scale(1.1);
+}
+
+.roleCard:hover .roleAction {
+    opacity: 1;
+}
+
+.iconCircleBlue {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: #e8f4fd;
+    color: #0a66c2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.roleCard h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 12px;
+}
+
+.roleDesc {
+    color: #718096;
+    line-height: 1.5;
+    margin-bottom: 0;
+    font-size: 0.875rem;
+}
+
+.roleFooterText {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 0.95rem;
+    color: #718096;
+}
+
+.linkText {
+    background: none;
+    border: none;
+    color: #0a66c2;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.linkText:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .authContainer {
+        padding-top: 80px;
+    }
+    .backButtonContainer {
+        top: 20px;
+        left: 20px;
+    }
+    .roleGrid {
+        grid-template-columns: 1fr;
+    }
 }

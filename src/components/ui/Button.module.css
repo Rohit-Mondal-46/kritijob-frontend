@@ -19,7 +19,7 @@
     background: var(--color-primary);
     border: 1px solid var(--color-primary);
     color: white;
-    box-shadow: 0 4px 6px -1px rgba(1, 65, 163, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(10, 102, 194, 0.2);
 }
 
 .primary:hover {
@@ -27,7 +27,7 @@
     border-color: var(--color-primary-dark);
     color: white;
     transform: translateY(-1px);
-    box-shadow: 0 6px 10px -1px rgba(1, 65, 163, 0.3);
+    box-shadow: 0 6px 10px -1px rgba(10, 102, 194, 0.3);
 }
 
 /* CTA: Vibrant Green (For Post Job, Find Job, etc) */
@@ -67,7 +67,7 @@
 }
 
 .outline:hover {
-    background: rgba(1, 65, 163, 0.05);
+    background: rgba(10, 102, 194, 0.05);
     border-color: var(--color-primary);
     color: var(--color-primary-dark);
 }

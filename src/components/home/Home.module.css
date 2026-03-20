@@ -1,251 +1,335 @@
-/* Base Layout Enhancements */
-.wideContainer {
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: 0 20px;
-    width: 100%;
+.section {
+    padding: 24px 20px;
+    background: var(--color-background);
 }
 
-/* Trusted Companies Section */
-.trustedSection {
-    padding: 1.5rem 0;
-    background: var(--color-surface-muted);
-    position: relative;
-    overflow: hidden;
-    color: var(--color-text-main);
-    text-align: center;
-    width: 100%;
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 16px;
 }
 
 .sectionTitle {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 2rem;
+    font-size: 20px;
     color: var(--color-text-main);
-    text-align: center;
-    width: 100%;
-    display: block;
+    font-weight: 700;
 }
 
-@media (max-width: 768px) {
-    .sectionTitle {
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
-    }
-}
-
-.highlight {
-    color: var(--color-primary);
-}
-
-.marqueeContainer {
-    width: 100%;
-    overflow: hidden;
-    white-space: nowrap;
-    position: relative;
-}
-
-.marqueeTrack {
-    display: inline-block;
-    animation: scroll 30s linear infinite;
-}
-
-/* Pause animation on hover */
-.marqueeContainer:hover .marqueeTrack {
-    animation-play-state: paused;
-}
-
-.companyLogo {
-    display: inline-block;
-    height: 40px;
-    margin: 0 4rem;
-    filter: grayscale(100%) opacity(0.5);
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-@media (max-width: 768px) {
-    .companyLogo {
-        margin: 0 2rem;
-        height: 30px;
-    }
-}
-
-.companyLogo:hover {
-    filter: grayscale(0%) opacity(1);
-    transform: scale(1.1);
-}
-
-@keyframes scroll {
-    0% {
-        transform: translateX(0);
-    }
-
-    100% {
-        transform: translateX(-50%);
-    }
-}
-
-/* Job Categories Section */
-.categoriesSection {
-    padding: 3rem 0;
-    background: #ffffff;
-    position: relative;
-    width: 100%;
-}
-
-.subtitle {
+.sectionSubtitle {
+    font-size: 12px;
     color: var(--color-text-muted);
-    text-align: center;
-    max-width: 700px;
-    margin: 0 auto 3rem;
-    font-size: 1.1rem;
-    padding: 0 20px;
+    margin-top: 4px;
 }
 
-/* React Slick Customization */
-.carouselWrapper {
-    padding: 0;
-    width: 100%;
-    overflow: hidden;
-}
-
-@media (max-width: 768px) {
-    .carouselWrapper {
-        padding: 0 20px;
-    }
+.categoryGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
 }
 
 .categoryCard {
     background: #ffffff;
-    border: 1px solid var(--color-border);
-    border-radius: 16px;
-    padding: 2rem;
-    text-align: center;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    margin: 15px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    height: 280px;
-    display: flex !important;
+    padding: 32px 20px;
+    border-radius: 20px;
+    width: 100%;
+    display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    box-shadow: var(--shadow-sm);
-}
-
-.categoryCard:hover {
-    border-color: var(--color-primary);
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-5px);
-    background: #ffffff;
-}
-
-.iconWrapper {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: rgba(1, 65, 163, 0.08);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-    color: var(--color-primary);
-    font-size: 1.5rem;
-    transition: all 0.3s ease;
-}
-
-.categoryCard:hover .iconWrapper {
-    background: var(--color-primary);
-    color: #ffffff;
-    transform: scale(1.1) rotate(5deg);
-}
-
-.cardTitle {
-    color: var(--color-text-main);
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-}
-
-.cardDesc {
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
-    margin-bottom: 1.5rem;
-    line-height: 1.5;
-}
-
-.jobCount {
-    color: var(--color-primary);
-    font-weight: 600;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    opacity: 0.8;
-}
-
-.categoryCard:hover .jobCount {
-    opacity: 1;
-}
-
-/* Arrows */
-.arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: #ffffff;
-    color: var(--color-text-main);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 20;
-    transition: all 0.3s ease;
-    opacity: 0;
     border: 1px solid var(--color-border);
-    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.carouselWrapper:hover .arrow {
-    opacity: 1;
-}
-
-@media (hover: none) {
-    .arrow {
-        opacity: 0.6;
-        background: #ffffff;
+@media (min-width: 640px) {
+    .categoryCard {
+        width: calc(50% - 8px);
     }
 }
 
-.arrow:hover {
-    background: var(--color-primary);
+@media (min-width: 1024px) {
+    .categoryCard {
+        width: calc(25% - 12px);
+    }
+}
+
+.categoryCard:active {
+    transform: scale(0.98);
+}
+
+.categoryIconCircle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--color-secondary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.categoryIconCircle i {
+    font-size: 16px;
+    color: var(--color-primary);
+}
+
+.categoryName {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text-main);
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.categorySubtitle {
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+
+/* Recommended Jobs Styling */
+.recommendedHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.viewAllButton {
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: text-decoration 0.2s;
+}
+
+.viewAllButton:hover {
+    text-decoration: underline;
+}
+
+.emptyRecommendedState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    background-color: var(--color-surface);
+    border: 1px dashed var(--color-border);
+    border-radius: 12px;
+    margin-bottom: 40px;
+}
+
+.emptyTitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-text-main);
+}
+
+.emptySubtitle {
+    font-size: 14px;
+    color: var(--color-text-muted);
+}
+
+/* Career CTA Banner */
+.ctaBanner {
+    background-color: var(--color-primary);
+    width: 100%;
+    margin: 40px 0;
+    padding: 60px 40px;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
     color: #ffffff;
-    border-color: var(--color-primary);
-    box-shadow: var(--shadow-md);
 }
 
-/* Push arrows to the absolute edges of the screen for full width feel */
-.prevArrow {
-    left: 20px;
+.ctaContent {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
-.nextArrow {
-    right: 20px;
+.ctaTitle {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.ctaSubtitle {
+    font-size: 14px;
+    margin-bottom: 32px;
+    opacity: 0.9;
+}
+
+.ctaButtons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.ctaPrimaryBtn {
+    background-color: #ffffff;
+    color: var(--color-primary);
+    border: none;
+    padding: 12px 32px;
+    border-radius: 30px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.ctaSecondaryBtn {
+    background-color: transparent;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+    padding: 12px 32px;
+    border-radius: 30px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Features Strip */
+.featuresStrip {
+    display: flex;
+    justify-content: space-between;
+    padding: 40px 20px;
+    gap: 24px;
+    background-color: var(--color-background);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.featureItem {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.featureIconCircle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--color-secondary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.featureIconCircle i {
+    color: var(--color-primary);
+    font-size: 20px;
+}
+
+.featureTitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-text-main);
+    margin-bottom: 8px;
+}
+
+.featureDesc {
+    font-size: 13px;
+    color: var(--color-text-muted);
 }
 
 @media (max-width: 768px) {
-    .categoriesSection {
-        padding: 2rem 15px;
+    .featuresStrip {
+        flex-direction: column;
     }
-    .trustedSection {
-        padding: 2rem 15px;
-    }
-    .subtitle {
-        font-size: 0.95rem;
-    }
+}
+
+/* Career Growth Section */
+.careerGrowthSection {
+    padding: 20px 20px 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.careerGrowthCard {
+    background-color: #053b7c; /* Dark blue matching image */
+    border-radius: 20px;
+    padding: 40px;
+    color: #ffffff;
+    max-width: 500px;
+    width: 100%;
+}
+
+.cgPill {
+    background-color: rgba(255, 255, 255, 0.15);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 24px;
+}
+
+.cgTitle {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 16px;
+}
+
+.cgSubtitle {
+    font-size: 15px;
+    line-height: 1.5;
+    opacity: 0.9;
+    margin-bottom: 32px;
+}
+
+.cgChecklist {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 40px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.cgChecklist li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.cgCheckIcon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    color: #053b7c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.cgButton {
+    background-color: var(--color-primary); /* Primary blue */
+    color: #ffffff;
+    border: none;
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cgButton:hover {
+    background-color: var(--color-primary-dark);
 }

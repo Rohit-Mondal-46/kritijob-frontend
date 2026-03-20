@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import ChatWidget from '../chat/ChatWidget';
+
 import styles from './DashboardLayout.module.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,6 +9,10 @@ const DashboardLayout = () => {
     const { user, logout } = useContext(AuthContext);
     const location = useLocation();
     const navigate = useNavigate();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+
+    const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+    const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
     const logoutClick = () => {
         logout();
@@ -50,7 +54,20 @@ const DashboardLayout = () => {
 
     return (
         <div className={styles.dashboardContainer}>
-            <aside className={styles.sidebar}>
+            {/* Mobile Header Toggle */}
+            <div className={styles.mobileHeader}>
+                <div className={styles.mobileUserInfo}>
+                   <div className={styles.mobileAvatar}>{user.name.charAt(0)}</div>
+                </div>
+                <button className={styles.menuToggle} onClick={toggleMobileMenu}>
+                    <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
+                </button>
+            </div>
+
+            {/* Overlay */}
+            {isMobileMenuOpen && <div className={styles.overlay} onClick={closeMobileMenu}></div>}
+
+            <aside className={`${styles.sidebar} ${isMobileMenuOpen ? styles.mobileOpen : ''}`}>
                 <div className={styles.userInfo}>
                     <div className={styles.avatar}>
                         {user.name.charAt(0)}
@@ -67,6 +84,7 @@ const DashboardLayout = () => {
                             key={link.path} 
                             to={link.path} 
                             className={`${styles.navLink} ${location.pathname === link.path ? styles.active : ''}`}
+                            onClick={closeMobileMenu}
                         >
                             <i className={`fas ${link.icon}`}></i>
                             {link.label}
@@ -81,7 +99,7 @@ const DashboardLayout = () => {
             <main className={styles.content}>
                 <Outlet />
             </main>
-            <ChatWidget />
+
         </div>
     );
 };

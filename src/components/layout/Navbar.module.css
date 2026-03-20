@@ -3,10 +3,9 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 80px;
+    height: 64px;
     z-index: 1000;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(12px);
+    background: var(--color-surface);
     border-bottom: 1px solid var(--color-border);
     display: flex;
     align-items: center;
@@ -22,7 +21,7 @@
 }
 
 .logo {
-    font-size: 1.8rem;
+    font-size: 1.4rem;
     font-weight: 700;
     letter-spacing: -1px;
     z-index: 1002;
@@ -36,11 +35,10 @@
 }
 
 .logoImage {
-    height: 38px;
-    width: 38px;
-    border-radius: 8px;
-    object-fit: cover;
-    box-shadow: var(--shadow-sm);
+    height: 32px;
+    width: 32px;
+    object-fit: contain;
+    mix-blend-mode: multiply;
 }
 
 .navLinks {
@@ -54,7 +52,8 @@
     font-weight: 500;
     color: var(--color-text-muted);
     position: relative;
-    font-size: 1rem;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
 }
 
 .navLinks a:hover {
@@ -189,9 +188,9 @@
 }
 
 .bar {
-    width: 25px;
-    height: 3px;
-    background-color: var(--color-accent);
+    width: 24px;
+    height: 2.5px;
+    background-color: var(--color-primary);
     border-radius: 2px;
     transition: all 0.3s ease;
 }

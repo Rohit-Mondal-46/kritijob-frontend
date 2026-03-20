@@ -9,8 +9,8 @@
 
 .jobWrapper {
     display: grid;
-    grid-template-columns: 1fr 350px;
-    gap: 2rem;
+    grid-template-columns: 1fr 340px;
+    gap: 30px;
 }
 
 /* Back Button */
@@ -312,14 +312,16 @@
 }
 
 .sidebarTitle {
-    font-size: 1.2rem;
-    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
     color: var(--color-text-main);
-    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--color-border);
 }
 
 /* Responsive */
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
     .jobWrapper {
         grid-template-columns: 1fr;
     }

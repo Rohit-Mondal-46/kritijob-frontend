@@ -61,57 +61,15 @@ const Subscription = () => {
     const handleUpgrade = async () => {
         setProcessing(true);
         try {
-            // 1. Create order
             const { data: orderData } = await api.post('/subscriptions/create-order');
             
             if (!orderData.success) throw new Error(orderData.message);
+            const paymentUrl = orderData?.data?.paymentUrl;
+            if (!paymentUrl) {
+                throw new Error('Payment URL is missing in create-order response');
+            }
 
-            const { orderId, amount, currency, razorpayKeyId } = orderData.data;
-
-            // 2. Initialize Razorpay Checkout
-            const options = {
-                key: razorpayKeyId,
-                amount: amount,
-                currency: currency,
-                name: "JobConnect",
-                description: "Premium Candidate Subscription",
-                order_id: orderId,
-                handler: async function (response) {
-                    // 3. Verify Payment
-                    try {
-                        const { data: verifyData } = await api.post('/subscriptions/verify-payment', {
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature
-                        });
-
-                        if (verifyData.success) {
-                            addToast('Subscription upgraded successfully!', 'success');
-                            fetchStatusAndHistory(); // Refresh status and history
-                        } else {
-                            addToast('Payment verification failed', 'error');
-                        }
-                    } catch (error) {
-                        console.error(error);
-                        addToast('Error verifying payment', 'error');
-                    }
-                },
-                prefill: {
-                    name: user.name,
-                    email: user.email,
-                },
-                theme: {
-                    color: "#0ea5e9"
-                }
-            };
-
-            const rzp = new window.Razorpay(options);
-            
-            rzp.on('payment.failed', function (response) {
-                addToast('Payment failed: ' + response.error.description, 'error');
-            });
-
-            rzp.open();
+            window.location.href = paymentUrl;
 
         } catch (err) {
             console.error(err);

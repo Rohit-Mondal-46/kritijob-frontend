@@ -1,118 +1,100 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Hero.module.css';
-import Button from '../ui/Button';
 
 const Hero = () => {
-  const navigate = useNavigate();
-  const [keyword, setKeyword] = useState('');
-  const [location, setLocation] = useState('');
+    const navigate = useNavigate();
+    const [searchTitle, setSearchTitle] = useState('');
+    const [searchLocation, setSearchLocation] = useState('');
 
-  const handleSearch = () => {
-    const params = new URLSearchParams();
-    if (keyword.trim()) params.set('keyword', keyword.trim());
-    if (location.trim()) params.set('location', location.trim());
-    params.set('page', '1');
-    navigate(`/jobs?${params.toString()}`);
-  };
+    const handleSearch = () => {
+        if (!searchTitle.trim() && !searchLocation.trim()) return;
+        const params = new URLSearchParams();
+        if (searchTitle.trim()) params.set('keyword', searchTitle.trim());
+        if (searchLocation.trim()) params.set('location', searchLocation.trim());
+        params.set('page', '1');
+        navigate(`/jobs?${params.toString()}`);
+    };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') handleSearch();
-  };
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') handleSearch();
+    };
 
-  return (
-    <section className={styles.hero}>
-      <div className={`focused-container ${styles.heroContainer}`}>
-        
-        {/* NEW HERO BANNER */}
-        <div className={styles.heroBanner}>
-          <div className={styles.heroContent}>
-            {/* Left Column */}
-            <div className={styles.heroLeft}>
-              <div className={styles.heroTag}>
-                <i className="fas fa-chart-line"></i>
-                <span className={styles.heroTagText}>Career Growth Platform</span>
-              </div>
-              <h1 className={styles.heroTitle}>
-                Unlock Your Career <br />
-                <span className={styles.heroSubtitle}>Potential Today</span>
-              </h1>
-              <p className={styles.heroDescription}>
-                Join thousands of professionals who found their perfect role. Connecting exceptional talent with premium opportunities.
-              </p>
+    return (
+        <section className={styles.heroSection}>
+            <div className={styles.heroContent}>
+                <div className={styles.textContent}>
+                    <div className={styles.cgPill}>
+                        <i className="fas fa-chart-line"></i> Career Growth Platform
+                    </div>
 
-              <div className={styles.searchBox}>
-                <div className={styles.inputGroup}>
-                  <i className="fas fa-search"></i>
-                  <input 
-                    type="text" 
-                    placeholder="Job title, keywords..." 
-                    value={keyword}
-                    onChange={(e) => setKeyword(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                  />
+                    <h1 className={styles.title}>Unlock Your Career Potential Today</h1>
+                    <p className={styles.subtitle}>
+                        Join thousands of professionals who found their perfect role
+                    </p>
+
+                    <ul className={styles.cgChecklist}>
+                        <li>
+                            <div className={styles.cgCheckIcon}>
+                                <i className="fas fa-check"></i>
+                            </div>
+                            Resume tips and guidance
+                        </li>
+                        <li>
+                            <div className={styles.cgCheckIcon}>
+                                <i className="fas fa-check"></i>
+                            </div>
+                            Plan your next career step
+                        </li>
+                        <li>
+                            <div className={styles.cgCheckIcon}>
+                                <i className="fas fa-check"></i>
+                            </div>
+                            Personalized job recommendations
+                        </li>
+                    </ul>
                 </div>
-                <div className={styles.divider}></div>
-                <div className={styles.inputGroup}>
-                  <i className="fas fa-map-marker-alt"></i>
-                  <input 
-                    type="text" 
-                    placeholder="Location" 
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                  />
+
+                <div className={styles.searchRowWrapper}>
+                    <div className={styles.searchContainer}>
+                        <div className={styles.searchBlock}>
+                            <div className={styles.inputWrapper}>
+                                <i className="fas fa-search"></i>
+                                <input
+                                    type="text"
+                                    placeholder="Job title, keywords, or company"
+                                    value={searchTitle}
+                                    onChange={(e) => setSearchTitle(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                />
+                            </div>
+                            
+                            <div className={styles.divider}></div>
+
+                            <div className={styles.inputWrapper}>
+                                <i className="fas fa-map-marker-alt"></i>
+                                <input
+                                    type="text"
+                                    placeholder="location"
+                                    value={searchLocation}
+                                    onChange={(e) => setSearchLocation(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                />
+                            </div>
+
+                            <button className={styles.searchButton} onClick={handleSearch}>
+                                Search
+                            </button>
+                        </div>
+                    </div>
+
+                    <button className={styles.startJourneyBtn} onClick={() => navigate('/login')}>
+                        Start Your Journey <i className="fas fa-arrow-right" style={{ marginLeft: '8px' }}></i>
+                    </button>
                 </div>
-                <Button variant="primary" className={styles.searchBtn} onClick={handleSearch}>Search</Button>
-              </div>
             </div>
-
-            {/* Right Column / Features */}
-            <div className={styles.heroRight}>
-               <div className={styles.heroFeatures}>
-                  <div className={styles.featureItem}>
-                    <i className="fas fa-check-circle"></i>
-                    <span className={styles.featureText}>Resume tips and guidance</span>
-                  </div>
-                  <div className={styles.featureItem}>
-                    <i className="fas fa-check-circle"></i>
-                    <span className={styles.featureText}>Plan your next career step</span>
-                  </div>
-                  <div className={styles.featureItem}>
-                    <i className="fas fa-check-circle"></i>
-                    <span className={styles.featureText}>Personalized job recommendations</span>
-                  </div>
-                  <div className={styles.featureItem}>
-                    <i className="fas fa-check-circle"></i>
-                    <span className={styles.featureText}>Direct contact with top employers</span>
-                  </div>
-                </div>
-            </div>
-          </div>
-        </div>
-
-        {/* STATS SECTION */}
-        <div className={styles.statsSection}>
-          <div className={styles.statCard}>
-            <div className={styles.statIconWrapper}><i className="fas fa-briefcase"></i></div>
-            <h3 className={styles.statNumber}>15,000+</h3>
-            <p className={styles.statLabel}>Active Jobs</p>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statIconWrapper}><i className="fas fa-building"></i></div>
-            <h3 className={styles.statNumber}>2,500+</h3>
-            <p className={styles.statLabel}>Top Companies</p>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statIconWrapper}><i className="fas fa-users"></i></div>
-            <h3 className={styles.statNumber}>50,000+</h3>
-            <p className={styles.statLabel}>Success Stories</p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-  );
+        </section>
+    );
 };
 
 export default Hero;

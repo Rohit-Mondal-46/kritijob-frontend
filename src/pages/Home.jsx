@@ -1,21 +1,18 @@
-import React from 'react';
 import Hero from '../components/layout/Hero';
-import TrustedCompanies from '../components/home/TrustedCompanies';
+import FeaturedJobs from '../components/home/FeaturedJobs';
 import JobCategories from '../components/home/JobCategories';
-import HowItWorks from '../components/home/HowItWorks';
-import Testimonials from '../components/home/Testimonials';
-import Newsletter from '../components/home/Newsletter';
+import CareerCTA from '../components/home/CareerCTA';
+import FeaturesStrip from '../components/home/FeaturesStrip';
 import Footer from '../components/layout/Footer';
 
 const Home = () => {
     return (
-        <main>
+        <main style={{ backgroundColor: 'var(--color-background)', minHeight: '100vh', maxWidth: '1600px', margin: '0 auto', paddingBottom: '32px', paddingTop: '50px' }}>
             <Hero />
-            <TrustedCompanies />
+            <FeaturedJobs />
             <JobCategories />
-            <HowItWorks />
-            <Testimonials />
-            <Newsletter />
+            <CareerCTA />
+            <FeaturesStrip />
             <Footer />
         </main>
     );

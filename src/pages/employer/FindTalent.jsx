@@ -5,7 +5,6 @@ import api from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
 import Button from '../../components/ui/Button';
 import { AuthContext } from '../../context/AuthContext';
-import MessageModal from '../../components/common/MessageModal';
 
 const FindTalent = () => {
     const [candidates, setCandidates] = useState([]);
@@ -67,29 +66,9 @@ const FindTalent = () => {
         navigate(`/dashboard/employer/candidate/${id}`);
     };
 
-    // Message Action - open modal
+    // Message Action - show toast (chat removed)
     const handleMessageClick = (candidate) => {
-        setMessageTarget(candidate);
-        setShowMessageModal(true);
-    };
-
-    const handleSendMessage = async (message) => {
-        try {
-            if (!messageTarget?.userId) {
-                addToast('Cannot identify candidate', 'error');
-                return;
-            }
-            // Create or find chat, then navigate
-            const res = await api.post('/chat', { userId: messageTarget.userId });
-            if (res.data.success) {
-                setShowMessageModal(false);
-                setMessageTarget(null);
-                navigate(`/dashboard/chat/${res.data.data._id}`);
-            }
-        } catch (err) {
-            console.error(err);
-            addToast('Failed to start conversation', 'error');
-        }
+        addToast('Messaging feature coming soon!', 'info');
     };
 
     return (
@@ -354,13 +333,7 @@ const FindTalent = () => {
                 </div>
             )}
 
-            <MessageModal 
-                isOpen={showMessageModal}
-                onClose={() => setShowMessageModal(false)}
-                onSend={handleSendMessage}
-                recipientName={messageTarget?.name}
-                jobTitle="Direct Message"
-            />
+
 
         </div>
     );

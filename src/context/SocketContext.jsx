@@ -27,7 +27,7 @@ export const SocketProvider = ({ children }) => {
                })
                .catch(err => console.error('Failed to fetch notifications', err));
 
-            const newSocket = io(import.meta.env.VITE_API_URL || 'https://kriti-job-backend.vercel.app/', {
+            const newSocket = io(import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000', {
                 auth: { token },
                 query: { token } // Fallback
             });
