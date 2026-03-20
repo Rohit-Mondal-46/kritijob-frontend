@@ -333,3 +333,22 @@
 .cgButton:hover {
     background-color: var(--color-primary-dark);
 }
+
+
+.viewAllButton {
+    background: transparent;
+    border: 2px solid #e0e0e0;
+    padding: 12px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.viewAllButton:hover {
+    background: #f5f5f5;
+    border-color: #007bff;
+    color: #007bff;
+}

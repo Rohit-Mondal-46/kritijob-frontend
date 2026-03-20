@@ -32,7 +32,7 @@ const RoleSelection = () => {
                         <div className={styles.iconCircleBlue}>
                             <i className="far fa-user fa-2x"></i>
                         </div>
-                        <h3>I'm a Job Seeker</h3>
+                        <h3>I'm looking for a job</h3>
                         <p className={styles.roleDesc}>
                             Find your dream job, apply easily, and track your applications. Build your profile and get noticed by top employers.
                         </p>
@@ -49,7 +49,7 @@ const RoleSelection = () => {
                         <div className={styles.iconCircleBlue}>
                             <i className="far fa-building fa-2x"></i>
                         </div>
-                        <h3>I'm an Employer</h3>
+                        <h3>I'm hiring</h3>
                         <p className={styles.roleDesc}>
                             Post jobs, find top talent, and manage your hiring process efficiently. Build your employer brand.
                         </p>

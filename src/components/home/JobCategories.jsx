@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
 import { politicalCategories } from '../../data/politicalCategories';
 
 const JobCategories = () => {
     const navigate = useNavigate();
+    const [showAll, setShowAll] = useState(false);
 
     const handleCategoryClick = (title) => {
         navigate(`/jobs?category=${encodeURIComponent(title)}`);
     };
+
+    const visibleCategories = showAll ? politicalCategories : politicalCategories.slice(0, 8);
 
     return (
         <section className={styles.section} style={{ paddingBottom: '60px' }}>
@@ -16,9 +19,9 @@ const JobCategories = () => {
                 <h2 className={styles.sectionTitle} style={{ textAlign: 'center', marginBottom: '24px' }}>Explore by Category</h2>
             </div>
             <div className={styles.categoryGrid}>
-                {politicalCategories.map((cat, index) => (
+                {visibleCategories.map((cat, index) => (
                     <div 
-                        key={index}
+                        key={cat.id}
                         className={styles.categoryCard} 
                         onClick={() => handleCategoryClick(cat.name)}
                     >
@@ -30,6 +33,16 @@ const JobCategories = () => {
                     </div>
                 ))}
             </div>
+            {!showAll && politicalCategories.length > 8 && (
+                <div style={{ textAlign: 'center', marginTop: '40px' }}>
+                    <button 
+                        className={styles.viewAllButton}
+                        onClick={() => setShowAll(true)}
+                    >
+                        View All Categories
+                    </button>
+                </div>
+            )}
         </section>
     );
 };
