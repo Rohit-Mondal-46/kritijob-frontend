@@ -13,6 +13,7 @@ const FeaturedJobs = () => {
     const { user, token } = useContext(AuthContext);
     const { addToast } = useToast();
     const navigate = useNavigate();
+    const getJobId = (job) => String(job?._id || job?.id || '');
 
     useEffect(() => {
         const fetchJobs = async () => {
@@ -41,7 +42,7 @@ const FeaturedJobs = () => {
                 try {
                     const { data } = await api.get('/candidate/saved-jobs');
                     if (data.success) {
-                        setSavedJobIds(data.data.map(job => job._id));
+                        setSavedJobIds(data.data.map(job => String(job._id || job.id)).filter(Boolean));
                     }
                 } catch (err) {
                     console.error("Failed to fetch saved jobs:", err);
@@ -54,6 +55,9 @@ const FeaturedJobs = () => {
     }, [token, user]);
 
     const handleToggleSave = (jobId) => {
+        const normalizedId = String(jobId || '');
+        if (!normalizedId) return;
+
         if (!token) {
             navigate('/login');
             return;
@@ -63,11 +67,11 @@ const FeaturedJobs = () => {
             return;
         }
 
-        const isSaved = savedJobIds.includes(jobId);
+        const isSaved = savedJobIds.includes(normalizedId);
         if (isSaved) {
-            setSavedJobIds(prev => prev.filter(id => id !== jobId));
+            setSavedJobIds(prev => prev.filter(id => id !== normalizedId));
         } else {
-            setSavedJobIds(prev => [...prev, jobId]);
+            setSavedJobIds(prev => [...prev, normalizedId]);
         }
     };
 
@@ -89,14 +93,17 @@ const FeaturedJobs = () => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {jobs.map(job => (
-                    <JobCard 
-                        key={job._id}
-                        job={job}
-                        isSaved={savedJobIds.includes(job._id)}
-                        onToggleSave={() => handleToggleSave(job._id)}
-                    />
-                ))}
+                {jobs.map(job => {
+                    const jobId = getJobId(job);
+                    return (
+                        <JobCard 
+                            key={jobId}
+                            job={job}
+                            isSaved={savedJobIds.includes(jobId)}
+                            onToggleSave={() => handleToggleSave(jobId)}
+                        />
+                    );
+                })}
             </div>
         </section>
     );
