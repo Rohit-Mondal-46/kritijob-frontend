@@ -41,11 +41,11 @@ const PaymentCallback = ({ forcedStatus }) => {
         <p style={{ marginBottom: '8px' }}>
           {isAppSource
             ? (normalizedStatus === 'success'
-              ? 'Redirecting you back to the app to refresh subscription status.'
-              : 'Redirecting you back to the app. You can retry payment from there.')
+              ? 'You may now close this tab and go to the mobile Application.'
+              : 'You may now close this tab. You can retry payment from the mobile Application.')
             : (normalizedStatus === 'success'
               ? 'Payment completed on the website. Continue from your Profile.'
-              : 'Payment failed or was cancelled. You can retry from your dashboard.')}
+              : 'Payment failed or was cancelled. You can retry from your Profile.')}
         </p>
         {reason && normalizedStatus === 'failure' && (
           <p style={{ color: '#dc2626', marginBottom: '12px' }}>{reason}</p>
