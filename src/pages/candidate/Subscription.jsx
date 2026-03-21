@@ -95,13 +95,7 @@ const Subscription = () => {
                     </div>
                 </div>
                 
-                {isPremium && (
-                    <div style={{ marginTop: '1rem', width: '100%', borderTop: '1px solid var(--color-border)', paddingTop: '1rem' }}>
-                        <p style={{ margin: 0, color: 'var(--color-text-muted)' }}>
-                            Premium is valid for 30 days from payment date. It will expire automatically and you can purchase again anytime.
-                        </p>
-                    </div>
-                )}
+                
             </div>
 
             <div className={styles.pricingGrid}>

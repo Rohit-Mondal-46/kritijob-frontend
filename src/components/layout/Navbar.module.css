@@ -60,6 +60,11 @@
     color: var(--color-primary);
 }
 
+.navLinks a.activeLink {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
 .navLinks a::after {
     content: '';
     position: absolute;
@@ -72,6 +77,10 @@
 }
 
 .navLinks a:hover::after {
+    width: 100%;
+}
+
+.navLinks a.activeLink::after {
     width: 100%;
 }
 

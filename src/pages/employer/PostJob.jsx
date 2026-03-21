@@ -105,6 +105,14 @@ const PostJob = () => {
         <div className={styles.pageContainer}>
             <div className={styles.header}>
                 <h1 style={{fontSize: '2rem', margin: 0, color: 'var(--color-text-main)'}}>Post a Job</h1>
+                <button
+                    type="button"
+                    onClick={() => navigate('/dashboard/employer')}
+                    className={styles.backBtn}
+                >
+                    <i className="fas fa-arrow-left" style={{ marginRight: '8px' }}></i>
+                    Back to Dashboard
+                </button>
             </div>
 
             <form className={styles.formGrid} onSubmit={handleSubmit}>

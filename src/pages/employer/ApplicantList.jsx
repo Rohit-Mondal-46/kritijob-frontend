@@ -62,7 +62,7 @@ const ApplicantList = () => {
         };
 
         fetchApplicants();
-    }, [jobId]);
+    }, [jobId, addToast]);
 
     const handleViewProfile = (applicant) => {
         if (applicant.userId) {
@@ -99,7 +99,25 @@ const ApplicantList = () => {
         <div className={styles.pageContainer}>
             <div className={styles.headerRow}>
                 <h1 style={{fontSize: '2rem', margin: 0, color: 'var(--color-text-main)'}}>{jobId ? 'Job Applicants' : 'All Applicants'}</h1>
-                <div style={{color: 'var(--color-text-muted)', fontSize: '0.9rem'}}>{jobId && `Job ID: ${jobId}`}</div>
+                <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                    <div style={{color: 'var(--color-text-muted)', fontSize: '0.9rem'}}>{jobId && `Job ID: ${jobId}`}</div>
+                    <button
+                        type="button"
+                        onClick={() => navigate('/dashboard/employer')}
+                        style={{
+                            background: 'transparent',
+                            border: '1px solid var(--color-border)',
+                            color: 'var(--color-text-main)',
+                            padding: '8px 14px',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontWeight: 600,
+                        }}
+                    >
+                        <i className="fas fa-arrow-left" style={{ marginRight: '8px' }}></i>
+                        Back to Dashboard
+                    </button>
+                </div>
             </div>
 
             <div className={styles.grid}>
