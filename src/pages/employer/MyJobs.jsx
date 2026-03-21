@@ -68,7 +68,7 @@ const MyJobs = () => {
                  <h1 style={{fontSize: '2rem', margin: 0, color: 'var(--color-text-main)'}}>My Jobs</h1>
                  <button 
                     className={styles.filterBtn} 
-                    style={{background: 'var(--color-secondary)', color: 'white', border: 'none'}}
+                    style={{background: 'var(--color-secondary)', color: 'blue', border: 'none'}}
                     onClick={() => navigate('/dashboard/employer/post-job')}
                 >
                     <i className="fas fa-plus"></i> Post a Job
