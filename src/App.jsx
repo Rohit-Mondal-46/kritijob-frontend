@@ -45,14 +45,51 @@ import AdminJobs from './pages/admin/AdminJobs';
 import AdminPostJob from './pages/admin/AdminPostJob';
 import AdminContent from './pages/admin/AdminContent';
 import AdminReports from './pages/admin/AdminReports';
+import CandidateAuthGuard from './components/auth/CandidateAuthGuard';
 import './App.css';
+
+const getRoleHomePath = (user) => {
+  if (!user) return '/login';
+  if (user.role === 'employer') return '/dashboard/employer/company';
+  if (user.role === 'candidate') return '/dashboard/candidate/profile';
+  if (user.role === 'admin' || user.role === 'ADMIN') return '/dashboard/admin/overview';
+  return '/dashboard';
+};
+
+const RootRoute = () => {
+  const { user, loading } = useContext(AuthContext);
+
+  if (loading) return <div style={{ padding: '50px', textAlign: 'center' }}>Loading...</div>;
+
+  if (!user) {
+    return <Home />;
+  }
+
+  return <Navigate to={getRoleHomePath(user)} replace />;
+};
+
+const RedirectAuthenticated = ({ children }) => {
+  const { user, loading } = useContext(AuthContext);
+
+  if (loading) return <div style={{ padding: '50px', textAlign: 'center' }}>Loading...</div>;
+
+  if (user) {
+    return <Navigate to={getRoleHomePath(user)} replace />;
+  }
+
+  return children;
+};
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
-    const { user } = useContext(AuthContext);
+    const { user, loading } = useContext(AuthContext);
+
+    if (loading) {
+        return <div style={{ padding: '50px', textAlign: 'center' }}>Loading...</div>;
+    }
     
     if (!user) {
-        return <Navigate to="/" replace />;
+      return <Navigate to="/" replace />;
     }
     
     return children;
@@ -67,7 +104,7 @@ function App() {
                <Navbar />
                <Routes>
                  {/* Public Routes */}
-                 <Route path="/" element={<Home />} />
+                 <Route path="/" element={<RootRoute />} />
                  <Route path="/about" element={<About />} />
                  <Route path="/pricing" element={<Pricing />} />
                  <Route path="/salary-guide" element={<SalaryGuide />} />
@@ -75,9 +112,9 @@ function App() {
                  <Route path="/jobs/:id" element={<JobDetails />} />
                  <Route path="/companies" element={<CompanyListing />} />
                  <Route path="/company/:id" element={<CompanyDetails />} />
-                 <Route path="/login" element={<Login />} />
-                 <Route path="/register" element={<Register />} />
-                 <Route path="/role-selection" element={<RoleSelection />} />
+                 <Route path="/login" element={<RedirectAuthenticated><Login /></RedirectAuthenticated>} />
+                 <Route path="/register" element={<RedirectAuthenticated><Register /></RedirectAuthenticated>} />
+                 <Route path="/role-selection" element={<RedirectAuthenticated><RoleSelection /></RedirectAuthenticated>} />
                  <Route path="/contact" element={<ContactUs />} />
                  <Route path="/testimonials" element={<Testimonials />} />
                  <Route path="/help-center" element={<HelpCenter />} />
@@ -119,11 +156,13 @@ function App() {
                     </Route>
 
                     {/* Candidate Routes */}
-                    <Route path="candidate/profile" element={<CandidateProfile />} />
-                    <Route path="candidate/savedjobs" element={<SavedJobs />} />
-                    <Route path="candidate/applications" element={<MyApplications />} />
-                    <Route path="candidate/resume" element={<ResumeManager />} />
-                    <Route path="candidate/subscription" element={<Subscription />} />
+                    <Route path="candidate" element={<CandidateAuthGuard />}>
+                      <Route path="profile" element={<CandidateProfile />} />
+                      <Route path="savedjobs" element={<SavedJobs />} />
+                      <Route path="applications" element={<MyApplications />} />
+                      <Route path="resume" element={<ResumeManager />} />
+                      <Route path="subscription" element={<Subscription />} />
+                    </Route>
                     
                     <Route index element={<div className="container" style={{paddingTop: '30px', color: 'white', textAlign: 'center'}}><h2>Welcome to your Dashboard</h2><p style={{color: '#aaa'}}>Select an option from the sidebar to get started.</p></div>} />
                  </Route>

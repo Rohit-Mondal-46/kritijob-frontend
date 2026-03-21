@@ -9,8 +9,19 @@ const CandidateAuthGuard = () => {
         return <div style={{padding: '50px', color: 'white', textAlign: 'center'}}>Loading...</div>;
     }
 
-    if (!user || user.role !== 'candidate') {
-        // Redirect non-candidates away from candidate routes
+    if (!user) {
+        return <Navigate to="/" replace />;
+    }
+
+    if (user.role !== 'candidate') {
+        if (user.role === 'employer') {
+            return <Navigate to="/dashboard/employer/company" replace />;
+        }
+
+        if (user.role === 'admin' || user.role === 'ADMIN') {
+            return <Navigate to="/dashboard/admin/overview" replace />;
+        }
+
         return <Navigate to="/dashboard" replace />;
     }
 

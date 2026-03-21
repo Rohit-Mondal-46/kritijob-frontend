@@ -1,5 +1,14 @@
 /* Companies.module.css */
 
+.loadingContainer {
+    min-height: calc(100vh - 64px);
+    padding-top: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
 /* --- Company Listing Header --- */
 .headerBlock {
     background-color: #ffffff;

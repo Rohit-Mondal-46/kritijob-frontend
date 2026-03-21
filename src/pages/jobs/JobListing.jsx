@@ -23,13 +23,16 @@ const JobListing = () => {
   const queryString = searchParams.toString();
 
   // Memoize filters to pass to JobFilterBar (only recomputes when URL changes)
-  const currentFilters = useMemo(() => ({
-      keyword: searchParams.get('keyword') || '',
-      category: searchParams.get('category') ? searchParams.get('category').split(',') : [],
-      location: searchParams.get('location') ? searchParams.get('location').split(',') : [],
-      experienceLevel: searchParams.get('experienceLevel') ? searchParams.get('experienceLevel').split(',') : [],
-      type: searchParams.get('type') ? searchParams.get('type').split(',') : [],
-  }), [queryString]);
+    const currentFilters = useMemo(() => {
+      const params = new URLSearchParams(queryString);
+      return {
+        keyword: params.get('keyword') || '',
+        category: params.get('category') ? params.get('category').split(',') : [],
+        location: params.get('location') ? params.get('location').split(',') : [],
+        experienceLevel: params.get('experienceLevel') ? params.get('experienceLevel').split(',') : [],
+        type: params.get('type') ? params.get('type').split(',') : [],
+      };
+    }, [queryString]);
 
   // Build URL params from filter object and update the URL
   const handleFilterChange = (newFilters) => {
@@ -74,7 +77,7 @@ const JobListing = () => {
       try {
         setLoading(true);
         // Build API query — ensure limit is always set
-        const apiParams = new URLSearchParams(searchParams);
+        const apiParams = new URLSearchParams(queryString);
         if (!apiParams.has('limit')) apiParams.set('limit', '9');
         
         const { data } = await api.get(`/jobs?${apiParams.toString()}`);
@@ -112,7 +115,13 @@ const JobListing = () => {
       }
   }
 
-  if (initialLoad) return <div className={`focused-container ${styles.pageContainer}`} style={{textAlign:'center', padding:'50px'}}><i className="fas fa-spinner fa-spin fa-2x"></i></div>;
+  if (initialLoad) {
+    return (
+      <div className={`focused-container ${styles.loadingContainer}`}>
+        <i className="fas fa-spinner fa-spin fa-2x"></i>
+      </div>
+    );
+  }
 
   return (
     <>

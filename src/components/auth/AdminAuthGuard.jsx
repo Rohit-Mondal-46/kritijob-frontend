@@ -9,8 +9,20 @@ const AdminAuthGuard = () => {
         return <div style={{padding: '50px', color: 'white', textAlign: 'center'}}>Loading...</div>;
     }
 
+    if (!user) {
+        return <Navigate to="/" replace />;
+    }
+
     // Role check: Admin role hardcoded as 'admin' or 'ADMIN'. Adjust based on backend.
-    if (!user || (user.role && user.role.toUpperCase() !== 'ADMIN')) {
+    if (user.role && user.role.toUpperCase() !== 'ADMIN') {
+        if (user.role === 'employer') {
+            return <Navigate to="/dashboard/employer/company" replace />;
+        }
+
+        if (user.role === 'candidate') {
+            return <Navigate to="/dashboard/candidate/profile" replace />;
+        }
+
         return <Navigate to="/dashboard" replace />;
     }
 

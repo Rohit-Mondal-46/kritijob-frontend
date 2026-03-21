@@ -9,9 +9,20 @@ const EmployerAuthGuard = () => {
         return <div style={{padding: '50px', textAlign: 'center'}}>Loading...</div>;
     }
 
-    if (!user || user.role !== 'employer') {
-        // Redirect non-employers away from employer routes
-        return <Navigate to="/dashboard/employer/company" replace />;
+    if (!user) {
+        return <Navigate to="/" replace />;
+    }
+
+    if (user.role !== 'employer') {
+        if (user.role === 'candidate') {
+            return <Navigate to="/dashboard/candidate/profile" replace />;
+        }
+
+        if (user.role === 'admin' || user.role === 'ADMIN') {
+            return <Navigate to="/dashboard/admin/overview" replace />;
+        }
+
+        return <Navigate to="/dashboard" replace />;
     }
 
     return <Outlet />;
