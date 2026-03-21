@@ -40,24 +40,6 @@ const Subscription = () => {
         }
     };
 
-    const handleCancelRenew = async () => {
-        if (!window.confirm("Are you sure you want to cancel your auto-renewal? You will lose premium benefits when your current billing cycle expires.")) return;
-        
-        setProcessing(true);
-        try {
-            const { data } = await api.post('/subscriptions/cancel');
-            if (data.success) {
-                addToast(data.message, 'success');
-                fetchStatusAndHistory();
-            }
-        } catch (err) {
-            console.error(err);
-            addToast(err.response?.data?.message || 'Failed to cancel subscription', 'error');
-        } finally {
-            setProcessing(false);
-        }
-    };
-
     const handleUpgrade = async () => {
         setProcessing(true);
         try {
@@ -113,23 +95,11 @@ const Subscription = () => {
                     </div>
                 </div>
                 
-                {isPremium && status?.activeSubscription && (
-                    <div style={{ marginTop: '1rem', width: '100%', borderTop: '1px solid var(--color-border)', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                            <strong>Auto-Renew: </strong> 
-                            <span style={{ color: status.activeSubscription.autoRenew !== false ? 'var(--color-success)' : 'var(--color-error)' }}>
-                                {status.activeSubscription.autoRenew !== false ? 'Enabled' : 'Disabled'}
-                            </span>
-                        </div>
-                        {status.activeSubscription.autoRenew !== false && (
-                            <button 
-                                onClick={handleCancelRenew} 
-                                disabled={processing}
-                                style={{ background: 'transparent', border: '1px solid var(--color-error)', color: 'var(--color-error)', padding: '0.5rem 1rem', borderRadius: '5px', cursor: 'pointer', fontSize: '0.85rem' }}
-                            >
-                                Cancel Auto-Renew
-                            </button>
-                        )}
+                {isPremium && (
+                    <div style={{ marginTop: '1rem', width: '100%', borderTop: '1px solid var(--color-border)', paddingTop: '1rem' }}>
+                        <p style={{ margin: 0, color: 'var(--color-text-muted)' }}>
+                            Premium is valid for 30 days from payment date. It will expire automatically and you can purchase again anytime.
+                        </p>
                     </div>
                 )}
             </div>

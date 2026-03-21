@@ -46,42 +46,6 @@ const EmployerSubscription = () => {
     fetchStatusAndHistory();
   }, [user, navigate, fetchStatusAndHistory]);
 
-  const handleCancelRenew = async () => {
-    if (!window.confirm('Are you sure you want to cancel auto-renewal? Premium access will continue until current cycle expires.')) {
-      return;
-    }
-
-    setProcessing(true);
-    try {
-      const { data } = await api.post('/employer-subscriptions/cancel');
-      if (data.success) {
-        addToast(data.message || 'Auto-renewal cancelled successfully', 'success');
-        await fetchStatusAndHistory();
-      }
-    } catch (err) {
-      console.error(err);
-      addToast(err.response?.data?.message || 'Failed to cancel auto-renewal', 'error');
-    } finally {
-      setProcessing(false);
-    }
-  };
-
-  const handleEnableRenew = async () => {
-    setProcessing(true);
-    try {
-      const { data } = await api.post('/employer-subscriptions/enable-auto-renew');
-      if (data.success) {
-        addToast(data.message || 'Auto-renewal enabled successfully', 'success');
-        await fetchStatusAndHistory();
-      }
-    } catch (err) {
-      console.error(err);
-      addToast(err.response?.data?.message || 'Failed to enable auto-renewal', 'error');
-    } finally {
-      setProcessing(false);
-    }
-  };
-
   const handleUpgrade = async () => {
     setProcessing(true);
     try {
@@ -141,39 +105,11 @@ const EmployerSubscription = () => {
           </div>
         </div>
 
-        {isPremium && status?.activeSubscription && (
+        {isPremium && (
           <div className={styles.renewRow}>
-            <div>
-              <strong>Auto-Renew: </strong>
-              <span
-                style={{
-                  color:
-                    status.activeSubscription.autoRenew !== false
-                      ? 'var(--color-success)'
-                      : 'var(--color-error)',
-                }}
-              >
-                {status.activeSubscription.autoRenew !== false ? 'Enabled' : 'Disabled'}
-              </span>
-            </div>
-
-            {status.activeSubscription.autoRenew !== false ? (
-              <button
-                onClick={handleCancelRenew}
-                disabled={processing}
-                className={styles.renewDangerBtn}
-              >
-                Cancel Auto-Renew
-              </button>
-            ) : (
-              <button
-                onClick={handleEnableRenew}
-                disabled={processing}
-                className={styles.renewSuccessBtn}
-              >
-                Enable Auto-Renew
-              </button>
-            )}
+            <p style={{ margin: 0, color: 'var(--color-text-muted)' }}>
+              Premium is valid for 30 days from payment date. It expires automatically and you can purchase again anytime.
+            </p>
           </div>
         )}
       </div>

@@ -10,6 +10,7 @@ import ForgotPasswordModal from './ForgotPasswordModal';
 const Login = () => {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [showForgotModal, setShowForgotModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const { login, error } = useContext(AuthContext);
     const { addToast } = useToast(); // Use Toast
     const navigate = useNavigate();
@@ -20,6 +21,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
         try {
             const data = await login(formData.email, formData.password);
             addToast('Login successful!', 'success');
@@ -35,6 +37,8 @@ const Login = () => {
         } catch (err) {
             console.error(err);
             addToast('Login failed. Please check your credentials.', 'error');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -83,8 +87,8 @@ const Login = () => {
 
 
 
-                    <Button type="submit" variant="primary" className={styles.submitBtn} style={{ marginTop: '20px', borderRadius: '8px', fontWeight: '600' }}>
-                        Sign in
+                    <Button type="submit" variant="primary" className={styles.submitBtn} style={{ marginTop: '20px', borderRadius: '8px', fontWeight: '600' }} disabled={isLoading}>
+                        {isLoading ? 'Signing in...' : 'Sign in'}
                     </Button>
                 </form>
                 
