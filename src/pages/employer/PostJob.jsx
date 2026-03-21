@@ -12,6 +12,8 @@ const PostJob = () => {
     const navigate = useNavigate();
     const { addToast } = useToast();
     const [loading, setLoading] = useState(false);
+    const [hasCheckedCompany, setHasCheckedCompany] = useState(false);
+    const [hasCompany, setHasCompany] = useState(true);
 
     const [jobData, setJobData] = useState({
         title: '',
@@ -24,6 +26,25 @@ const PostJob = () => {
         description: '',
         applicationDeadline: '' 
     });
+
+    React.useEffect(() => {
+        const checkCompany = async () => {
+            try {
+                const { data } = await api.get('/company/me');
+                if (!data.data) {
+                    setHasCompany(false);
+                }
+            } catch (err) {
+                console.error(err);
+                if (err.response?.status === 404) {
+                    setHasCompany(false);
+                }
+            } finally {
+                setHasCheckedCompany(true);
+            }
+        };
+        checkCompany();
+    }, []);
 
     const handleChange = (e) => {
         setJobData({
@@ -203,6 +224,25 @@ const PostJob = () => {
                     </button>
                 </div>
             </form>
+
+            {/* Blocking Modal for Missing Company Profile */}
+            {hasCheckedCompany && !hasCompany && (
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+                    <div style={{ background: 'var(--color-surface)', padding: '2rem', borderRadius: '12px', maxWidth: '400px', width: '90%', textAlign: 'center', boxShadow: '0 10px 15px rgba(0,0,0,0.1)' }}>
+                        <i className="fas fa-building" style={{ fontSize: '3rem', color: 'var(--color-primary)', marginBottom: '1rem' }}></i>
+                        <h2 style={{ marginBottom: '1rem', color: 'var(--color-text-main)' }}>Company Profile Required</h2>
+                        <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1.5rem', lineHeight: '1.5' }}>
+                            You need to set up your company profile before you can post jobs. This helps candidates learn more about your organization.
+                        </p>
+                        <button 
+                            onClick={() => navigate('/dashboard/employer/company')}
+                            style={{ background: 'var(--color-primary)', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', width: '100%', fontSize: '1rem' }}
+                        >
+                            Set up Profile
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
