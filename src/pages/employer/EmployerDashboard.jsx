@@ -108,7 +108,7 @@ const EmployerDashboard = () => {
         <div className={styles.pageContainer}>
             <div className={styles.headerRow}>
                 <div>
-                    <h1 className={styles.pageTitle}>Welcome, {companyName}</h1>
+                    <h1 className={styles.pageTitle}>Welcome, {companyName}!</h1>
                     <p className={styles.pageSubtitle}>Here is a quick snapshot of your hiring activity.</p>
                 </div>
             </div>

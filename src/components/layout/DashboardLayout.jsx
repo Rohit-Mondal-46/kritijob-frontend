@@ -35,15 +35,22 @@ const DashboardLayout = () => {
         return () => document.body.classList.remove('dashboard-active');
     }, []);
 
+    // Redirect to home if no user
+    useEffect(() => {
+        if (!user) {
+            navigate('/', { replace: true });
+        }
+    }, [user, navigate]);
+
     const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
     const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
     const logoutClick = () => {
-        logout();
-        navigate('/login');
+        logout(); // This now only clears state, no redirect
+        navigate('/', { replace: true }); // Navigate to home page
     };
 
-    if (!user) return <div className="container" style={{paddingTop: '100px'}}>Loading...</div>;
+    if (!user) return null;
 
     const employerLinks = [
         { path: '/dashboard/employer/find-talent', label: 'Find Talent', icon: 'fa-search' },
@@ -56,7 +63,6 @@ const DashboardLayout = () => {
         { path: '/dashboard/candidate/resume', label: 'Resume', icon: 'fa-file-upload' },
         { path: '/dashboard/candidate/savedjobs', label: 'Saved Jobs', icon: 'fa-bookmark' },
         { path: '/dashboard/candidate/subscription', label: 'Premium Plans', icon: 'fa-star' },
-        // { path: '/dashboard/candidate/profile', label: 'Profile Settings', icon: 'fa-cog' },
     ];
 
     const adminLinks = [

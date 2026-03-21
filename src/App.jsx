@@ -1,6 +1,6 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import React, { useContext } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, AuthContext } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import Navbar from './components/layout/Navbar';
 import Home from './pages/Home';
@@ -23,24 +23,20 @@ import SavedJobs from './pages/candidate/SavedJobs';
 import ResumeManager from './pages/candidate/ResumeManager';
 import Subscription from './pages/candidate/Subscription';
 import About from './pages/About';
+import Testimonials from './components/home/Testimonials';
 import Pricing from './pages/Pricing';
 import SalaryGuide from './pages/SalaryGuide';
 import PaymentCheckout from './pages/payment/PaymentCheckout';
 import PaymentCallback from './pages/payment/PaymentCallback';
-
-
-
 import FindTalent from './pages/employer/FindTalent';
 import CandidateDetails from './pages/employer/CandidateDetails';
 import EmployerSubscription from './pages/employer/EmployerSubscription';
 import EmployerDashboard from './pages/employer/EmployerDashboard';
 import NotFound from './pages/NotFound';
-
 import ContactUs from './pages/legal/ContactUs';
 import HelpCenter from './pages/legal/HelpCenter';
 import PrivacyPolicy from './pages/legal/PrivacyPolicy';
 import TermsOfService from './pages/legal/TermsOfService';
-
 import AdminAuthGuard from './components/auth/AdminAuthGuard';
 import EmployerAuthGuard from './components/auth/EmployerAuthGuard';
 import AdminOverview from './pages/admin/AdminOverview';
@@ -49,8 +45,18 @@ import AdminJobs from './pages/admin/AdminJobs';
 import AdminPostJob from './pages/admin/AdminPostJob';
 import AdminContent from './pages/admin/AdminContent';
 import AdminReports from './pages/admin/AdminReports';
-
 import './App.css';
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+    const { user } = useContext(AuthContext);
+    
+    if (!user) {
+        return <Navigate to="/" replace />;
+    }
+    
+    return children;
+};
 
 function App() {
   return (
@@ -60,7 +66,7 @@ function App() {
             <div className="app">
                <Navbar />
                <Routes>
-
+                 {/* Public Routes */}
                  <Route path="/" element={<Home />} />
                  <Route path="/about" element={<About />} />
                  <Route path="/pricing" element={<Pricing />} />
@@ -72,8 +78,8 @@ function App() {
                  <Route path="/login" element={<Login />} />
                  <Route path="/register" element={<Register />} />
                  <Route path="/role-selection" element={<RoleSelection />} />
-                 
                  <Route path="/contact" element={<ContactUs />} />
+                 <Route path="/testimonials" element={<Testimonials />} />
                  <Route path="/help-center" element={<HelpCenter />} />
                  <Route path="/privacy" element={<PrivacyPolicy />} />
                  <Route path="/terms" element={<TermsOfService />} />
@@ -82,29 +88,34 @@ function App() {
                  <Route path="/payment/success" element={<PaymentCallback forcedStatus="success" />} />
                  <Route path="/payment/failure" element={<PaymentCallback forcedStatus="failure" />} />
                  
-                 <Route path="/dashboard" element={<DashboardLayout />}>
+                 {/* Protected Dashboard Routes */}
+                 <Route path="/dashboard" element={
+                   <ProtectedRoute>
+                     <DashboardLayout />
+                   </ProtectedRoute>
+                 }>
                     {/* Employer Routes */}
                     <Route path="employer" element={<EmployerAuthGuard />}>
-                    <Route index element={<EmployerDashboard />} />
-                        <Route path="company" element={<CompanyProfile />} />
-                        <Route path="jobs" element={<MyJobs />} />
-                        <Route path="post-job" element={<PostJob />} />
-                        <Route path="jobs/edit/:id" element={<EditJob />} />
-                        <Route path="applicants" element={<ApplicantList />} />
-                        <Route path="jobs/:jobId/applicants" element={<ApplicantList />} />
-                        <Route path="find-talent" element={<FindTalent />} />
-                        <Route path="subscription" element={<EmployerSubscription />} />
-                        <Route path="candidate/:id" element={<CandidateDetails />} />
+                      <Route index element={<EmployerDashboard />} />
+                      <Route path="company" element={<CompanyProfile />} />
+                      <Route path="jobs" element={<MyJobs />} />
+                      <Route path="post-job" element={<PostJob />} />
+                      <Route path="jobs/edit/:id" element={<EditJob />} />
+                      <Route path="applicants" element={<ApplicantList />} />
+                      <Route path="jobs/:jobId/applicants" element={<ApplicantList />} />
+                      <Route path="find-talent" element={<FindTalent />} />
+                      <Route path="subscription" element={<EmployerSubscription />} />
+                      <Route path="candidate/:id" element={<CandidateDetails />} />
                     </Route>
                     
                     {/* Admin Routes */}
                     <Route path="admin" element={<AdminAuthGuard />}>
-                        <Route path="overview" element={<AdminOverview />} />
-                        <Route path="users" element={<AdminUsers />} />
-                        <Route path="jobs" element={<AdminJobs />} />
-                        <Route path="post-job" element={<AdminPostJob />} />
-                        <Route path="content" element={<AdminContent />} />
-                        <Route path="reports" element={<AdminReports />} />
+                      <Route path="overview" element={<AdminOverview />} />
+                      <Route path="users" element={<AdminUsers />} />
+                      <Route path="jobs" element={<AdminJobs />} />
+                      <Route path="post-job" element={<AdminPostJob />} />
+                      <Route path="content" element={<AdminContent />} />
+                      <Route path="reports" element={<AdminReports />} />
                     </Route>
 
                     {/* Candidate Routes */}
@@ -117,9 +128,8 @@ function App() {
                     <Route index element={<div className="container" style={{paddingTop: '30px', color: 'white', textAlign: 'center'}}><h2>Welcome to your Dashboard</h2><p style={{color: '#aaa'}}>Select an option from the sidebar to get started.</p></div>} />
                  </Route>
        
-
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+                 <Route path="*" element={<NotFound />} />
+               </Routes>
             </div>
           </Router>
       </ToastProvider>
