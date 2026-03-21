@@ -302,3 +302,10 @@ button:active {
 .stagger-item:nth-child(5) {
   animation-delay: 0.5s;
 }
+
+/* Hide main navbar on mobile when on dashboard pages */
+@media (max-width: 1024px) {
+  body.dashboard-active #main-navbar {
+    display: none !important;
+  }
+}

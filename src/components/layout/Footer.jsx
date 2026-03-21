@@ -26,9 +26,9 @@ const Footer = () => {
                         <ul>
                             <li><Link to="/jobs">Browse Jobs</Link></li>
                             <li><Link to="/companies">Top Companies</Link></li>
-                            <li><Link to="/help-center">Career Advice</Link></li>
+                            {/* <li><Link to="/help-center">Career Advice</Link></li>
                             {/* <li><Link to="/">Salary Guide</Link></li> */}
-                            <li><Link to="/salary-guide">Salary Guide</Link></li>
+                            {/* <li><Link to="/salary-guide">Salary Guide</Link></li> */} 
                         </ul>
                     </div>
 
@@ -37,8 +37,8 @@ const Footer = () => {
                         <ul>
                             <li><Link to="/dashboard/employer/post-job">Post a Job</Link></li>
                             <li><Link to="/dashboard/employer/find-talent">Talent Solutions</Link></li>
-                            <li><Link to="/about">Pricing Plans</Link></li>
-                            <li><Link to="/about">Success Stories</Link></li>
+                            <li><Link to="/pricing">Pricing Plans</Link></li>
+                            {/* <li><Link to="/about">Success Stories</Link></li> */}
                         </ul>
                     </div>
 
