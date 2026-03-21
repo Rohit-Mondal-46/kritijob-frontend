@@ -106,10 +106,12 @@ const JobCard = ({ job, onUnsave, isSaved, onToggleSave, hidePostedDate, actionS
       </div>
 
       {/* Bookmark */}
-      <div className={styles.bookmark} onClick={toggleSave}>
-        <i className={`${(onUnsave || isSaved) ? 'fas' : 'far'} fa-bookmark`}
-           style={{ color: (onUnsave || isSaved) ? '#fbbf24' : 'inherit' }}></i>
-      </div>
+      {(!user || user.role === 'candidate') && (
+        <div className={styles.bookmark} onClick={toggleSave}>
+          <i className={`${(onUnsave || isSaved) ? 'fas' : 'far'} fa-bookmark`}
+             style={{ color: (onUnsave || isSaved) ? '#fbbf24' : 'inherit' }}></i>
+        </div>
+      )}
     </div>
   );
 };

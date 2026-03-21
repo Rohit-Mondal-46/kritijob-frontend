@@ -22,6 +22,7 @@ const Register = () => {
         password: '',
         confirmPassword: ''
     });
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -45,6 +46,7 @@ const Register = () => {
             return;
         }
 
+        setIsLoading(true);
         try {
             // Note: phone isn't currently supported by AuthContext.register but passed for completeness if it's updated later.
             await register(formData.name, formData.email, formData.password, role, false);
@@ -53,6 +55,8 @@ const Register = () => {
         } catch (err) {
             console.error('Registration failed', err);
             addToast(err.message || 'Registration failed', 'error');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -130,8 +134,8 @@ const Register = () => {
                         <a href="/privacy" className={styles.link} style={{ fontWeight: '500' }}>Privacy Policy</a>.
                     </div>
 
-                    <Button type="submit" variant="primary" className={styles.submitBtn} style={{ marginTop: '8px', borderRadius: '8px', fontWeight: '600' }}>
-                        Create Account
+                    <Button type="submit" variant="primary" className={styles.submitBtn} style={{ marginTop: '8px', borderRadius: '8px', fontWeight: '600' }} disabled={isLoading}>
+                        {isLoading ? 'Creating Account...' : 'Create Account'}
                     </Button>
                 </form>
                 
