@@ -22,7 +22,7 @@ const DashboardLayout = () => {
             if (user.role === 'candidate') {
                 navigate('/dashboard/candidate/profile', { replace: true });
             } else if (user.role === 'employer') {
-                navigate('/dashboard/employer', { replace: true });
+                navigate('/dashboard/employer/company', { replace: true });
             } else if (user.role === 'admin' || user.role === 'ADMIN') {
                 navigate('/dashboard/admin/overview', { replace: true });
             }

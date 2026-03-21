@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Companies.module.css';
 import Footer from '../../components/layout/Footer';
@@ -52,11 +52,7 @@ const CompanyListing = () => {
         return () => window.removeEventListener('popstate', handleUrlChange);
     }, []);
 
-    useEffect(() => {
-        fetchCompanies();
-    }, [searchParams]);
-
-    const fetchCompanies = async () => {
+    const fetchCompanies = useCallback(async () => {
         try {
             setLoading(true);
             const page = searchParams.get('page') || 1;
@@ -76,7 +72,15 @@ const CompanyListing = () => {
             console.error(err);
             setLoading(false);
         }
-    };
+    }, [searchParams]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchCompanies();
+        }, 0);
+
+        return () => clearTimeout(timer);
+    }, [fetchCompanies]);
 
     const handlePageChange = (newPage) => {
         const params = new URLSearchParams(window.location.search);
@@ -95,7 +99,13 @@ const CompanyListing = () => {
         company.location.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    if (loading) return <div className={`focused-container ${styles.pageContainer}`} style={{textAlign:'center', padding:'50px'}}>Loading companies...</div>;
+    if (loading) {
+        return (
+            <div className={`focused-container ${styles.loadingContainer}`}>
+                <i className="fas fa-spinner fa-spin fa-2x"></i>
+            </div>
+        );
+    }
 
     return (
         <div style={{ backgroundColor: 'var(--color-surface-muted)', minHeight: '100vh' }}>

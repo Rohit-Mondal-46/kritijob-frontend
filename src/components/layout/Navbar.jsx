@@ -31,7 +31,6 @@ const Navbar = () => {
 
     if (user.role === 'candidate') {
       return [
-        { label: 'Home', path: '/' },
         { label: 'Find Jobs', path: '/jobs' },
         { label: 'Companies', path: '/companies' },
         { label: 'About', path: '/about' },
@@ -95,7 +94,7 @@ const Navbar = () => {
     if (user?.role === 'candidate') {
       navigate('/dashboard/candidate/profile');
     } else if (user?.role === 'employer') {
-      navigate('/dashboard/employer');
+      navigate('/dashboard/employer/company');
     } else if (user?.role === 'admin') {
       navigate('/dashboard/admin/overview');
     } else {
