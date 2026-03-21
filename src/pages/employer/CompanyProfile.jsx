@@ -212,18 +212,9 @@ const CompanyProfile = () => {
 
     return (
         <div className={styles.profileContainer}>
-            {/* Global Actions */}
-            <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem', gap: '1rem'}}>
-                {isEditing ? (
-                     <button 
-                        onClick={handleSave}
-                        className={styles.submitBtn} 
-                        style={{width: 'auto', padding: '10px 24px'}}
-                    >
-                        <i className="fas fa-save" style={{marginRight:'8px'}}></i>
-                        Save Profile
-                    </button>
-                ) : (
+            {/* Edit Button - Top Right */}
+            {!isEditing && (
+                <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem'}}>
                     <button 
                         onClick={() => setIsEditing(true)}
                         className={styles.filterBtn}
@@ -232,8 +223,8 @@ const CompanyProfile = () => {
                         <i className="fas fa-pencil-alt" style={{marginRight:'8px'}}></i>
                         Edit Profile
                     </button>
-                )}
-            </div>
+                </div>
+            )}
 
             {/* Header Card */}
             <div className={styles.companyHeaderCard}>
@@ -321,6 +312,33 @@ const CompanyProfile = () => {
                 </div>
             </div>
 
+            {/* Save Profile Button - Bottom */}
+            {isEditing && (
+                <div style={{display: 'flex', justifyContent: 'center', marginTop: '2rem', marginBottom: '1rem'}}>
+                    <button 
+                        onClick={handleSave}
+                        style={{
+                            background: '#3b82f6',
+                            color: 'white',
+                            padding: '12px 32px',
+                            fontSize: '16px',
+                            fontWeight: '600',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            transition: 'background 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => e.target.style.background = '#2563eb'}
+                        onMouseLeave={(e) => e.target.style.background = '#3b82f6'}
+                    >
+                        <i className="fas fa-save"></i>
+                        Save Profile
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

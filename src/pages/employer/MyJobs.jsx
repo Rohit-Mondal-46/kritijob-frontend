@@ -68,7 +68,21 @@ const MyJobs = () => {
                  <h1 style={{fontSize: '2rem', margin: 0, color: 'var(--color-text-main)'}}>My Jobs</h1>
                  <button 
                     className={styles.filterBtn} 
-                    style={{background: 'var(--color-secondary)', color: 'blue', border: 'none'}}
+                    style={{
+                        background: '#3b82f6', 
+                        color: 'white', 
+                        border: 'none',
+                        padding: '10px 20px',
+                        borderRadius: '8px',
+                        fontWeight: '600',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = '#2563eb'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = '#3b82f6'}
                     onClick={() => navigate('/dashboard/employer/post-job')}
                 >
                     <i className="fas fa-plus"></i> Post a Job
@@ -127,7 +141,19 @@ const MyJobs = () => {
                      <div style={{gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: 'var(--color-text-muted)', background: 'var(--color-surface-muted)', borderRadius: '12px', border: '1px solid var(--color-border)'}}>
                          <p>You haven't posted any jobs yet.</p>
                          <button 
-                            style={{marginTop: '10px', background: 'none', border:'1px solid var(--color-primary)', color: 'var(--color-primary)', padding:'8px 16px', borderRadius:'8px', cursor:'pointer'}}
+                            style={{
+                                marginTop: '10px',
+                                background: '#3b82f6',
+                                border: 'none',
+                                color: 'white',
+                                padding: '10px 20px',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                fontWeight: '600',
+                                transition: 'all 0.2s ease'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.background = '#2563eb'}
+                            onMouseLeave={(e) => e.currentTarget.style.background = '#3b82f6'}
                             onClick={() => navigate('/dashboard/employer/post-job')}
                          >
                              Create your first job
