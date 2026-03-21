@@ -110,16 +110,43 @@
 .mobileHeader {
     display: none;
     position: fixed;
-    top: 70px; /* Offset for main Navbar height */
+    top: 0;
     left: 0;
     right: 0;
-    height: 60px;
-    background: #fff;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--color-border);
     padding: 0 20px;
     align-items: center;
     justify-content: space-between;
-    z-index: 850;
+    z-index: 950;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+}
+
+.mobileLogo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.mobileLogoImg {
+    height: 28px;
+    width: 28px;
+    object-fit: contain;
+    border-radius: 6px;
+}
+
+.mobileLogoText {
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--color-primary), #3b82f6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
 }
 
 .mobileUserInfo {
@@ -129,24 +156,48 @@
 }
 
 .mobileAvatar {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary), #3b82f6);
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 15px;
+    box-shadow: 0 2px 8px rgba(1, 65, 163, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .menuToggle {
     background: none;
     border: none;
-    font-size: 24px;
-    color: var(--color-text-main);
     cursor: pointer;
+    padding: 0;
+}
+
+.profileToggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px 4px 4px;
+    border-radius: 24px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-muted);
+    transition: all 0.2s;
+}
+
+.profileToggle:hover,
+.profileToggle:active {
+    border-color: var(--color-primary);
+    background: rgba(1, 65, 163, 0.05);
+}
+
+.toggleIcon {
+    font-size: 10px;
+    color: var(--color-text-muted);
+    transition: transform 0.3s;
 }
 
 .overlay {
@@ -162,7 +213,7 @@
 @media (max-width: 1024px) {
     .dashboardContainer {
         flex-direction: column;
-        padding-top: 130px; /* Navbar + MobileHeader */
+        padding-top: 74px; /* Dashboard mobile header height + spacing */
     }
 
     .sidebar {
@@ -174,6 +225,7 @@
         transition: left 0.3s ease;
         z-index: 1000;
         height: 100vh;
+        padding-top: 80px;
     }
 
     .mobileOpen {
@@ -182,7 +234,7 @@
 
     .content {
         margin-left: 0;
-        padding: 20px;
+        padding: 16px;
     }
 
     .mobileHeader {

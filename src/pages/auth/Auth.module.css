@@ -13,6 +13,7 @@
     padding: 40px;
     background: #ffffff;
     border-radius: 16px;
+    margin-top: 100px;
     box-shadow: var(--shadow-lg);
     border: 1px solid var(--color-border);
 }

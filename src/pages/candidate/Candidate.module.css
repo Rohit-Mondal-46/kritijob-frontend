@@ -253,3 +253,117 @@
     margin: 0;
     font-weight: 500;
 }
+
+/* ==================== Mobile Responsive ==================== */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px 0;
+        padding-bottom: 40px;
+    }
+
+    .headerCard {
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+    }
+
+    .banner {
+        height: 120px;
+    }
+
+    .profileHeader {
+        padding: 0 20px 24px 20px;
+    }
+
+    .avatarWrapper {
+        width: 100px;
+        height: 100px;
+        margin-top: -50px;
+        margin-bottom: 16px;
+    }
+
+    .editAvatarBtn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+        bottom: 4px;
+        right: 4px;
+    }
+
+    .nameRow {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .nameRow h1 {
+        font-size: 1.6rem;
+    }
+
+    .titleLocation {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .title,
+    .location {
+        font-size: 0.95rem;
+    }
+
+    .editIcon {
+        font-size: 1rem;
+        padding: 6px;
+    }
+
+    .sectionCard {
+        padding: 24px 0;
+    }
+
+    .sectionHeader {
+        margin-bottom: 1.2rem;
+    }
+
+    .sectionHeader h2 {
+        font-size: 1.2rem;
+    }
+
+    .aboutText {
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    .editTextarea {
+        padding: 14px;
+        font-size: 0.95rem;
+    }
+
+    .editInput {
+        max-width: 100%;
+    }
+
+    .skillsContainer {
+        gap: 8px;
+    }
+
+    .skillTag {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+    }
+
+    .addSkillInput {
+        width: 100%;
+    }
+
+    .contactGrid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .contactItem label {
+        font-size: 0.8rem;
+    }
+
+    .contactItem p {
+        font-size: 1rem;
+    }
+}

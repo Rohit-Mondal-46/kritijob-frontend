@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import styles from './Navbar.module.css';
 import Button from '../ui/Button';
 import { AuthContext } from '../../context/AuthContext';
-import NotificationDropdown from '../common/NotificationDropdown';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +18,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className={styles.navbar}>
+    <nav id="main-navbar" className={styles.navbar}>
       <div className={`focused-container ${styles.navContainer}`}>
         <div className={styles.logo}>
           <Link to="/" className={styles.logoLink}>

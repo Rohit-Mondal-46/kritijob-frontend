@@ -1,12 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import JobCard from '../jobs/JobCard';
+import { AuthContext } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import api from '../../utils/api';
 import styles from './Home.module.css';
 
 const FeaturedJobs = () => {
     const [jobs, setJobs] = useState([]);
+    const [savedJobIds, setSavedJobIds] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { user, token } = useContext(AuthContext);
+    const { addToast } = useToast();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -31,8 +36,40 @@ const FeaturedJobs = () => {
             }
         };
 
+        const fetchSavedJobs = async () => {
+            if (token && user?.role === 'candidate') {
+                try {
+                    const { data } = await api.get('/candidate/saved-jobs');
+                    if (data.success) {
+                        setSavedJobIds(data.data.map(job => job._id));
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch saved jobs:", err);
+                }
+            }
+        };
+
         fetchJobs();
-    }, []);
+        fetchSavedJobs();
+    }, [token, user]);
+
+    const handleToggleSave = (jobId) => {
+        if (!token) {
+            navigate('/login');
+            return;
+        }
+        if (user?.role !== 'candidate') {
+            addToast('Only candidates can save jobs', 'warning');
+            return;
+        }
+
+        const isSaved = savedJobIds.includes(jobId);
+        if (isSaved) {
+            setSavedJobIds(prev => prev.filter(id => id !== jobId));
+        } else {
+            setSavedJobIds(prev => [...prev, jobId]);
+        }
+    };
 
     if (loading || jobs.length === 0) return null;
 
@@ -56,8 +93,8 @@ const FeaturedJobs = () => {
                     <JobCard 
                         key={job._id}
                         job={job}
-                        isSaved={false}
-                        onToggleSave={() => navigate('/login')}
+                        isSaved={savedJobIds.includes(job._id)}
+                        onToggleSave={() => handleToggleSave(job._id)}
                     />
                 ))}
             </div>

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://kriti-job-backend.vercel.app/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   timeout: 8000,
   headers: {
     'Content-Type': 'application/json',
@@ -13,7 +13,14 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
-    if (token) {
+    const hasAuthHeader = Boolean(
+      config.headers?.Authorization ||
+      config.headers?.authorization ||
+      (typeof config.headers?.get === 'function' && config.headers.get('Authorization')),
+    );
+
+    // Preserve per-request auth headers (used by payment callback/verification flows).
+    if (token && !hasAuthHeader) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;
@@ -27,10 +34,13 @@ api.interceptors.response.use(
   (error) => {
     // Handle 401 Unauthorized (Token expired/invalid)
     if (error.response && error.response.status === 401) {
+        const isPaymentRoute = window.location.pathname.startsWith('/payment');
+        const skipAuthReset = Boolean(error.config?.skipAuthResetOn401);
+
         // Optional: Implement refresh token logic here if needed
         // For now, just clear storage and redirect to login if it's a hard auth failure
         // But be careful not to redirect on login failure itself
-        if (!window.location.pathname.startsWith('/auth')) {
+        if (!window.location.pathname.startsWith('/auth') && !isPaymentRoute && !skipAuthReset) {
              localStorage.removeItem('token');
              localStorage.removeItem('user');
              // window.location.href = '/login'; 
