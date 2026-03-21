@@ -69,7 +69,9 @@ const Subscription = () => {
                 throw new Error('Payment URL is missing in create-order response');
             }
 
-            window.location.href = paymentUrl;
+            const checkoutUrl = new URL(paymentUrl);
+            checkoutUrl.searchParams.set('source', 'web');
+            window.location.href = checkoutUrl.toString();
 
         } catch (err) {
             console.error(err);

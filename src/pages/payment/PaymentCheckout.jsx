@@ -12,6 +12,7 @@ const PaymentCheckout = () => {
   const currency = searchParams.get('currency') || 'INR';
   const keyId = searchParams.get('keyId');
   const token = searchParams.get('token') || '';
+  const source = (searchParams.get('source') || '').toLowerCase();
 
   const verifyEndpoint = useMemo(() => {
     if (flow === 'employer') {
@@ -39,6 +40,9 @@ const PaymentCheckout = () => {
       const callback = new URL('/payment/callback', window.location.origin);
       callback.searchParams.set('status', 'failure');
       callback.searchParams.set('flow', flow);
+      if (source) {
+        callback.searchParams.set('source', source);
+      }
       callback.searchParams.set('reason', 'Payment gateway failed to load');
       window.location.replace(callback.toString());
       return;
@@ -48,6 +52,9 @@ const PaymentCheckout = () => {
       const callback = new URL('/payment/callback', window.location.origin);
       callback.searchParams.set('status', status);
       callback.searchParams.set('flow', flow);
+      if (source) {
+        callback.searchParams.set('source', source);
+      }
       if (reason) {
         callback.searchParams.set('reason', reason);
       }
@@ -108,7 +115,7 @@ const PaymentCheckout = () => {
     });
 
     razorpay.open();
-  }, [amount, currency, flow, keyId, orderId, token, verifyEndpoint, sessionError]);
+  }, [amount, currency, flow, keyId, orderId, source, token, verifyEndpoint, sessionError]);
 
   return (
     <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: '24px' }}>

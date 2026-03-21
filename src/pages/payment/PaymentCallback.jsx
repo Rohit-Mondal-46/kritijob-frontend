@@ -13,15 +13,24 @@ const PaymentCallback = ({ forcedStatus }) => {
 
   const normalizedStatus = status === 'success' ? 'success' : 'failure';
   const deepLink = normalizedStatus === 'success' ? 'myapp://payment-success' : 'myapp://payment-failure';
+  const source = (searchParams.get('source') || '').toLowerCase();
+  const isAppSource = source === 'app';
+  const isWebSource = source === 'web';
+  const flow = (searchParams.get('flow') || '').toLowerCase();
+  const webTarget = flow === 'employer' ? '/dashboard/employer/subscription' : '/dashboard/candidate/subscription';
   const reason = searchParams.get('reason');
 
   useEffect(() => {
+    if (!isAppSource) {
+      return undefined;
+    }
+
     const timer = setTimeout(() => {
       window.location.href = deepLink;
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [deepLink]);
+  }, [deepLink, isAppSource]);
 
   return (
     <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: '24px' }}>
@@ -30,27 +39,35 @@ const PaymentCallback = ({ forcedStatus }) => {
           {normalizedStatus === 'success' ? 'Payment Successful' : 'Payment Not Completed'}
         </h2>
         <p style={{ marginBottom: '8px' }}>
-          {normalizedStatus === 'success'
-            ? 'Redirecting you back to the app to refresh subscription status.'
-            : 'Redirecting you back to the app. You can retry payment from there.'}
+          {isAppSource
+            ? (normalizedStatus === 'success'
+              ? 'Redirecting you back to the app to refresh subscription status.'
+              : 'Redirecting you back to the app. You can retry payment from there.')
+            : (normalizedStatus === 'success'
+              ? 'Payment completed on the website. Continue from your Profile.'
+              : 'Payment failed or was cancelled. You can retry from your dashboard.')}
         </p>
         {reason && normalizedStatus === 'failure' && (
           <p style={{ color: '#dc2626', marginBottom: '12px' }}>{reason}</p>
         )}
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '16px' }}>
-          <a
-            href={deepLink}
-            style={{ textDecoration: 'none', borderRadius: '8px', background: '#0ea5e9', color: '#fff', padding: '10px 16px' }}
-          >
-            Open App
-          </a>
-          <Link
-            to="/"
-            style={{ textDecoration: 'none', borderRadius: '8px', border: '1px solid #cbd5e1', color: '#0f172a', padding: '10px 16px' }}
-          >
-            Go To Website
-          </Link>
+          {(isAppSource || (!isAppSource && !isWebSource)) && (
+            <a
+              href={deepLink}
+              style={{ textDecoration: 'none', borderRadius: '8px', background: '#0ea5e9', color: '#fff', padding: '10px 16px' }}
+            >
+              Open App
+            </a>
+          )}
+          {(isWebSource || (!isAppSource && !isWebSource)) && (
+            <Link
+              to={webTarget}
+              style={{ textDecoration: 'none', borderRadius: '8px', border: '1px solid #cbd5e1', color: '#0f172a', padding: '10px 16px' }}
+            >
+              Go To Dashboard
+            </Link>
+          )}
         </div>
       </div>
     </div>

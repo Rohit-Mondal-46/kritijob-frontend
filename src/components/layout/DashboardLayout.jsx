@@ -44,6 +44,7 @@ const DashboardLayout = () => {
         { path: '/dashboard/employer/post-job', label: 'Post a Job', icon: 'fa-plus-circle' },
         { path: '/dashboard/employer/applicants', label: 'Applicants', icon: 'fa-users' },
         { path: '/dashboard/employer/find-talent', label: 'Find Talent', icon: 'fa-search' },
+        { path: '/dashboard/employer/subscription', label: 'Premium Plans', icon: 'fa-star' },
     ];
 
     const candidateLinks = [
