@@ -33,6 +33,7 @@ import PaymentCallback from './pages/payment/PaymentCallback';
 import FindTalent from './pages/employer/FindTalent';
 import CandidateDetails from './pages/employer/CandidateDetails';
 import EmployerSubscription from './pages/employer/EmployerSubscription';
+import EmployerDashboard from './pages/employer/EmployerDashboard';
 import NotFound from './pages/NotFound';
 
 import ContactUs from './pages/legal/ContactUs';
@@ -84,6 +85,7 @@ function App() {
                  <Route path="/dashboard" element={<DashboardLayout />}>
                     {/* Employer Routes */}
                     <Route path="employer" element={<EmployerAuthGuard />}>
+                    <Route index element={<EmployerDashboard />} />
                         <Route path="company" element={<CompanyProfile />} />
                         <Route path="jobs" element={<MyJobs />} />
                         <Route path="post-job" element={<PostJob />} />

@@ -8,6 +8,14 @@ const DashboardLayout = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+    const isEmployer = user?.role === 'employer';
+    const employerMorePaths = [
+        '/dashboard/employer/company',
+        '/dashboard/employer/find-talent',
+        '/dashboard/employer/subscription',
+    ];
+    const isEmployerMoreSection = employerMorePaths.includes(location.pathname);
+    const showSidebar = !isEmployer || isEmployerMoreSection;
 
     // Auto-redirect from /dashboard to default page based on role
     useEffect(() => {
@@ -15,7 +23,7 @@ const DashboardLayout = () => {
             if (user.role === 'candidate') {
                 navigate('/dashboard/candidate/profile', { replace: true });
             } else if (user.role === 'employer') {
-                navigate('/dashboard/employer/company', { replace: true });
+                navigate('/dashboard/employer', { replace: true });
             } else if (user.role === 'admin' || user.role === 'ADMIN') {
                 navigate('/dashboard/admin/overview', { replace: true });
             }
@@ -40,9 +48,6 @@ const DashboardLayout = () => {
 
     const employerLinks = [
         { path: '/dashboard/employer/company', label: 'Company Profile', icon: 'fa-building' },
-        { path: '/dashboard/employer/jobs', label: 'My Jobs', icon: 'fa-briefcase' },
-        { path: '/dashboard/employer/post-job', label: 'Post a Job', icon: 'fa-plus-circle' },
-        { path: '/dashboard/employer/applicants', label: 'Applicants', icon: 'fa-users' },
         { path: '/dashboard/employer/find-talent', label: 'Find Talent', icon: 'fa-search' },
         { path: '/dashboard/employer/subscription', label: 'Premium Plans', icon: 'fa-star' },
     ];
@@ -73,7 +78,7 @@ const DashboardLayout = () => {
     return (
         <div className={styles.dashboardContainer}>
             {/* Mobile Header Toggle */}
-            <div className={styles.mobileHeader}>
+            {showSidebar && <div className={styles.mobileHeader}>
                 <Link to="/" className={styles.mobileLogo}>
                     <img src="/images/logo.jpeg" alt="KritiJob" className={styles.mobileLogoImg} />
                     <span className={styles.mobileLogoText}>KritiJob</span>
@@ -84,12 +89,12 @@ const DashboardLayout = () => {
                         <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-chevron-down'} ${styles.toggleIcon}`}></i>
                     </div>
                 </button>
-            </div>
+            </div>}
 
             {/* Overlay */}
-            {isMobileMenuOpen && <div className={styles.overlay} onClick={closeMobileMenu}></div>}
+            {showSidebar && isMobileMenuOpen && <div className={styles.overlay} onClick={closeMobileMenu}></div>}
 
-            <aside className={`${styles.sidebar} ${isMobileMenuOpen ? styles.mobileOpen : ''}`}>
+            {showSidebar && <aside className={`${styles.sidebar} ${isMobileMenuOpen ? styles.mobileOpen : ''}`}>
                 <div className={styles.userInfo}>
                     <div className={styles.avatar}>
                         {user.name.charAt(0)}
@@ -117,8 +122,8 @@ const DashboardLayout = () => {
                         Logout
                     </button>
                 </nav>
-            </aside>
-            <main className={styles.content}>
+            </aside>}
+            <main className={`${styles.content} ${!showSidebar ? styles.fullContent : ''}`}>
                 <Outlet />
             </main>
 
