@@ -10,7 +10,6 @@ const DashboardLayout = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
     const isEmployer = user?.role === 'employer';
     const employerMorePaths = [
-        '/dashboard/employer/company',
         '/dashboard/employer/find-talent',
         '/dashboard/employer/subscription',
     ];
@@ -47,7 +46,6 @@ const DashboardLayout = () => {
     if (!user) return <div className="container" style={{paddingTop: '100px'}}>Loading...</div>;
 
     const employerLinks = [
-        { path: '/dashboard/employer/company', label: 'Company Profile', icon: 'fa-building' },
         { path: '/dashboard/employer/find-talent', label: 'Find Talent', icon: 'fa-search' },
         { path: '/dashboard/employer/subscription', label: 'Premium Plans', icon: 'fa-star' },
     ];

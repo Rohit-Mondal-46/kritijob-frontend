@@ -8,6 +8,13 @@ import Select from '../../components/ui/Select';
 import api from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
 
+const normalizeDateInput = (value) => {
+    if (!value) return '';
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return '';
+    return parsed.toISOString().split('T')[0];
+};
+
 const EditJob = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -33,6 +40,7 @@ const EditJob = () => {
                 const { data } = await api.get(`/jobs/${id}`);
                 if (data.success) {
                     const job = data.data;
+                    const normalizedDeadline = normalizeDateInput(job.applicationDeadline);
                     setJobData({
                         title: job.title,
                         experienceLevel: job.experienceLevel || '',
@@ -42,19 +50,20 @@ const EditJob = () => {
                         skillsRequired: job.skillsRequired || [],
                         description: job.description || '',
                         status: job.status || 'Open',
-                        applicationDeadline: job.applicationDeadline ? job.applicationDeadline.split('T')[0] : ''
+                        applicationDeadline: normalizedDeadline
                     });
-                    setLoading(false);
                 }
             } catch (err) {
                 console.error(err);
                 addToast('Failed to load job', 'error');
                 navigate('/dashboard/employer/jobs');
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchJob();
-    }, [id, navigate]);
+    }, [id, navigate, addToast]);
 
     const handleChange = (e) => {
         setJobData({
@@ -82,8 +91,13 @@ const EditJob = () => {
         setSaving(true);
 
         try {
+            // Frontend-only mitigation: never send deadline in update payload.
+            // This avoids backend deadline conversion crashing on legacy invalid values.
+            const payload = { ...jobData };
+            delete payload.applicationDeadline;
+
             await api.put(`/jobs/${id}`, {
-                ...jobData
+                ...payload
             });
 
             addToast('Job updated successfully!', 'success');
@@ -97,10 +111,22 @@ const EditJob = () => {
         }
     };
 
+    if (loading) {
+        return <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-main)' }}>Loading job...</div>;
+    }
+
     return (
         <div className={styles.pageContainer}>
             <div className={styles.header}>
                 <h1 style={{fontSize: '2rem', margin: 0, color: 'var(--color-text-main)'}}>Edit Job</h1>
+                <button
+                    type="button"
+                    onClick={() => navigate('/dashboard/employer/jobs')}
+                    className={styles.backBtn}
+                >
+                    <i className="fas fa-arrow-left" style={{ marginRight: '8px' }}></i>
+                    Back to Jobs
+                </button>
             </div>
 
             <form className={styles.formGrid} onSubmit={handleSubmit}>
@@ -120,8 +146,6 @@ const EditJob = () => {
                         name="applicationDeadline"
                         value={jobData.applicationDeadline}
                         onChange={handleChange}
-                        min={new Date().toISOString().split('T')[0]}
-                        required
                         style={{
                             padding: '10px',
                             background: '#ffffff',

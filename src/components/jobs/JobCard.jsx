@@ -4,9 +4,9 @@ import { AuthContext } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import api from '../../utils/api';
 import styles from './JobCard.module.css';
-import { formatDistanceToNow, differenceInDays } from 'date-fns';
+import { differenceInDays } from 'date-fns';
 
-const JobCard = ({ job, onUnsave, isSaved, onToggleSave, hidePostedDate, actionSlot }) => {
+const JobCard = ({ job, onUnsave, isSaved, onToggleSave, actionSlot, disableNavigation = false }) => {
   const { user } = useContext(AuthContext);
   const { addToast } = useToast();
   const navigate = useNavigate();
@@ -14,13 +14,14 @@ const JobCard = ({ job, onUnsave, isSaved, onToggleSave, hidePostedDate, actionS
   const displayJob = {
       id: job._id || job.id,
       title: job.title,
-      company: job.companyId?.name || 'Unknown Company',
-      logo: job.companyId?.logoUrl,
+      company: job.companyId?.name || job.companyName || job.company?.name || 'Unknown Company',
       location: job.location,
       type: job.type,
       salary: job.salaryRange,
-      postedAt: job.postedAt,
-      isNew: job.postedAt ? differenceInDays(new Date(), new Date(job.postedAt)) <= 7 : false,
+      postedAt: job.postedAt || job.createdAt,
+      isNew: (job.postedAt || job.createdAt)
+        ? differenceInDays(new Date(), new Date(job.postedAt || job.createdAt)) <= 7
+        : false,
   };
 
   // Generate initials for company logo fallback
@@ -65,6 +66,9 @@ const JobCard = ({ job, onUnsave, isSaved, onToggleSave, hidePostedDate, actionS
   };
 
   const handleCardClick = (e) => {
+    if (disableNavigation) {
+        return;
+    }
     const isInteractive = e.target.closest('button') || e.target.closest('a') || e.target.closest('[role="button"]') || e.target.closest('.prevent-nav');
     if (isInteractive && isInteractive !== e.currentTarget) {
         return;
@@ -73,14 +77,15 @@ const JobCard = ({ job, onUnsave, isSaved, onToggleSave, hidePostedDate, actionS
   };
 
   return (
-    <div className={styles.card} onClick={handleCardClick} role="button" tabIndex={0}>
+    <div
+      className={`${styles.card} ${disableNavigation ? styles.cardStatic : ''}`}
+      onClick={handleCardClick}
+      role={disableNavigation ? undefined : 'button'}
+      tabIndex={disableNavigation ? -1 : 0}
+    >
       {/* Circular company logo */}
       <div className={styles.companyIcon}>
-        {displayJob.logo ? (
-          <img src={displayJob.logo} alt={displayJob.company} />
-        ) : (
-          <span>{initials}</span>
-        )}
+        <span>{initials}</span>
       </div>
 
       {/* Info block */}
@@ -112,6 +117,8 @@ const JobCard = ({ job, onUnsave, isSaved, onToggleSave, hidePostedDate, actionS
              style={{ color: (onUnsave || isSaved) ? '#fbbf24' : 'inherit' }}></i>
         </div>
       )}
+
+      {actionSlot && <div className={styles.actionSlot}>{actionSlot}</div>}
     </div>
   );
 };

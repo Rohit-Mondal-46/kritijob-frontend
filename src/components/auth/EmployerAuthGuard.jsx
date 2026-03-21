@@ -11,7 +11,7 @@ const EmployerAuthGuard = () => {
 
     if (!user || user.role !== 'employer') {
         // Redirect non-employers away from employer routes
-        return <Navigate to="/dashboard" replace />;
+        return <Navigate to="/dashboard/employer/company" replace />;
     }
 
     return <Outlet />;

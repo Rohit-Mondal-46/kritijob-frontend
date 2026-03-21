@@ -41,9 +41,10 @@ const Navbar = () => {
 
     if (user.role === 'employer') {
       return [
+        { label: 'Company Profile', path: '/dashboard/employer/company' },
         { label: 'Dashboard', path: '/dashboard/employer' },
         { label: 'My Jobs', path: '/dashboard/employer/jobs' },
-        { label: 'More', path: '/dashboard/employer/company' }
+        { label: 'More', path: '/dashboard/employer/find-talent' }
       ];
     }
 
@@ -72,13 +73,16 @@ const Navbar = () => {
       return currentPath === '/dashboard/employer';
     }
 
+    if (user?.role === 'employer' && item.label === 'Company Profile') {
+      return currentPath === '/dashboard/employer/company' || currentPath.startsWith('/dashboard/employer/company/');
+    }
+
     if (user?.role === 'employer' && item.label === 'My Jobs') {
       return currentPath === '/dashboard/employer/jobs' || currentPath.startsWith('/dashboard/employer/jobs/');
     }
 
     if (user?.role === 'employer' && item.label === 'More') {
       return [
-        '/dashboard/employer/company',
         '/dashboard/employer/find-talent',
         '/dashboard/employer/subscription',
       ].some((path) => currentPath === path || currentPath.startsWith(`${path}/`));
