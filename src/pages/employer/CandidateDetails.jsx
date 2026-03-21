@@ -34,10 +34,6 @@ const CandidateDetails = () => {
         }
     }, [id, navigate, addToast]);
 
-    const handleMessage = () => {
-        addToast('Messaging feature coming soon!', 'info');
-    };
-
     if (loading) {
         return (
             <div className="flex justify-center items-center h-[60vh]">
@@ -90,12 +86,6 @@ const CandidateDetails = () => {
                                 {candidate.user.email}
                             </div>
                         </div>
-                    </div>
-                    <div className={styles.headerActions}>
-                        <button onClick={handleMessage} className={styles.messageBtn}>
-                            <i className="fas fa-paper-plane"></i>
-                            Send Message
-                        </button>
                     </div>
                 </div>
             </div>
