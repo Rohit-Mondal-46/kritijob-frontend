@@ -6,7 +6,7 @@ const AdminAuthGuard = () => {
     const { user, loading } = useContext(AuthContext);
 
     if (loading) {
-        return <div style={{padding: '50px', color: 'white', textAlign: 'center'}}>Loading...</div>;
+        return <div style={{marginTop: '64px', minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', textAlign: 'center'}}>Loading...</div>;
     }
 
     if (!user) {

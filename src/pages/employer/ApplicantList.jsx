@@ -17,12 +17,22 @@ const ApplicantList = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let isActive = true;
+
         const fetchData = async () => {
+            setLoading(true);
+
+            if (jobId) {
+                setApplicants([]);
+            } else {
+                setJobSummaries([]);
+            }
+
             try {
                 if (jobId) {
                     const { data } = await api.get(`/applications/job/${jobId}`);
 
-                    if (data.success) {
+                    if (isActive && data.success) {
                         const mapped = data.data.map(app => ({
                             id: app._id,
                             applicationId: app._id,
@@ -49,6 +59,8 @@ const ApplicantList = () => {
                         api.get('/applications/employer/all')
                     ]);
 
+                    if (!isActive) return;
+
                     const jobs = jobsRes.data?.success ? jobsRes.data.data : [];
                     const applications = appsRes.data?.success ? appsRes.data.data : [];
 
@@ -74,11 +86,17 @@ const ApplicantList = () => {
                 console.error(err);
                 addToast('Failed to load applicant data', 'error');
             } finally {
-                setLoading(false);
+                if (isActive) {
+                    setLoading(false);
+                }
             }
         };
 
         fetchData();
+
+        return () => {
+            isActive = false;
+        };
     }, [jobId, addToast]);
 
     const handleViewProfile = (applicant) => {
@@ -89,7 +107,24 @@ const ApplicantList = () => {
         }
     };
 
-    if (loading) return <div style={{padding: '2rem', textAlign: 'center', color: 'var(--color-text-main)'}}>Loading Applicants...</div>;
+    if (loading) {
+        return (
+            <div className={styles.pageContainer}>
+                <div className={styles.headerRow}>
+                    <h1 style={{fontSize: '2rem', margin: 0, color: 'var(--color-text-main)'}}>
+                        {jobId ? 'Job Applicants' : 'Applicants by Job'}
+                    </h1>
+                </div>
+                <div className={styles.grid}>
+                    {Array.from({ length: 6 }).map((_, index) => (
+                        <div key={index} className={styles.loadingSkeletonCard}>
+                            <div className={styles.skeletonShimmer}></div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.pageContainer}>

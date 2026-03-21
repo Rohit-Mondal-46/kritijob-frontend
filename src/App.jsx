@@ -48,6 +48,24 @@ import AdminReports from './pages/admin/AdminReports';
 import CandidateAuthGuard from './components/auth/CandidateAuthGuard';
 import './App.css';
 
+const NAVBAR_HEIGHT = 64;
+
+const NavbarAwareLoader = () => (
+  <div
+    style={{
+      marginTop: `${NAVBAR_HEIGHT}px`,
+      minHeight: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'var(--color-text-main)',
+      padding: '24px',
+    }}
+  >
+    Loading...
+  </div>
+);
+
 const getRoleHomePath = (user) => {
   if (!user) return '/login';
   if (user.role === 'employer') return '/dashboard/employer/company';
@@ -59,7 +77,7 @@ const getRoleHomePath = (user) => {
 const RootRoute = () => {
   const { user, loading } = useContext(AuthContext);
 
-  if (loading) return <div style={{ padding: '50px', textAlign: 'center' }}>Loading...</div>;
+  if (loading) return <NavbarAwareLoader />;
 
   if (!user) {
     return <Home />;
@@ -71,7 +89,7 @@ const RootRoute = () => {
 const RedirectAuthenticated = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
 
-  if (loading) return <div style={{ padding: '50px', textAlign: 'center' }}>Loading...</div>;
+  if (loading) return <NavbarAwareLoader />;
 
   if (user) {
     return <Navigate to={getRoleHomePath(user)} replace />;
@@ -85,7 +103,7 @@ const ProtectedRoute = ({ children }) => {
     const { user, loading } = useContext(AuthContext);
 
     if (loading) {
-        return <div style={{ padding: '50px', textAlign: 'center' }}>Loading...</div>;
+    return <NavbarAwareLoader />;
     }
     
     if (!user) {
