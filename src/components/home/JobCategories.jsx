@@ -6,12 +6,11 @@ import { politicalCategories } from '../../data/politicalCategories';
 const JobCategories = () => {
     const navigate = useNavigate();
     const [showAll, setShowAll] = useState(false);
+    const visibleCategories = showAll ? politicalCategories : politicalCategories.slice(0, 8);
 
     const handleCategoryClick = (title) => {
         navigate(`/jobs?category=${encodeURIComponent(title)}`);
     };
-
-    const visibleCategories = showAll ? politicalCategories : politicalCategories.slice(0, 8);
 
     return (
         <section className={styles.section} style={{ paddingBottom: '60px' }}>
@@ -21,7 +20,7 @@ const JobCategories = () => {
             <div className={styles.categoryGrid}>
                 {visibleCategories.map((cat, index) => (
                     <div 
-                        key={cat.id}
+                        key={cat.id || cat.name || index}
                         className={styles.categoryCard} 
                         onClick={() => handleCategoryClick(cat.name)}
                     >

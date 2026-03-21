@@ -1,50 +1,62 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './JobFilterBar.module.css';
 import { politicalCategories } from '../../data/politicalCategories';
 
 const JobFilterBar = ({ filters, onFilterChange }) => {
-    const [localFilters, setLocalFilters] = useState(filters || {
-        keyword: '',
-        location: '',
-        category: '',
-        type: '',
-        experienceLevel: ''
-    });
+    // Track whether this is the first mount to avoid overwriting user input
+    const isFirstMount = useRef(true);
 
-    useEffect(() => {
-        if (filters) {
-            setLocalFilters({
-                keyword: filters.keyword || '',
-                location: Array.isArray(filters.location) && filters.location.length > 0 ? filters.location[0] : (filters.location || ''),
-                category: Array.isArray(filters.category) && filters.category.length > 0 ? filters.category[0] : (filters.category || ''),
-                type: Array.isArray(filters.type) && filters.type.length > 0 ? filters.type[0] : (filters.type || ''),
-                experienceLevel: Array.isArray(filters.experienceLevel) && filters.experienceLevel.length > 0 ? filters.experienceLevel[0] : (filters.experienceLevel || ''),
-            });
-        }
-    }, [filters]);
-
-    const handleChange = (field, value) => {
-        setLocalFilters(prev => ({ ...prev, [field]: value }));
+    const parseFilterValue = (val) => {
+        if (Array.isArray(val) && val.length > 0) return val[0];
+        if (typeof val === 'string') return val;
+        return '';
     };
+
+    const [keyword, setKeyword] = useState(parseFilterValue(filters?.keyword));
+    const [location, setLocation] = useState(parseFilterValue(filters?.location));
+    const [category, setCategory] = useState(parseFilterValue(filters?.category));
+    const [type, setType] = useState(parseFilterValue(filters?.type));
+    const [experienceLevel, setExperienceLevel] = useState(parseFilterValue(filters?.experienceLevel));
+
+    // Only sync from props on the first mount or when URL changes externally (e.g. browser back/forward)
+    useEffect(() => {
+        if (isFirstMount.current) {
+            isFirstMount.current = false;
+            return;
+        }
+        // Sync from URL params (for browser back/forward or external navigation)
+        setKeyword(parseFilterValue(filters?.keyword));
+        setLocation(parseFilterValue(filters?.location));
+        setCategory(parseFilterValue(filters?.category));
+        setType(parseFilterValue(filters?.type));
+        setExperienceLevel(parseFilterValue(filters?.experienceLevel));
+    }, [filters]);
 
     const handleApply = () => {
         if (onFilterChange) {
             onFilterChange({
-                ...localFilters,
-                location: localFilters.location ? [localFilters.location] : [],
-                category: localFilters.category ? [localFilters.category] : [],
-                type: localFilters.type ? [localFilters.type] : [],
-                experienceLevel: localFilters.experienceLevel ? [localFilters.experienceLevel] : []
+                keyword: keyword.trim(),
+                location: location.trim() ? [location.trim()] : [],
+                category: category ? [category] : [],
+                type: type ? [type] : [],
+                experienceLevel: experienceLevel ? [experienceLevel] : []
             });
         }
     };
 
     const handleClear = () => {
-        const empty = { keyword: '', location: '', category: '', type: '', experienceLevel: '' };
-        setLocalFilters(empty);
+        setKeyword('');
+        setLocation('');
+        setCategory('');
+        setType('');
+        setExperienceLevel('');
         if (onFilterChange) {
             onFilterChange({ keyword: '', location: [], category: [], type: [], experienceLevel: [] });
         }
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') handleApply();
     };
 
     return (
@@ -59,8 +71,9 @@ const JobFilterBar = ({ filters, onFilterChange }) => {
                 <input 
                     type="text" 
                     placeholder="e.g. React Developer" 
-                    value={localFilters.keyword}
-                    onChange={(e) => handleChange('keyword', e.target.value)}
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     className={styles.inputField}
                 />
             </div>
@@ -70,8 +83,9 @@ const JobFilterBar = ({ filters, onFilterChange }) => {
                 <input 
                     type="text" 
                     placeholder="e.g. Remote, New York" 
-                    value={localFilters.location}
-                    onChange={(e) => handleChange('location', e.target.value)}
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     className={styles.inputField}
                 />
             </div>
@@ -79,8 +93,8 @@ const JobFilterBar = ({ filters, onFilterChange }) => {
             <div className={styles.formGroup}>
                 <label>Category</label>
                 <select 
-                    value={localFilters.category}
-                    onChange={(e) => handleChange('category', e.target.value)}
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
                     className={styles.selectField}
                 >
                     <option value="">All Categories</option>
@@ -93,8 +107,8 @@ const JobFilterBar = ({ filters, onFilterChange }) => {
             <div className={styles.formGroup}>
                 <label>Job Type</label>
                 <select 
-                    value={localFilters.type}
-                    onChange={(e) => handleChange('type', e.target.value)}
+                    value={type}
+                    onChange={(e) => setType(e.target.value)}
                     className={styles.selectField}
                 >
                     <option value="">All Job Types</option>
@@ -109,8 +123,8 @@ const JobFilterBar = ({ filters, onFilterChange }) => {
             <div className={styles.formGroup}>
                 <label>Experience Level</label>
                 <select 
-                    value={localFilters.experienceLevel}
-                    onChange={(e) => handleChange('experienceLevel', e.target.value)}
+                    value={experienceLevel}
+                    onChange={(e) => setExperienceLevel(e.target.value)}
                     className={styles.selectField}
                 >
                     <option value="">All Experience Levels</option>

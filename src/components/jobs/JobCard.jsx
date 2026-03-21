@@ -50,7 +50,7 @@ const JobCard = ({ job, onUnsave, isSaved, onToggleSave, hidePostedDate, actionS
         } else {
             if (isSaved) {
                 await api.delete(`/candidate/saved-jobs/${displayJob.id}`);
-                addToast('Job removed from saved items', 'default');
+                addToast('Job removed from saved items', 'success');
             } else {
                 await api.post('/candidate/saved-jobs', { jobId: displayJob.id });
                 addToast('Job saved successfully!', 'success');
