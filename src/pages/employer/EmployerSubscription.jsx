@@ -105,13 +105,6 @@ const EmployerSubscription = () => {
           </div>
         </div>
 
-        {isPremium && (
-          <div className={styles.renewRow}>
-            <p style={{ margin: 0, color: 'var(--color-text-muted)' }}>
-              Premium is valid for 30 days from payment date. It expires automatically and you can purchase again anytime.
-            </p>
-          </div>
-        )}
       </div>
 
       <div className={styles.pricingGrid}>
