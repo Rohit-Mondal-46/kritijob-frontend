@@ -32,6 +32,7 @@ import PaymentCallback from './pages/payment/PaymentCallback';
 
 import FindTalent from './pages/employer/FindTalent';
 import CandidateDetails from './pages/employer/CandidateDetails';
+import EmployerSubscription from './pages/employer/EmployerSubscription';
 import NotFound from './pages/NotFound';
 
 import ContactUs from './pages/legal/ContactUs';
@@ -90,6 +91,7 @@ function App() {
                         <Route path="applicants" element={<ApplicantList />} />
                         <Route path="jobs/:jobId/applicants" element={<ApplicantList />} />
                         <Route path="find-talent" element={<FindTalent />} />
+                        <Route path="subscription" element={<EmployerSubscription />} />
                         <Route path="candidate/:id" element={<CandidateDetails />} />
                     </Route>
                     

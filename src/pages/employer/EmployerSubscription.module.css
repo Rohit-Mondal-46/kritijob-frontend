@@ -1,0 +1,297 @@
+.pageContainer {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.headerRow {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.title {
+  font-size: 2.25rem;
+  color: var(--color-text-main);
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+}
+
+.statusCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.statusCardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 1rem;
+}
+
+.statusInfo h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--color-text-main);
+}
+
+.statusInfo p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.usageStats {
+  text-align: right;
+}
+
+.usageCount {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-primary);
+}
+
+.usageLabel {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.renewRow {
+  margin-top: 1rem;
+  width: 100%;
+  border-top: 1px solid var(--color-border);
+  padding-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.renewDangerBtn,
+.renewSuccessBtn {
+  background: transparent;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.renewDangerBtn {
+  border: 1px solid var(--color-error);
+  color: var(--color-error);
+}
+
+.renewSuccessBtn {
+  border: 1px solid var(--color-success);
+  color: var(--color-success);
+}
+
+.pricingGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.pricingCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.pricingCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.pricingCard.premium {
+  border: 2px solid var(--color-primary);
+  position: relative;
+}
+
+.popularBadge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-primary);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.planName {
+  font-size: 1.5rem;
+  color: var(--color-text-main);
+  margin-bottom: 1rem;
+}
+
+.planPrice {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--color-text-main);
+  margin: 1rem 0;
+}
+
+.planPrice span {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  font-weight: normal;
+}
+
+.planFeatures {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0;
+  flex-grow: 1;
+  text-align: left;
+}
+
+.planFeatures li {
+  margin-bottom: 1rem;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+}
+
+.planFeatures li i {
+  color: var(--color-primary);
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
+}
+
+.actionBtn {
+  background: var(--color-surface-muted);
+  color: var(--color-text-main);
+  border: 1px solid var(--color-border);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.actionBtn.primary {
+  background: var(--color-primary);
+  color: white;
+  border: 1px solid var(--color-primary);
+}
+
+.actionBtn.primary:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.actionBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.historySection {
+  margin-top: 4rem;
+}
+
+.historyTitle {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.emptyHistory {
+  padding: 2rem;
+  background: var(--color-surface);
+  border-radius: 10px;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.tableWrap {
+  background: var(--color-surface);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.historyTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.historyTable thead tr {
+  background: var(--color-surface-muted);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.historyTable th,
+.historyTable td {
+  padding: 1rem;
+}
+
+.historyTable tbody tr {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.badgeOk,
+.badgeFail {
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+.badgeOk {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.badgeFail {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.mono {
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 1rem;
+  }
+
+  .statusCardTop {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .usageStats {
+    text-align: left;
+  }
+
+  .renewRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .historyTable {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
