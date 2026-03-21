@@ -36,6 +36,13 @@ const JobCard = ({ job, onUnsave, isSaved, onToggleSave, actionSlot, disableNavi
 
   const toggleSave = async (e) => {
     e.stopPropagation();
+    const jobId = String(displayJob.id || '');
+
+    if (!jobId) {
+        addToast('Invalid job reference. Please refresh and try again.', 'error');
+        return;
+    }
+
     if (!user) {
         addToast('Please login to save jobs', 'info');
         return;
@@ -47,22 +54,22 @@ const JobCard = ({ job, onUnsave, isSaved, onToggleSave, actionSlot, disableNavi
 
     try {
         if (onUnsave) {
-            await api.delete(`/candidate/saved-jobs/${displayJob.id}`);
+        await api.delete(`/candidate/saved-jobs/${jobId}`);
             addToast('Job removed from saved items', 'success');
-            onUnsave(displayJob.id);
+        onUnsave(jobId);
         } else {
             if (isSaved) {
-                await api.delete(`/candidate/saved-jobs/${displayJob.id}`);
+          await api.delete(`/candidate/saved-jobs/${jobId}`);
                 addToast('Job removed from saved items', 'success');
             } else {
-                await api.post('/candidate/saved-jobs', { jobId: displayJob.id });
+          await api.post('/candidate/saved-jobs', { jobId });
                 addToast('Job saved successfully!', 'success');
             }
             if (onToggleSave) onToggleSave();
         }
     } catch (err) {
         console.error(err);
-        const msg = err.response?.data?.message || 'Action failed';
+      const msg = err?.response?.data?.message || err?.message || err?.error || 'Action failed';
         addToast(msg, 'error');
     }
   };
