@@ -75,8 +75,8 @@ export const AuthProvider = ({ children }) => {
     // Optional: Call logout endpoint
     // api.get('/auth/logout').catch(err => console.error(err)); 
     
-    // Redirect to login if needed, or handle in UI
-    window.location.href = '/login';
+    // REMOVED: window.location.href = '/login';
+    // Let the component handle the redirect instead
   };
 
   return (
