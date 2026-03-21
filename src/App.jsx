@@ -23,6 +23,7 @@ import SavedJobs from './pages/candidate/SavedJobs';
 import ResumeManager from './pages/candidate/ResumeManager';
 import Subscription from './pages/candidate/Subscription';
 import About from './pages/About';
+import Testimonials from './components/home/Testimonials';
 import Pricing from './pages/Pricing';
 import SalaryGuide from './pages/SalaryGuide';
 import PaymentCheckout from './pages/payment/PaymentCheckout';
@@ -73,6 +74,7 @@ function App() {
                  <Route path="/role-selection" element={<RoleSelection />} />
                  
                  <Route path="/contact" element={<ContactUs />} />
+                 <Route path="/testimonials" element={<Testimonials />} />
                  <Route path="/help-center" element={<HelpCenter />} />
                  <Route path="/privacy" element={<PrivacyPolicy />} />
                  <Route path="/terms" element={<TermsOfService />} />
