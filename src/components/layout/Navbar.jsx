@@ -17,6 +17,61 @@ const Navbar = () => {
     setIsOpen(false);
   };
 
+  // Navigation items based on user role
+  const getNavItems = () => {
+    if (!user) {
+      // Non-authenticated users
+      return [
+        { label: 'Home', path: '/' },
+        { label: 'Premium Plans', path: '/pricing' },
+        { label: 'About', path: '/about' }
+      ];
+    }
+
+    if (user.role === 'candidate') {
+      return [
+        { label: 'Home', path: '/' },
+        { label: 'Find Jobs', path: '/jobs' },
+        { label: 'Companies', path: '/companies' },
+        { label: 'About', path: '/about' },
+        { label: 'Profile', path: '/dashboard/candidate/profile' }
+      ];
+    }
+
+    if (user.role === 'employer') {
+      return [
+        { label: 'Dashboard', path: '/dashboard/employer/overview' },
+        { label: 'My Jobs', path: '/employer/jobs' },
+        { label: 'Profile', path: '/dashboard/employer/company' }
+      ];
+    }
+
+    if (user.role === 'admin') {
+      return [
+        { label: 'Dashboard', path: '/dashboard/admin/overview' },
+        { label: 'Users', path: '/dashboard/admin/users' },
+        { label: 'Jobs', path: '/dashboard/admin/jobs' },
+        { label: 'Reports', path: '/dashboard/admin/reports' }
+      ];
+    }
+
+    return [];
+  };
+
+  const navItems = getNavItems();
+
+  const handleProfileClick = () => {
+    if (user?.role === 'candidate') {
+      navigate('/dashboard/candidate/profile');
+    } else if (user?.role === 'employer') {
+      navigate('/dashboard/employer/company');
+    } else if (user?.role === 'admin') {
+      navigate('/dashboard/admin/overview');
+    } else {
+      navigate('/dashboard');
+    }
+  };
+
   return (
     <nav id="main-navbar" className={styles.navbar}>
       <div className={`focused-container ${styles.navContainer}`}>
@@ -34,14 +89,13 @@ const Navbar = () => {
         </div>
 
         <ul className={`${styles.navLinks} ${isOpen ? styles.active : ''}`}>
-          {user?.role !== 'employer' && (
-            <>
-              <li><Link to="/jobs" onClick={toggleMenu}>Find Jobs</Link></li>
-              <li><Link to="/companies" onClick={toggleMenu}>Companies</Link></li>
-              {/* <li><Link to="/salary-guide" onClick={toggleMenu}>Salary Guide</Link></li> */}
-              <li><Link to="/about" onClick={toggleMenu}>About</Link></li>
-            </>
-          )}
+          {navItems.map((item, index) => (
+            <li key={index}>
+              <Link to={item.path} onClick={toggleMenu}>
+                {item.label}
+              </Link>
+            </li>
+          ))}
           
           {/* Mobile Only Actions */}
           <div className={styles.navActionsMobile}>
@@ -50,9 +104,12 @@ const Navbar = () => {
                     <div className={styles.mobileUserInfo}>
                         <span className={styles.userName}>{user?.name || 'User'}</span>
                     </div>
-                    <Link to="/dashboard" onClick={toggleMenu}>
-                        <Button variant="outline">Dashboard</Button>
-                    </Link>
+                    <Button variant="outline" onClick={() => {
+                      handleProfileClick();
+                      toggleMenu();
+                    }}>
+                      Profile
+                    </Button>
                     <Button variant="primary" onClick={handleLogout}>Logout</Button>
                   </>
               ) : (
@@ -72,20 +129,9 @@ const Navbar = () => {
         <div className={styles.navActions}>
           {token ? (
               <div className={styles.userControls}>
-                   
-                  
                   <div 
                       className={styles.userProfile} 
-                      onClick={() => {
-
-                        if (user?.role === 'candidate') {
-                            navigate('/dashboard/candidate/profile');
-                        } else if(user?.role === 'admin') {
-                            navigate('/dashboard/admin/overview');
-                        }else {
-                            navigate('/dashboard/employer/company');
-                        }
-                      }}
+                      onClick={handleProfileClick}
                       style={{cursor: 'pointer'}}
                   >
                       <span className={styles.userName}>{user?.name || 'User'}</span>
