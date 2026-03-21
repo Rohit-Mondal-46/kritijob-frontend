@@ -40,7 +40,7 @@ const FindTalent = () => {
             setLoading(true);
             const queryParams = new URLSearchParams({
                 page,
-                limit: 12,
+                limit: 9,
                 ...filters
             });
             const res = await api.get(`/employer/candidates?${queryParams}`);
@@ -74,7 +74,16 @@ const FindTalent = () => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className="text-gradient" style={{fontSize: '2rem', margin: 0}}>Find Talent</h1>
+                <div style={{display: 'flex', alignItems: 'baseline', gap: '12px'}}>
+                    <h1 className="text-gradient" style={{fontSize: '2rem', margin: 0}}>Find Talent</h1>
+                    {!loading ? (
+                        <span style={{fontSize: '1rem', color: 'var(--color-text-muted)', fontWeight: '500'}}>
+                            {total} candidate{total !== 1 ? 's' : ''} found
+                        </span>
+                    ) : (
+                        <span style={{fontSize: '1rem', color: 'var(--color-text-muted)'}}>...</span>
+                    )}
+                </div>
                 <div className={styles.filterBar}>
                     <input 
                         type="text" 
@@ -175,23 +184,40 @@ const FindTalent = () => {
             )}
 
             {/* Pagination Controls */}
-             {total > 12 && (
-                <div className={styles.pagination}>
-                    <Button 
+            {/* Pagination Controls */}
+            {!loading && (
+                <div className={styles.pagination} style={{display: 'flex', justifyContent: 'center', marginTop: '30px', gap: '15px', alignItems: 'center'}}>
+                    <button 
                         disabled={page === 1} 
-                        onClick={() => setPage(page - 1)}
-                        variant="ghost"
+                        onClick={() => setPage(prev => Math.max(1, prev - 1))}
+                        style={{
+                            padding: '8px 16px', 
+                            borderRadius: '4px', 
+                            border: '1px solid var(--color-border)', 
+                            background: page === 1 ? '#f3f4f6' : 'white', 
+                            color: page === 1 ? '#9ca3af' : 'var(--color-primary)',
+                            cursor: page === 1 ? 'not-allowed' : 'pointer',
+                            fontWeight: '600'
+                        }}
                     >
                         Previous
-                    </Button>
-                    <span className="text-gray-600 font-medium">Page {page}</span>
-                    <Button 
-                        disabled={candidates.length < 12}
-                        onClick={() => setPage(page + 1)}
-                        variant="ghost"
+                    </button>
+                    <span className="text-gray-600 font-medium mx-4">Page {page}</span>
+                    <button 
+                        disabled={candidates.length < 9}
+                        onClick={() => setPage(prev => prev + 1)}
+                        style={{
+                            padding: '8px 16px', 
+                            borderRadius: '4px', 
+                            border: '1px solid var(--color-border)', 
+                            background: candidates.length < 9 ? '#f3f4f6' : 'white', 
+                            color: candidates.length < 9 ? '#9ca3af' : 'var(--color-primary)',
+                            cursor: candidates.length < 9 ? 'not-allowed' : 'pointer',
+                            fontWeight: '600'
+                        }}
                     >
                         Next
-                    </Button>
+                    </button>
                 </div>
             )}
 

@@ -43,12 +43,12 @@ const ApplicantList = () => {
                        avatar: app.candidateId?.avatarUrl,
                        status: app.status,
                        date: app.createdAt ? new Date(app.createdAt).toLocaleDateString() : '-',
-                       title: 'Candidate', 
+                       title: app.candidateProfile?.title || 'Candidate', 
                        skills: [], 
                        resumeLink: app.resumeUrl,
                        company: '',
                        bio: '',
-                       location: '',
+                        
                        salary: ''
                    }));
                    setApplicants(mapped);

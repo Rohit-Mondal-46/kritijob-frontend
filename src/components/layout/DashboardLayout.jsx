@@ -15,7 +15,7 @@ const DashboardLayout = () => {
             if (user.role === 'candidate') {
                 navigate('/dashboard/candidate/profile', { replace: true });
             } else if (user.role === 'employer') {
-                navigate('/dashboard/employer/company', { replace: true });
+                navigate('/dashboard/employer', { replace: true });
             } else if (user.role === 'admin' || user.role === 'ADMIN') {
                 navigate('/dashboard/admin/overview', { replace: true });
             }
@@ -105,7 +105,7 @@ const DashboardLayout = () => {
                         <Link 
                             key={link.path} 
                             to={link.path} 
-                            className={`${styles.navLink} ${location.pathname === link.path ? styles.active : ''}`}
+                            className={`${styles.navLink} ${(link.exact ? location.pathname === link.path : location.pathname.startsWith(link.path)) ? styles.active : ''}`}
                             onClick={closeMobileMenu}
                         >
                             <i className={`fas ${link.icon}`}></i>

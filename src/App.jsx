@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import Navbar from './components/layout/Navbar';
@@ -84,6 +84,7 @@ function App() {
                  <Route path="/dashboard" element={<DashboardLayout />}>
                     {/* Employer Routes */}
                     <Route path="employer" element={<EmployerAuthGuard />}>
+                        <Route index element={<Navigate to="company" replace />} />
                         <Route path="company" element={<CompanyProfile />} />
                         <Route path="jobs" element={<MyJobs />} />
                         <Route path="post-job" element={<PostJob />} />

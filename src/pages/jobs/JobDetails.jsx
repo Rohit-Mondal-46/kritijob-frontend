@@ -20,6 +20,7 @@ const JobDetails = () => {
     const [showModal, setShowModal] = useState(false);
     const [hasApplied, setHasApplied] = useState(false);
     const [candidateStatus, setCandidateStatus] = useState(null);
+    const [isSaved, setIsSaved] = useState(false);
 
     useEffect(() => {
         const fetchJobAndStatus = async () => {
@@ -43,6 +44,17 @@ const JobDetails = () => {
                     }
                     if (subRes.data.success) {
                         setCandidateStatus(subRes.data.data);
+                    }
+                    
+                    // Fetch saved jobs to see if this particular job is saved
+                    try {
+                        const savedRes = await api.get('/candidate/saved-jobs');
+                        if (savedRes.data.success) {
+                            const saved = savedRes.data.data.some(app => (app.jobId?._id === id) || (app._id === id));
+                            setIsSaved(saved);
+                        }
+                    } catch (e) {
+                        console.error("Failed to check saved jobs", e);
                     }
                 }
                 
@@ -76,6 +88,32 @@ const JobDetails = () => {
         }
 
         setShowModal(true);
+    };
+
+    const handleToggleSave = async () => {
+        if (!user) {
+            navigate('/login');
+            return;
+        }
+        if (user.role !== 'candidate') {
+            addToast('Only candidates can save jobs', 'warning');
+            return;
+        }
+
+        try {
+            if (isSaved) {
+                await api.delete(`/candidate/saved-jobs/${id}`);
+                addToast('Job removed from saved items', 'success');
+                setIsSaved(false);
+            } else {
+                await api.post('/candidate/saved-jobs', { jobId: id });
+                addToast('Job saved successfully!', 'success');
+                setIsSaved(true);
+            }
+        } catch (err) {
+            console.error(err);
+            addToast(err.response?.data?.message || 'Action failed', 'error');
+        }
     };
 
     if (loading) return <div className={`focused-container ${styles.container}`} style={{textAlign:'center', padding:'50px'}}>Loading...</div>;
@@ -146,8 +184,8 @@ const JobDetails = () => {
                                 {hasApplied ? 'Applied' : (!job.canApply ? 'Applications Closed' : 'Apply')} 
                                 <i className={hasApplied ? "fas fa-check" : "fas fa-external-link-alt"} style={{ marginLeft: '8px', fontSize: '0.9em' }}></i>
                             </button>
-                            <button className={styles.saveButton}>
-                                <i className="far fa-bookmark"></i>
+                            <button className={styles.saveButton} onClick={handleToggleSave}>
+                                <i className={`${isSaved ? 'fas' : 'far'} fa-bookmark`} style={{ color: isSaved ? '#fbbf24' : 'inherit' }}></i>
                             </button>
                         </div>
                     </div>
