@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routestimonial, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import Navbar from './components/layout/Navbar';
@@ -42,7 +42,6 @@ import TermsOfService from './pages/legal/TermsOfService';
 
 import AdminAuthGuard from './components/auth/AdminAuthGuard';
 import EmployerAuthGuard from './components/auth/EmployerAuthGuard';
-import CandidateAuthGuard from './components/auth/CandidateAuthGuard';
 import AdminOverview from './pages/admin/AdminOverview';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminJobs from './pages/admin/AdminJobs';
@@ -107,13 +106,11 @@ function App() {
                     </Route>
 
                     {/* Candidate Routes */}
-                    <Route path="candidate" element={<CandidateAuthGuard />}>
-                        <Route path="profile" element={<CandidateProfile />} />
-                        <Route path="savedjobs" element={<SavedJobs />} />
-                        <Route path="applications" element={<MyApplications />} />
-                        <Route path="resume" element={<ResumeManager />} />
-                        <Route path="subscription" element={<Subscription />} />
-                    </Route>
+                    <Route path="candidate/profile" element={<CandidateProfile />} />
+                    <Route path="candidate/savedjobs" element={<SavedJobs />} />
+                    <Route path="candidate/applications" element={<MyApplications />} />
+                    <Route path="candidate/resume" element={<ResumeManager />} />
+                    <Route path="candidate/subscription" element={<Subscription />} />
                     
                     <Route index element={<div className="container" style={{paddingTop: '30px', color: 'white', textAlign: 'center'}}><h2>Welcome to your Dashboard</h2><p style={{color: '#aaa'}}>Select an option from the sidebar to get started.</p></div>} />
                  </Route>
