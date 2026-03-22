@@ -12,15 +12,20 @@ const AdminJobs = () => {
 
     useEffect(() => {
         fetchJobs();
-    }, []);
+    }, [filter]);
 
     const fetchJobs = async () => {
+        setLoading(true);
         try {
-            // Admin should ideally see all jobs. 
-            // If public getJobs filters by status=Open, we might need a specific Admin route or query param?
-            // The generic getJobs in controller uses req.query directly.
-            // If I don't pass status, it finds all.
-            const { data } = await api.get('/jobs?limit=100&sort=-createdAt');
+            let endpoint = '/jobs?limit=100&sort=-createdAt';
+            
+            if (filter === 'active') {
+                endpoint += '&status=Open';
+            } else if (filter === 'closed') {
+                endpoint += '&status=Closed';
+            }
+            
+            const { data } = await api.get(endpoint);
             if (data.success) {
                 setJobs(data.data);
             }
@@ -46,7 +51,13 @@ const AdminJobs = () => {
                 
                 await api.put(`/jobs/${jobId}`, { status: newStatus });
                 
-                setJobs(jobs.map(j => j._id === jobId ? { ...j, status: newStatus } : j));
+                // Opt-out from local update if it doesn't match the current filter
+                if (filter !== 'all' && (filter === 'active' ? 'Open' : 'Closed') !== newStatus) {
+                    setJobs(jobs.filter(j => j._id !== jobId));
+                } else {
+                    setJobs(jobs.map(j => j._id === jobId ? { ...j, status: newStatus } : j));
+                }
+                
                 addToast(`Job marked as ${newStatus}`, 'success');
             }
         } catch (err) {
@@ -55,9 +66,8 @@ const AdminJobs = () => {
         }
     };
 
-    const filteredJobs = filter === 'all' 
-        ? jobs 
-        : jobs.filter(j => j.status === (filter === 'active' ? 'Open' : 'Closed'));
+    // No frontend filtering needed anymore
+    const filteredJobs = jobs;
 
     if (loading) return <div style={{padding:'20px', color:'var(--color-text-main)'}}>Loading Jobs...</div>;
 
