@@ -17,11 +17,20 @@ const ApplicantList = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchApplicants = async () => {
+        let isActive = true;
+
+        const fetchData = async () => {
+            setLoading(true);
+
+            if (jobId) {
+                setApplicants([]);
+            } else {
+                setJobSummaries([]);
+            }
+
             try {
-                const endpoint = jobId 
-                    ? `/applications/job/${jobId}`
-                    : `/applications/employer/all`;
+                if (jobId) {
+                    const { data } = await api.get(`/applications/job/${jobId}`);
 
                     if (isActive && data.success) {
                         const mapped = data.data.map(app => ({
