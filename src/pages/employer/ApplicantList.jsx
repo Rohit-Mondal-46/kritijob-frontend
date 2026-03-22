@@ -49,7 +49,8 @@ const ApplicantList = () => {
                             company: '',
                             bio: '',
                             location: '',
-                            salary: ''
+                            salary: '',
+                            isPremium: app.isPremiumApplication
                         }));
                         setApplicants(mapped);
                     }

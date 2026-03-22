@@ -38,7 +38,22 @@ const ApplicantCard = ({ applicant, onProfileClick, showJobTitle }) => {
                 </div>
                 <div className={styles.info}>
                     <div className={styles.applicantNameRow}>
-                        <h3>{applicant.name}</h3>
+                        <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                            <h3 style={{margin: 0}}>{applicant.name}</h3>
+                            {applicant.isPremium && (
+                                <span style={{
+                                    background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                                    color: 'white',
+                                    padding: '2px 8px',
+                                    borderRadius: '10px',
+                                    fontSize: '0.65rem',
+                                    fontWeight: 'bold',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.5px',
+                                    whiteSpace: 'nowrap'
+                                }}>★ Premium</span>
+                            )}
+                        </div>
                         <span className={styles.statusChip}>{status}</span>
                     </div>
                     <p>{applicant.title || 'Candidate'} {showJobTitle && `• Applied for: ${applicant.jobTitle}`}</p>

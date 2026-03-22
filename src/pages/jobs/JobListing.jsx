@@ -1,8 +1,6 @@
-import { AuthContext } from '../../context/AuthContext';
 import styles from './JobListing.module.css';
 import JobCard from '../../components/jobs/JobCard';
 import JobFilterBar from '../../components/jobs/JobFilterBar';
-import SortDropdown from '../../components/jobs/SortDropdown';
 import Footer from '../../components/layout/Footer';
 import api from '../../utils/api';
 import { useSearchParams } from 'react-router-dom';
@@ -14,8 +12,6 @@ const JobListing = () => {
   const [initialLoad, setInitialLoad] = useState(true);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const { user, token } = React.useContext(AuthContext); 
-  const [savedJobIds, setSavedJobIds] = useState([]);
   
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
   
@@ -57,19 +53,6 @@ const JobListing = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Fetch saved job IDs once on mount
-  useEffect(() => {
-    if (token && user?.role === 'candidate') {
-      api.get('/candidate/saved-jobs')
-        .then(res => {
-          if (res.data.success) {
-            setSavedJobIds(res.data.data.map(j => String(j._id || j.id)).filter(Boolean));
-          }
-        })
-        .catch(err => console.error('Failed to fetch saved jobs:', err));
-    }
-  }, [token, user]);
-
   // Fetch jobs whenever URL query changes
   useEffect(() => {
     let cancelled = false;
@@ -105,20 +88,6 @@ const JobListing = () => {
     
     return () => { cancelled = true; };
   }, [queryString]);
-
-
-  const handleToggleSave = (id) => {
-      const normalizedId = String(id || '');
-      if (!normalizedId) return;
-
-      const isSaved = savedJobIds.includes(normalizedId);
-      if (isSaved) {
-        setSavedJobIds(prev => prev.filter(sid => sid !== normalizedId));
-      } else {
-        setSavedJobIds(prev => [...prev, normalizedId]);
-      }
-  }
-
   if (initialLoad) {
     return (
       <div className={`focused-container ${styles.loadingContainer}`}>
@@ -177,8 +146,6 @@ const JobListing = () => {
                         <JobCard 
                           key={jobId} 
                           job={job} 
-                          isSaved={savedJobIds.includes(jobId)}
-                          onToggleSave={() => handleToggleSave(jobId)}
                         />
                       );
                   })}
