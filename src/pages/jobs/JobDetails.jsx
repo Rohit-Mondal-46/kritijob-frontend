@@ -22,6 +22,15 @@ const JobDetails = () => {
     const [isSaved, setIsSaved] = useState(false);
     const [saveLoading, setSaveLoading] = useState(false);
 
+    const normalizeJobId = (value) => {
+        if (!value) return '';
+        if (typeof value === 'string') return value;
+        if (typeof value === 'object') {
+            return String(value._id || value.id || value.jobId?._id || value.jobId || '');
+        }
+        return String(value);
+    };
+
     useEffect(() => {
         const fetchJobAndStatus = async () => {
             try {
@@ -33,22 +42,28 @@ const JobDetails = () => {
                 
                 // 2. Check if applied and limits (only if candidate)
                 if (user && user.role === 'candidate') {
-                    const [appRes, subRes, savedRes] = await Promise.all([
+                    const [appResult, subResult, savedResult] = await Promise.allSettled([
                         api.get('/applications/my-applications'),
                         api.get('/subscriptions/status'),
-                        api.get(`/candidate/saved-jobs?t=${Date.now()}`)
+                        api.get(`/candidate/saved-jobs?t=${Date.now()}`, {
+                            headers: {
+                                'Cache-Control': 'no-cache',
+                                Pragma: 'no-cache'
+                            }
+                        })
                     ]);
-                    
-                    if (appRes.data.success) {
-                        const isApplied = appRes.data.data.some(app => app.jobId._id === id || app.jobId === id);
+
+                    if (appResult.status === 'fulfilled' && appResult.value.data.success) {
+                        const isApplied = appResult.value.data.data.some(app => normalizeJobId(app?.jobId) === String(id));
                         setHasApplied(isApplied);
                     }
-                    if (subRes.data.success) {
-                        setCandidateStatus(subRes.data.data);
+
+                    if (subResult.status === 'fulfilled' && subResult.value.data.success) {
+                        setCandidateStatus(subResult.value.data.data);
                     }
 
-                    if (savedRes.data.success) {
-                        const alreadySaved = savedRes.data.data.some(savedJob => String(savedJob?._id || savedJob?.id) === String(id));
+                    if (savedResult.status === 'fulfilled' && savedResult.value.data.success) {
+                        const alreadySaved = savedResult.value.data.data.some(savedJob => normalizeJobId(savedJob) === String(id));
                         setIsSaved(alreadySaved);
                     }
                 } else {
@@ -113,6 +128,11 @@ const JobDetails = () => {
         } catch (err) {
             console.error(err);
             const message = err?.response?.data?.message || 'Failed to update saved jobs';
+            if (message.toLowerCase().includes('already saved')) {
+                setIsSaved(true);
+                addToast('Job is already saved', 'info');
+                return;
+            }
             addToast(message, 'error');
         } finally {
             setSaveLoading(false);
@@ -142,7 +162,6 @@ const JobDetails = () => {
             </button>
 
             <div className={styles.jobWrapper}>
-                {/* Main Content Column (70%) */}
                 <div className={styles.mainContent}>
 
                     {/* Header Section */}
@@ -283,16 +302,6 @@ const JobDetails = () => {
                     )}
 
                 </div>
-
-                {/* Sidebar (30%) */}
-                <div className={styles.sidebar}>
-                    <h2 className={styles.sidebarTitle}>Recommended Jobs</h2>
-                    <p style={{color:'#666', fontSize:'0.9rem'}}>Coming soon...</p>
-                    {/* {recommendedJobs.map(recJob => (
-             <JobCard key={recJob.id} job={recJob} />
-          ))} */}
-                </div>
-
             </div>
 
             {showModal && (
