@@ -29,11 +29,15 @@ const DashboardLayout = () => {
         }
     }, [user, location.pathname, navigate]);
 
-    // Add body class to hide main navbar on mobile when dashboard is active
+    // Add body class to hide main navbar on mobile ONLY when sidebar is shown
     useEffect(() => {
-        document.body.classList.add('dashboard-active');
+        if (showSidebar) {
+            document.body.classList.add('dashboard-active');
+        } else {
+            document.body.classList.remove('dashboard-active');
+        }
         return () => document.body.classList.remove('dashboard-active');
-    }, []);
+    }, [showSidebar]);
 
     // Redirect to home if no user
     useEffect(() => {

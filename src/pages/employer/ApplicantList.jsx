@@ -17,6 +17,8 @@ const ApplicantList = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let isActive = true;
+
         const fetchApplicants = async () => {
             try {
                 const endpoint = jobId 
@@ -26,7 +28,7 @@ const ApplicantList = () => {
                 console.log('Fetching from:', endpoint);
                 const { data } = await api.get(endpoint);
                 
-                if (data.success) {
+                if (data.success && isActive) {
                    const mapped = data.data.map(app => ({
                        id: app._id, 
                        applicationId: app._id,
@@ -57,7 +59,7 @@ const ApplicantList = () => {
             }
         };
 
-        fetchData();
+        fetchApplicants();
 
         return () => {
             isActive = false;
@@ -135,45 +137,18 @@ const ApplicantList = () => {
             </div>
 
             <div className={styles.grid}>
-                {jobId ? (
-                    applicants.map(applicant => (
-                        <ApplicantCard 
-                            key={applicant.id} 
-                            applicant={applicant} 
-                            showJobTitle={false}
-                            onProfileClick={() => handleViewProfile(applicant)}
-                        />
-                    ))
-                ) : (
-                    jobSummaries.map(job => (
-                        <button
-                            key={job.id}
-                            type="button"
-                            className={styles.jobSummaryCard}
-                            onClick={() => navigate(`/dashboard/employer/jobs/${job.id}/applicants`)}
-                        >
-                            <div className={styles.jobSummaryTop}>
-                                <h3>{job.title}</h3>
-                                <span className={styles.applicantCountBadge}>{job.applicantCount} Applicants</span>
-                            </div>
-                            <div className={styles.jobSummaryMeta}>
-                                <span><i className="fas fa-map-marker-alt"></i> {job.location}</span>
-                                <span><i className="fas fa-briefcase"></i> {job.type}</span>
-                                <span><i className="fas fa-money-bill-wave"></i> {job.salaryRange}</span>
-                            </div>
-                        </button>
-                    ))
-                )}
+                {applicants.map(applicant => (
+                    <ApplicantCard 
+                        key={applicant.id} 
+                        applicant={applicant} 
+                        showJobTitle={!jobId}
+                        onProfileClick={() => handleViewProfile(applicant)}
+                    />
+                ))}
                 
-                {jobId && applicants.length === 0 && (
+                {applicants.length === 0 && (
                      <div style={{gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: 'var(--color-text-muted)', background: 'var(--color-surface-muted)', borderRadius: '12px', border: '1px solid var(--color-border)'}}>
                          <p>No applicants found.</p>
-                     </div>
-                 )}
-
-                {!jobId && jobSummaries.length === 0 && (
-                     <div style={{gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: 'var(--color-text-muted)', background: 'var(--color-surface-muted)', borderRadius: '12px', border: '1px solid var(--color-border)'}}>
-                         <p>No jobs found.</p>
                      </div>
                  )}
             </div>
