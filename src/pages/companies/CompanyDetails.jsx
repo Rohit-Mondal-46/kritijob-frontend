@@ -4,13 +4,16 @@ import styles from './Companies.module.css';
 import Footer from '../../components/layout/Footer';
 import api from '../../utils/api';
 import DOMPurify from 'dompurify';
-import JobCard from '../../components/jobs/JobCard'; // Assuming we can use generic JobCard here
+import JobCard from '../../components/jobs/JobCard';
+import { AuthContext } from '../../context/AuthContext';
 
 const CompanyDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { user, token } = React.useContext(AuthContext);
     const [company, setCompany] = useState(null);
     const [jobs, setJobs] = useState([]);
+    const [savedJobIds, setSavedJobIds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('about'); // 'about' | 'jobs'
 
@@ -43,6 +46,34 @@ const CompanyDetails = () => {
         };
         fetchCompanyData();
     }, [id]);
+
+    // Fetch saved job IDs to sync UI locally
+    useEffect(() => {
+        if (token && user?.role === 'candidate') {
+            api.get('/candidate/saved-jobs')
+                .then(res => {
+                    if (res.data.success) {
+                        setSavedJobIds(res.data.data.map(j => j._id));
+                    }
+                })
+                .catch(err => console.error('Failed to fetch saved jobs:', err));
+        }
+    }, [token, user]);
+
+    const handleToggleSave = (jobId) => {
+        if (!token) {
+            navigate('/login');
+            return;
+        }
+        if (user?.role !== 'candidate') return;
+
+        const isSaved = savedJobIds.includes(jobId);
+        if (isSaved) {
+            setSavedJobIds(prev => prev.filter(sid => sid !== jobId));
+        } else {
+            setSavedJobIds(prev => [...prev, jobId]);
+        }
+    };
 
     if (loading) return <div className={`focused-container`} style={{textAlign:'center', padding:'150px'}}>Loading...</div>;
     if (!company) return <div className={`focused-container`} style={{textAlign:'center', padding:'150px'}}>Company not found.</div>;
@@ -88,7 +119,7 @@ const CompanyDetails = () => {
                             className={`${styles.tabItem} ${activeTab === 'jobs' ? styles.activeTab : ''}`}
                             onClick={() => setActiveTab('jobs')}
                         >
-                            Active Jobs <span className={styles.tabBadge}>{jobs.length || 2}</span>
+                            Active Jobs <span className={styles.tabBadge}>{jobs.length}</span>
                         </div>
                     </div>
 
@@ -107,12 +138,17 @@ const CompanyDetails = () => {
                                 <div className={styles.contentBlock}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                                         <h2 className={styles.blockTitle} style={{ margin: 0 }}>Open Positions</h2>
-                                        <span className={styles.tabBadge}>{jobs.length || 2} Jobs</span>
+                                        <span className={styles.tabBadge}>{jobs.length} Jobs</span>
                                     </div>
                                     <div className={styles.jobsList}>
                                         {jobs.length > 0 ? (
                                             jobs.map(job => (
-                                                <JobCard key={job._id} job={job} isSaved={false} onToggleSave={() => navigate('/login')} />
+                                                <JobCard 
+                                                    key={job._id} 
+                                                    job={job} 
+                                                    isSaved={savedJobIds.includes(job._id)} 
+                                                    onToggleSave={() => handleToggleSave(job._id)} 
+                                                />
                                             ))
                                         ) : (
                                             <div style={{ padding: '20px', textAlign: 'center', color: 'var(--color-text-muted)' }}>

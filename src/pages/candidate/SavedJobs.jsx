@@ -1,31 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import JobCard from '../../components/jobs/JobCard';
 import api from '../../utils/api';
-import styles from './Candidate.module.css'; // Reusing candidate styles
 
 const SavedJobs = () => {
     const [savedJobs, setSavedJobs] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchSavedJobs();
+        let isMounted = true;
+
+        (async () => {
+            try {
+                const { data } = await api.get(`/candidate/saved-jobs?t=${Date.now()}`);
+                if (isMounted && data.success) {
+                    setSavedJobs(data.data);
+                }
+            } catch (err) {
+                console.error('Failed to fetch saved jobs', err);
+            } finally {
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
+        })();
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
-    const fetchSavedJobs = async () => {
+    const handleUnsave = async (id) => {
         try {
-            const { data } = await api.get('/candidate/saved-jobs');
-            if (data.success) {
-                setSavedJobs(data.data);
-            }
-            setLoading(false);
+            await api.delete(`/candidate/saved-jobs/${id}`);
+            setSavedJobs(prev => prev.filter(job => String(job._id) !== String(id)));
         } catch (err) {
-            console.error('Failed to fetch saved jobs', err);
-            setLoading(false);
+            console.error('Failed to unsave job', err);
         }
-    };
-
-    const handleUnsave = (id) => {
-        setSavedJobs(prev => prev.filter(job => job._id !== id));
     };
 
     if (loading) return <div style={{padding: '2rem', textAlign: 'center'}}>Loading...</div>;
@@ -46,7 +56,31 @@ const SavedJobs = () => {
                         gap: '20px' 
                     }}>
                         {savedJobs.map(job => (
-                            <JobCard key={job._id} job={job} onUnsave={handleUnsave} />
+                            <JobCard
+                                key={job._id}
+                                job={job}
+                                actionSlot={(
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleUnsave(job._id);
+                                        }}
+                                        style={{
+                                            border: '1px solid var(--color-border)',
+                                            background: 'white',
+                                            color: '#dc2626',
+                                            borderRadius: '8px',
+                                            padding: '0.45rem 0.75rem',
+                                            cursor: 'pointer',
+                                            fontWeight: 600
+                                        }}
+                                    >
+                                        <i className="fas fa-bookmark" style={{ marginRight: '6px' }}></i>
+                                        Unsave
+                                    </button>
+                                )}
+                            />
                         ))}
                     </div>
                 </>

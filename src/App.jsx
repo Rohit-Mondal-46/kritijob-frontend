@@ -151,16 +151,16 @@ function App() {
                  }>
                     {/* Employer Routes */}
                     <Route path="employer" element={<EmployerAuthGuard />}>
-                      <Route index element={<EmployerDashboard />} />
-                      <Route path="company" element={<CompanyProfile />} />
-                      <Route path="jobs" element={<MyJobs />} />
-                      <Route path="post-job" element={<PostJob />} />
-                      <Route path="jobs/edit/:id" element={<EditJob />} />
-                      <Route path="applicants" element={<ApplicantList />} />
-                      <Route path="jobs/:jobId/applicants" element={<ApplicantList />} />
-                      <Route path="find-talent" element={<FindTalent />} />
-                      <Route path="subscription" element={<EmployerSubscription />} />
-                      <Route path="candidate/:id" element={<CandidateDetails />} />
+                        <Route index element={<EmployerDashboard />} />
+                        <Route path="company" element={<CompanyProfile />} />
+                        <Route path="jobs" element={<MyJobs />} />
+                        <Route path="post-job" element={<PostJob />} />
+                        <Route path="jobs/edit/:id" element={<EditJob />} />
+                        <Route path="applicants" element={<ApplicantList />} />
+                        <Route path="jobs/:jobId/applicants" element={<ApplicantList />} />
+                        <Route path="find-talent" element={<FindTalent />} />
+                        <Route path="subscription" element={<EmployerSubscription />} />
+                        <Route path="candidate/:id" element={<CandidateDetails />} />
                     </Route>
                     
                     {/* Admin Routes */}

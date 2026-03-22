@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './JobDetails.module.css';
-import JobCard from '../../components/jobs/JobCard';
 import JobApplicationModal from '../../components/jobs/JobApplicationModal';
 import api from '../../utils/api';
 import DOMPurify from 'dompurify';
@@ -20,6 +19,8 @@ const JobDetails = () => {
     const [showModal, setShowModal] = useState(false);
     const [hasApplied, setHasApplied] = useState(false);
     const [candidateStatus, setCandidateStatus] = useState(null);
+    const [isSaved, setIsSaved] = useState(false);
+    const [saveLoading, setSaveLoading] = useState(false);
 
     useEffect(() => {
         const fetchJobAndStatus = async () => {
@@ -32,9 +33,10 @@ const JobDetails = () => {
                 
                 // 2. Check if applied and limits (only if candidate)
                 if (user && user.role === 'candidate') {
-                    const [appRes, subRes] = await Promise.all([
+                    const [appRes, subRes, savedRes] = await Promise.all([
                         api.get('/applications/my-applications'),
-                        api.get('/subscriptions/status')
+                        api.get('/subscriptions/status'),
+                        api.get(`/candidate/saved-jobs?t=${Date.now()}`)
                     ]);
                     
                     if (appRes.data.success) {
@@ -44,6 +46,13 @@ const JobDetails = () => {
                     if (subRes.data.success) {
                         setCandidateStatus(subRes.data.data);
                     }
+
+                    if (savedRes.data.success) {
+                        const alreadySaved = savedRes.data.data.some(savedJob => String(savedJob?._id || savedJob?.id) === String(id));
+                        setIsSaved(alreadySaved);
+                    }
+                } else {
+                    setIsSaved(false);
                 }
                 
                 setLoading(false);
@@ -78,9 +87,41 @@ const JobDetails = () => {
         setShowModal(true);
     };
 
-    if (loading) return <div className={`focused-container ${styles.container}`} style={{textAlign:'center', padding:'50px'}}>Loading...</div>;
+    const handleToggleSave = async () => {
+        if (!user) {
+            addToast('Please login to save jobs', 'info');
+            navigate('/login');
+            return;
+        }
 
-    if (!job) return <div className={`focused-container ${styles.container}`} style={{textAlign:'center', padding:'50px'}}>Job not found.</div>;
+        if (user.role !== 'candidate') {
+            addToast('Only candidates can save jobs', 'warning');
+            return;
+        }
+
+        setSaveLoading(true);
+        try {
+            if (isSaved) {
+                await api.delete(`/candidate/saved-jobs/${id}`);
+                setIsSaved(false);
+                addToast('Job removed from saved items', 'success');
+            } else {
+                await api.post('/candidate/saved-jobs', { jobId: id });
+                setIsSaved(true);
+                addToast('Job saved successfully!', 'success');
+            }
+        } catch (err) {
+            console.error(err);
+            const message = err?.response?.data?.message || 'Failed to update saved jobs';
+            addToast(message, 'error');
+        } finally {
+            setSaveLoading(false);
+        }
+    };
+
+    if (loading) return <div className={`focused-container ${styles.container}`} style={{ textAlign: 'center', paddingInline: '50px' }}>Loading...</div>;
+
+    if (!job) return <div className={`focused-container ${styles.container}`} style={{ textAlign: 'center', paddingInline: '50px' }}>Job not found.</div>;
 
     // Sanitize HTML description
     const sanitizedDesc = DOMPurify.sanitize(job.description);
@@ -146,8 +187,20 @@ const JobDetails = () => {
                                 {hasApplied ? 'Applied' : (!job.canApply ? 'Applications Closed' : 'Apply')} 
                                 <i className={hasApplied ? "fas fa-check" : "fas fa-external-link-alt"} style={{ marginLeft: '8px', fontSize: '0.9em' }}></i>
                             </button>
-                            <button className={styles.saveButton}>
-                                <i className="far fa-bookmark"></i>
+                            <button
+                                className={styles.saveButton}
+                                onClick={handleToggleSave}
+                                disabled={saveLoading}
+                                title={isSaved ? 'Saved job (click to remove)' : 'Save this job'}
+                                style={{
+                                    opacity: saveLoading ? 0.6 : 1,
+                                    cursor: saveLoading ? 'not-allowed' : 'pointer'
+                                }}
+                            >
+                                <i
+                                    className={`${isSaved ? 'fas' : 'far'} fa-bookmark`}
+                                    style={{ color: isSaved ? '#fbbf24' : 'inherit' }}
+                                ></i>
                             </button>
                         </div>
                     </div>
