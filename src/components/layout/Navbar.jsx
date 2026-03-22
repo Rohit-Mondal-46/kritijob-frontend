@@ -87,6 +87,10 @@ const Navbar = () => {
       ].some((path) => currentPath === path || currentPath.startsWith(`${path}/`));
     }
 
+    if (user?.role === 'candidate' && item.label === 'Profile') {
+      return currentPath === '/dashboard/candidate' || currentPath.startsWith('/dashboard/candidate/');
+    }
+
     return currentPath === item.path || currentPath.startsWith(`${item.path}/`);
   };
 

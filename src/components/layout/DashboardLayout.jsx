@@ -63,6 +63,8 @@ const DashboardLayout = () => {
     ];
 
     const candidateLinks = [
+        { path: '/jobs', label: 'Find Jobs', icon: 'fa-search' },
+        { path: '/companies', label: 'Companies', icon: 'fa-building' },
         { path: '/dashboard/candidate/profile', label: 'Profile Settings', icon: 'fa-cog' },
         { path: '/dashboard/candidate/applications', label: 'My Applications', icon: 'fa-file-alt' },
         { path: '/dashboard/candidate/resume', label: 'Resume', icon: 'fa-file-upload' },

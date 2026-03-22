@@ -303,6 +303,32 @@ button:active {
   animation-delay: 0.5s;
 }
 
+.mobileBackBtn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--color-text-main);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.mobileBackBtn:hover {
+  color: var(--color-primary);
+}
+
+@media (max-width: 768px) {
+  .mobileBackBtn {
+    display: inline-flex;
+  }
+}
+
 /* Hide main navbar on mobile when on dashboard pages */
 @media (max-width: 1024px) {
   body.dashboard-active #main-navbar {

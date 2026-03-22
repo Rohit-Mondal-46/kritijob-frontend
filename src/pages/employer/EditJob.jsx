@@ -7,6 +7,7 @@ import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
 import api from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
+import { politicalCategories } from '../../data/politicalCategories';
 
 const normalizeDateInput = (value) => {
     if (!value) return '';
@@ -24,6 +25,7 @@ const EditJob = () => {
 
     const [jobData, setJobData] = useState({
         title: '',
+        category: '',
         experienceLevel: '',
         type: '', 
         location: '', 
@@ -43,6 +45,7 @@ const EditJob = () => {
                     const normalizedDeadline = normalizeDateInput(job.applicationDeadline);
                     setJobData({
                         title: job.title,
+                        category: job.category || '',
                         experienceLevel: job.experienceLevel || '',
                         type: job.type || '',
                         location: job.location || '',
@@ -159,6 +162,16 @@ const EditJob = () => {
                 </div>
                 
                 {/* Row 2 */}
+                <Select 
+                    label="Category"
+                    name="category" 
+                    value={jobData.category} 
+                    onChange={handleChange}
+                    placeholder="Select Category"
+                    options={politicalCategories.map((cat) => cat.name)}
+                    required
+                />
+                
                 <Select 
                     label="Experience"
                     name="experienceLevel" 

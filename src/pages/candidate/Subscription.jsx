@@ -70,6 +70,9 @@ const Subscription = () => {
 
     return (
         <div className={styles.pageContainer}>
+            <button className="mobileBackBtn" onClick={() => navigate('/dashboard/candidate/profile')}>
+                <i className="fas fa-arrow-left"></i> Back to Profile
+            </button>
             <div className={styles.headerRow}>
                 <h1 className={styles.title}>Supercharge Your Job Search</h1>
                 <p className={styles.subtitle}>Choose the plan that fits your career goals.</p>

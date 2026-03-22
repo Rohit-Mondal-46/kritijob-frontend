@@ -71,7 +71,7 @@ const SavedJobs = () => {
         },
         grid: {
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
             gap: '20px',
         },
         card: {
@@ -230,6 +230,9 @@ const SavedJobs = () => {
 
     return (
         <div style={styles.page}>
+            <button className="mobileBackBtn" onClick={() => navigate('/dashboard/candidate/profile')}>
+                <i className="fas fa-arrow-left"></i> Back to Profile
+            </button>
             {savedJobs.length === 0 ? (
                 <div style={styles.emptyState}>
                     <i className="far fa-bookmark" style={styles.emptyIcon}></i>
