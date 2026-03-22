@@ -69,7 +69,7 @@ const AdminContent = () => {
             </div>
             
             <div className={styles.card}>
-                <div style={{display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '1px solid var(--color-border)', paddingBottom: '10px'}}>
+                <div style={{display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '1px solid var(--color-border)', paddingBottom: '10px', flexWrap: 'wrap'}}>
                     {TAB_DATA.map(tab => (
                         <button 
                             key={tab.id}
