@@ -29,11 +29,16 @@ const DashboardLayout = () => {
         }
     }, [user, location.pathname, navigate]);
 
-    // Add body class to hide main navbar on mobile when dashboard is active
+    // Hide main navbar on mobile only when dashboard sidebar is in use
     useEffect(() => {
-        document.body.classList.add('dashboard-active');
+        if (showSidebar) {
+            document.body.classList.add('dashboard-active');
+        } else {
+            document.body.classList.remove('dashboard-active');
+        }
+
         return () => document.body.classList.remove('dashboard-active');
-    }, []);
+    }, [showSidebar]);
 
     // Redirect to home if no user
     useEffect(() => {
@@ -54,11 +59,17 @@ const DashboardLayout = () => {
     if (!user) return null;
 
     const employerLinks = [
+        { path: '/dashboard/employer/company', label: 'Company Profile', icon: 'fa-building' },
+        { path: '/dashboard/employer', label: 'Dashboard', icon: 'fa-chart-line', exact: true },
+        { path: '/dashboard/employer/jobs', label: 'My Jobs', icon: 'fa-briefcase' },
         { path: '/dashboard/employer/find-talent', label: 'Find Talent', icon: 'fa-search' },
         { path: '/dashboard/employer/subscription', label: 'Premium Plans', icon: 'fa-star' },
     ];
 
     const candidateLinks = [
+        { path: '/jobs', label: 'Find Jobs', icon: 'fa-briefcase' },
+        { path: '/companies', label: 'Companies', icon: 'fa-building' },
+        { path: '/about', label: 'About', icon: 'fa-info-circle' },
         { path: '/dashboard/candidate/profile', label: 'Profile Settings', icon: 'fa-cog' },
         { path: '/dashboard/candidate/applications', label: 'My Applications', icon: 'fa-file-alt' },
         { path: '/dashboard/candidate/resume', label: 'Resume', icon: 'fa-file-upload' },
