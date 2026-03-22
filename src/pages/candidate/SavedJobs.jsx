@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
+import { useToast } from '../../context/ToastContext';
 
 const SavedJobs = () => {
     const [savedJobs, setSavedJobs] = useState([]);
