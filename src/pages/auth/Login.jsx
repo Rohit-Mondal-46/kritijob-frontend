@@ -28,10 +28,8 @@ const Login = () => {
             addToast('Login successful!', 'success');
             
             // Redirect based on role
-            if (data.role === 'employer') {
-                navigate('/dashboard/employer/company'); // Or post-job
-            } else if (data.role === 'candidate') {
-                navigate('/dashboard/candidate/profile');
+            if (data.role === 'employer' || data.role === 'candidate') {
+                navigate('/');
             } else {
                 navigate('/dashboard/admin/overview');
             }

@@ -22,7 +22,7 @@ const DashboardLayout = () => {
             if (user.role === 'candidate') {
                 navigate('/dashboard/candidate/profile', { replace: true });
             } else if (user.role === 'employer') {
-                navigate('/dashboard/employer/company', { replace: true });
+                navigate('/dashboard/employer', { replace: true });
             } else if (user.role === 'admin' || user.role === 'ADMIN') {
                 navigate('/dashboard/admin/overview', { replace: true });
             }
@@ -46,8 +46,9 @@ const DashboardLayout = () => {
     const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
     const logoutClick = () => {
+        const isAdmin = user?.role === 'admin' || user?.role === 'ADMIN';
         logout(); // This now only clears state, no redirect
-        navigate('/', { replace: true }); // Navigate to home page
+        navigate(isAdmin ? '/login' : '/', { replace: true });
     };
 
     if (!user) return null;
@@ -69,7 +70,7 @@ const DashboardLayout = () => {
         { path: '/dashboard/admin/overview', label: 'Overview', icon: 'fa-chart-line' },
         { path: '/dashboard/admin/users', label: 'Users', icon: 'fa-users-cog' },
         { path: '/dashboard/admin/jobs', label: 'Jobs', icon: 'fa-briefcase' },
-        { path: '/dashboard/admin/post-job', label: 'Post Job', icon: 'fa-plus-circle' },
+        // { path: '/dashboard/admin/post-job', label: 'Post Job', icon: 'fa-plus-circle' },
         { path: '/dashboard/admin/content', label: 'Content', icon: 'fa-file-alt' },
         { path: '/dashboard/admin/reports', label: 'Reports', icon: 'fa-chart-bar' },
     ];
@@ -114,7 +115,7 @@ const DashboardLayout = () => {
                         <Link 
                             key={link.path} 
                             to={link.path} 
-                            className={`${styles.navLink} ${location.pathname === link.path ? styles.active : ''}`}
+                            className={`${styles.navLink} ${(link.exact ? location.pathname === link.path : location.pathname.startsWith(link.path)) ? styles.active : ''}`}
                             onClick={closeMobileMenu}
                         >
                             <i className={`fas ${link.icon}`}></i>

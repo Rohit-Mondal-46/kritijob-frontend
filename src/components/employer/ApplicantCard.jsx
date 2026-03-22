@@ -31,11 +31,9 @@ const ApplicantCard = ({ applicant, onProfileClick, showJobTitle }) => {
     };
 
     return (
-        <div className={`${styles.card} ${styles.applicantCard}`}>
+        <div className={styles.card}>
             <div className={styles.cardHeader}>
-                <div className={`${styles.avatar} ${styles.applicantAvatarFallback}`}>
-                    {getInitials(applicant.name)}
-                </div>
+                <img src={applicant.avatar || `https://ui-avatars.com/api/?name=${applicant.name}`} alt={applicant.name} className={styles.avatar} />
                 <div className={styles.info}>
                     <div className={styles.applicantNameRow}>
                         <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
@@ -65,24 +63,30 @@ const ApplicantCard = ({ applicant, onProfileClick, showJobTitle }) => {
                 </div>
             </div>
 
-            <div className={styles.skills}>
-                {applicant.skills.slice(0, 3).map((skill, index) => (
-                    <span key={index} className={styles.skillTag}>{skill}</span>
-                ))}
-            </div>
-
-            <p className={styles.bio}>
-                {applicant.bio}
-            </p>
-
-            <div className={styles.detailsRow}>
-                <div className={styles.salary}>
-                    <strong>{applicant.salary}</strong>
+            {applicant.skills && applicant.skills.length > 0 && (
+                <div className={styles.skills}>
+                    {applicant.skills.slice(0, 3).map((skill, index) => (
+                        <span key={index} className={styles.skillTag}>{skill}</span>
+                    ))}
                 </div>
-                <div className={styles.location}>
-                    <i className="fas fa-map-marker-alt"></i> {applicant.location}
+            )}
+
+            {applicant.bio && (
+                <p className={styles.bio}>
+                    {applicant.bio}
+                </p>
+            )}
+
+            {applicant.salary && (
+                <div className={styles.detailsRow}>
+                    <div className={styles.salary}>
+                        <strong>{applicant.salary}</strong>
+                    </div>
+                    {/* <div className={styles.location}>
+                        <i className="fas fa-map-marker-alt"></i> {applicant.location}
+                    </div> */}
                 </div>
-            </div>
+            )}
 
             <div className={styles.applicantActions}>
                 <button 

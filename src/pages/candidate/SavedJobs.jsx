@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import JobCard from '../../components/jobs/JobCard';
+import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 
 const SavedJobs = () => {
     const [savedJobs, setSavedJobs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    const { addToast } = useToast();
 
     useEffect(() => {
         let isMounted = true;
@@ -41,11 +43,20 @@ const SavedJobs = () => {
     if (loading) return <div style={{padding: '2rem', textAlign: 'center'}}>Loading...</div>;
 
     return (
-        <div style={{ padding: '2rem' }}>
+        <div style={styles.page}>
             {savedJobs.length === 0 ? (
-                <div style={{ textAlign: 'center', color: '#6b7280', marginTop: '3rem' }}>
-                    <i className="far fa-bookmark" style={{ fontSize: '3rem', marginBottom: '1rem' }}></i>
-                    <p>No saved jobs yet.</p>
+                <div style={styles.emptyState}>
+                    <i className="far fa-bookmark" style={styles.emptyIcon}></i>
+                    <p style={styles.emptyText}>No saved jobs yet</p>
+                    <p style={styles.emptySub}>Jobs you bookmark will appear here for easy access</p>
+                    <button 
+                        style={styles.browseBtn} 
+                        onClick={() => navigate('/jobs')}
+                        onMouseEnter={e => e.target.style.opacity = '0.9'}
+                        onMouseLeave={e => e.target.style.opacity = '1'}
+                    >
+                        Browse Jobs
+                    </button>
                 </div>
             ) : (
                 <>

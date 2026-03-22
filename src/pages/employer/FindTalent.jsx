@@ -384,7 +384,7 @@ const FindTalent = () => {
         try {
             setLoading(true);
             const queryParams = new URLSearchParams({
-                page: currentPage, // Use validated page
+                page,
                 limit: 12,
                 ...filters
             });
@@ -433,7 +433,16 @@ const FindTalent = () => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className="text-gradient" style={{fontSize: '2rem', margin: 0}}>Find Talent</h1>
+                <div style={{display: 'flex', alignItems: 'baseline', gap: '12px'}}>
+                    <h1 className="text-gradient" style={{fontSize: '2rem', margin: 0}}>Find Talent</h1>
+                    {!loading ? (
+                        <span style={{fontSize: '1rem', color: 'var(--color-text-muted)', fontWeight: '500'}}>
+                            {total} candidate{total !== 1 ? 's' : ''} found
+                        </span>
+                    ) : (
+                        <span style={{fontSize: '1rem', color: 'var(--color-text-muted)'}}>...</span>
+                    )}
+                </div>
                 <div className={styles.filterBar}>
                     <input 
                         type="text" 
@@ -521,83 +530,23 @@ const FindTalent = () => {
                 </div>
             )}
 
-            {/* Improved Pagination Controls */}
-            {totalPages > 1 && (
+            {/* Pagination Controls */}
+             {total > 12 && (
                 <div className={styles.pagination}>
                     <Button 
                         disabled={page === 1} 
-                        onClick={handlePreviousPage}
+                        onClick={() => setPage(page - 1)}
                         variant="ghost"
                     >
-                        <i className="fas fa-chevron-left"></i> Previous
+                        Previous
                     </Button>
-                    
-                    <div className={styles.pageNumbers}>
-                        {/* Show first page */}
-                        {page > 2 && (
-                            <button 
-                                onClick={() => setPage(1)} 
-                                className={styles.pageNumber}
-                            >
-                                1
-                            </button>
-                        )}
-                        
-                        {/* Show ellipsis if needed */}
-                        {page > 3 && (
-                            <span className={styles.ellipsis}>...</span>
-                        )}
-                        
-                        {/* Show previous page if exists */}
-                        {page > 1 && (
-                            <button 
-                                onClick={() => setPage(page - 1)} 
-                                className={styles.pageNumber}
-                            >
-                                {page - 1}
-                            </button>
-                        )}
-                        
-                        {/* Current page */}
-                        <button 
-                            className={`${styles.pageNumber} ${styles.activePage}`}
-                            disabled
-                        >
-                            {page}
-                        </button>
-                        
-                        {/* Show next page if exists */}
-                        {page < totalPages && (
-                            <button 
-                                onClick={() => setPage(page + 1)} 
-                                className={styles.pageNumber}
-                            >
-                                {page + 1}
-                            </button>
-                        )}
-                        
-                        {/* Show ellipsis if needed */}
-                        {page < totalPages - 2 && (
-                            <span className={styles.ellipsis}>...</span>
-                        )}
-                        
-                        {/* Show last page */}
-                        {page < totalPages - 1 && (
-                            <button 
-                                onClick={() => setPage(totalPages)} 
-                                className={styles.pageNumber}
-                            >
-                                {totalPages}
-                            </button>
-                        )}
-                    </div>
-                    
+                    <span className="text-gray-600 font-medium">Page {page}</span>
                     <Button 
-                        disabled={page === totalPages || candidates.length < 12}
-                        onClick={handleNextPage}
+                        disabled={candidates.length < 12}
+                        onClick={() => setPage(page + 1)}
                         variant="ghost"
                     >
-                        Next <i className="fas fa-chevron-right"></i>
+                        Next
                     </Button>
                 </div>
             )}
