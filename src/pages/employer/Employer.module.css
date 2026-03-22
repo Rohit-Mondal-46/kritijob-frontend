@@ -156,6 +156,24 @@
     gap: 8px;
     margin-top: 5px;
     font-size: 1rem;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+}
+
+.locationSeparator {
+    margin: 0 5px;
+    display: inline;
+}
+
+@media (max-width: 600px) {
+    .locationSeparator {
+        display: none; /* Hide dot on mobile */
+    }
+    
+    .companyLocation {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
 }
 
 .companyLocationInput {
@@ -741,6 +759,18 @@
 
     .companyBanner {
         height: 140px;
+    }
+
+    .companyNameInput {
+        font-size: 1.5rem;
+    }
+
+    .headerLeft h1 {
+        font-size: 1.5rem !important;
+    }
+
+    .sectionTitle {
+        font-size: 1.25rem;
     }
 }
 

@@ -287,8 +287,8 @@ const CompanyProfile = () => {
                                     <span>{company.location}</span>
                                     {company.website && (
                                         <>
-                                            <span style={{margin:'0 5px'}}>•</span>
-                                            <a href={company.website} target="_blank" rel="noopener noreferrer" style={{color:'var(--color-primary)'}}>{company.website}</a>
+                                            <span className={styles.locationSeparator}>•</span>
+                                            <a href={company.website} target="_blank" rel="noopener noreferrer" style={{color:'var(--color-primary)', wordBreak: 'break-all'}}>{company.website}</a>
                                         </>
                                     )}
                                 </div>
