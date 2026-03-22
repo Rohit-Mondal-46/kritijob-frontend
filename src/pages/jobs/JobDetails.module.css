@@ -8,9 +8,9 @@
 }
 
 .jobWrapper {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 30px;
+    width: 100%;
+    max-width: 980px;
+    margin: 0 auto;
 }
 
 /* Back Button */
@@ -304,26 +304,10 @@
     color: var(--color-text-muted);
 }
 
-/* Sidebar */
-.sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.sidebarTitle {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--color-text-main);
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--color-border);
-}
-
 /* Responsive */
 @media (max-width: 1024px) {
     .jobWrapper {
-        grid-template-columns: 1fr;
+        max-width: 100%;
     }
 }
 

@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './JobDetails.module.css';
-import JobCard from '../../components/jobs/JobCard';
 import JobApplicationModal from '../../components/jobs/JobApplicationModal';
 import api from '../../utils/api';
 import DOMPurify from 'dompurify';
@@ -21,6 +20,16 @@ const JobDetails = () => {
     const [hasApplied, setHasApplied] = useState(false);
     const [candidateStatus, setCandidateStatus] = useState(null);
     const [isSaved, setIsSaved] = useState(false);
+    const [saveLoading, setSaveLoading] = useState(false);
+
+    const normalizeJobId = (value) => {
+        if (!value) return '';
+        if (typeof value === 'string') return value;
+        if (typeof value === 'object') {
+            return String(value._id || value.id || value.jobId?._id || value.jobId || '');
+        }
+        return String(value);
+    };
 
     useEffect(() => {
         const fetchJobAndStatus = async () => {
@@ -33,29 +42,32 @@ const JobDetails = () => {
                 
                 // 2. Check if applied and limits (only if candidate)
                 if (user && user.role === 'candidate') {
-                    const [appRes, subRes] = await Promise.all([
+                    const [appResult, subResult, savedResult] = await Promise.allSettled([
                         api.get('/applications/my-applications'),
-                        api.get('/subscriptions/status')
+                        api.get('/subscriptions/status'),
+                        api.get(`/candidate/saved-jobs?t=${Date.now()}`, {
+                            headers: {
+                                'Cache-Control': 'no-cache',
+                                Pragma: 'no-cache'
+                            }
+                        })
                     ]);
-                    
-                    if (appRes.data.success) {
-                        const isApplied = appRes.data.data.some(app => app.jobId._id === id || app.jobId === id);
+
+                    if (appResult.status === 'fulfilled' && appResult.value.data.success) {
+                        const isApplied = appResult.value.data.data.some(app => normalizeJobId(app?.jobId) === String(id));
                         setHasApplied(isApplied);
                     }
-                    if (subRes.data.success) {
-                        setCandidateStatus(subRes.data.data);
+
+                    if (subResult.status === 'fulfilled' && subResult.value.data.success) {
+                        setCandidateStatus(subResult.value.data.data);
                     }
-                    
-                    // Fetch saved jobs to see if this particular job is saved
-                    try {
-                        const savedRes = await api.get('/candidate/saved-jobs');
-                        if (savedRes.data.success) {
-                            const saved = savedRes.data.data.some(app => (app.jobId?._id === id) || (app._id === id));
-                            setIsSaved(saved);
-                        }
-                    } catch (e) {
-                        console.error("Failed to check saved jobs", e);
+
+                    if (savedResult.status === 'fulfilled' && savedResult.value.data.success) {
+                        const alreadySaved = savedResult.value.data.data.some(savedJob => normalizeJobId(savedJob) === String(id));
+                        setIsSaved(alreadySaved);
                     }
+                } else {
+                    setIsSaved(false);
                 }
                 
                 setLoading(false);
@@ -92,33 +104,44 @@ const JobDetails = () => {
 
     const handleToggleSave = async () => {
         if (!user) {
+            addToast('Please login to save jobs', 'info');
             navigate('/login');
             return;
         }
+
         if (user.role !== 'candidate') {
             addToast('Only candidates can save jobs', 'warning');
             return;
         }
 
+        setSaveLoading(true);
         try {
             if (isSaved) {
                 await api.delete(`/candidate/saved-jobs/${id}`);
-                addToast('Job removed from saved items', 'success');
                 setIsSaved(false);
+                addToast('Job removed from saved items', 'success');
             } else {
                 await api.post('/candidate/saved-jobs', { jobId: id });
-                addToast('Job saved successfully!', 'success');
                 setIsSaved(true);
+                addToast('Job saved successfully!', 'success');
             }
         } catch (err) {
             console.error(err);
-            addToast(err.response?.data?.message || 'Action failed', 'error');
+            const message = err?.response?.data?.message || 'Failed to update saved jobs';
+            if (message.toLowerCase().includes('already saved')) {
+                setIsSaved(true);
+                addToast('Job is already saved', 'info');
+                return;
+            }
+            addToast(message, 'error');
+        } finally {
+            setSaveLoading(false);
         }
     };
 
-    if (loading) return <div className={`focused-container ${styles.container}`} style={{textAlign:'center', padding:'50px'}}>Loading...</div>;
+    if (loading) return <div className={`focused-container ${styles.container}`} style={{ textAlign: 'center', paddingInline: '50px' }}>Loading...</div>;
 
-    if (!job) return <div className={`focused-container ${styles.container}`} style={{textAlign:'center', padding:'50px'}}>Job not found.</div>;
+    if (!job) return <div className={`focused-container ${styles.container}`} style={{ textAlign: 'center', paddingInline: '50px' }}>Job not found.</div>;
 
     // Sanitize HTML description
     const sanitizedDesc = DOMPurify.sanitize(job.description);
@@ -139,7 +162,6 @@ const JobDetails = () => {
             </button>
 
             <div className={styles.jobWrapper}>
-                {/* Main Content Column (70%) */}
                 <div className={styles.mainContent}>
 
                     {/* Header Section */}
@@ -184,8 +206,20 @@ const JobDetails = () => {
                                 {hasApplied ? 'Applied' : (!job.canApply ? 'Applications Closed' : 'Apply')} 
                                 <i className={hasApplied ? "fas fa-check" : "fas fa-external-link-alt"} style={{ marginLeft: '8px', fontSize: '0.9em' }}></i>
                             </button>
-                            <button className={styles.saveButton} onClick={handleToggleSave}>
-                                <i className={`${isSaved ? 'fas' : 'far'} fa-bookmark`} style={{ color: isSaved ? '#fbbf24' : 'inherit' }}></i>
+                            <button
+                                className={styles.saveButton}
+                                onClick={handleToggleSave}
+                                disabled={saveLoading}
+                                title={isSaved ? 'Saved job (click to remove)' : 'Save this job'}
+                                style={{
+                                    opacity: saveLoading ? 0.6 : 1,
+                                    cursor: saveLoading ? 'not-allowed' : 'pointer'
+                                }}
+                            >
+                                <i
+                                    className={`${isSaved ? 'fas' : 'far'} fa-bookmark`}
+                                    style={{ color: isSaved ? '#fbbf24' : 'inherit' }}
+                                ></i>
                             </button>
                         </div>
                     </div>
@@ -268,16 +302,6 @@ const JobDetails = () => {
                     )}
 
                 </div>
-
-                {/* Sidebar (30%) */}
-                <div className={styles.sidebar}>
-                    <h2 className={styles.sidebarTitle}>Recommended Jobs</h2>
-                    <p style={{color:'#666', fontSize:'0.9rem'}}>Coming soon...</p>
-                    {/* {recommendedJobs.map(recJob => (
-             <JobCard key={recJob.id} job={recJob} />
-          ))} */}
-                </div>
-
             </div>
 
             {showModal && (

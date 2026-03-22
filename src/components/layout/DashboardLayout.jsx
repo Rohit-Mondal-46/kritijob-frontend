@@ -29,7 +29,7 @@ const DashboardLayout = () => {
         }
     }, [user, location.pathname, navigate]);
 
-    // Add body class to hide main navbar on mobile ONLY when sidebar is shown
+    // Add body class to hide main navbar on mobile when dashboard is active
     useEffect(() => {
         if (showSidebar) {
             document.body.classList.add('dashboard-active');
@@ -58,13 +58,14 @@ const DashboardLayout = () => {
     if (!user) return null;
 
     const employerLinks = [
+        { path: '/dashboard/employer/company', label: 'Company Profile', icon: 'fa-building' },
+        { path: '/dashboard/employer', label: 'Dashboard', icon: 'fa-chart-line', exact: true },
+        { path: '/dashboard/employer/jobs', label: 'My Jobs', icon: 'fa-briefcase' },
         { path: '/dashboard/employer/find-talent', label: 'Find Talent', icon: 'fa-search' },
         { path: '/dashboard/employer/subscription', label: 'Premium Plans', icon: 'fa-star' },
     ];
 
     const candidateLinks = [
-        { path: '/jobs', label: 'Find Jobs', icon: 'fa-search' },
-        { path: '/companies', label: 'Companies', icon: 'fa-building' },
         { path: '/dashboard/candidate/profile', label: 'Profile Settings', icon: 'fa-cog' },
         { path: '/dashboard/candidate/applications', label: 'My Applications', icon: 'fa-file-alt' },
         { path: '/dashboard/candidate/resume', label: 'Resume', icon: 'fa-file-upload' },

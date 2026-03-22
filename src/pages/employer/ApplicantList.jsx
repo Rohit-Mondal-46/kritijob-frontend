@@ -19,35 +19,69 @@ const ApplicantList = () => {
     useEffect(() => {
         let isActive = true;
 
-        const fetchApplicants = async () => {
-            try {
-                const endpoint = jobId 
-                    ? `/applications/job/${jobId}`
-                    : `/applications/employer/all`;
+        const fetchData = async () => {
+            setLoading(true);
 
-                console.log('Fetching from:', endpoint);
-                const { data } = await api.get(endpoint);
-                
-                if (data.success && isActive) {
-                   const mapped = data.data.map(app => ({
-                       id: app._id, 
-                       applicationId: app._id,
-                       userId: app.candidateId?._id,
-                       jobTitle: app.jobId?.title || 'Unknown Job', 
-                       name: app.candidateId?.name || 'Unknown',
-                       email: app.candidateId?.email,
-                       avatar: app.candidateId?.avatarUrl,
-                       status: app.status,
-                       date: app.createdAt ? new Date(app.createdAt).toLocaleDateString() : '-',
-                       title: 'Candidate', 
-                       skills: [], 
-                       resumeLink: app.resumeUrl,
-                       company: '',
-                       bio: '',
-                       location: '',
-                       salary: ''
-                   }));
-                   setApplicants(mapped);
+            if (jobId) {
+                setApplicants([]);
+            } else {
+                setJobSummaries([]);
+            }
+
+            try {
+                if (jobId) {
+                    const { data } = await api.get(`/applications/job/${jobId}`);
+
+                    if (isActive && data.success) {
+                        const mapped = data.data.map(app => ({
+                            id: app._id,
+                            applicationId: app._id,
+                            userId: app.candidateId?._id,
+                            jobTitle: app.jobId?.title || 'Unknown Job',
+                            name: app.candidateId?.name || 'Unknown',
+                            email: app.candidateId?.email,
+                            avatar: app.candidateId?.avatarUrl,
+                            status: app.status,
+                            date: app.createdAt ? new Date(app.createdAt).toLocaleDateString() : '-',
+                            title: 'Candidate',
+                            skills: [],
+                            resumeLink: app.resumeUrl,
+                            company: '',
+                            bio: '',
+                            location: '',
+                            salary: '',
+                            isPremium: app.isPremiumApplication
+                        }));
+                        setApplicants(mapped);
+                    }
+                } else {
+                    const [jobsRes, appsRes] = await Promise.all([
+                        api.get('/jobs/my-jobs'),
+                        api.get('/applications/employer/all')
+                    ]);
+
+                    if (!isActive) return;
+
+                    const jobs = jobsRes.data?.success ? jobsRes.data.data : [];
+                    const applications = appsRes.data?.success ? appsRes.data.data : [];
+
+                    const countByJobId = applications.reduce((acc, app) => {
+                        const appJobId = app.jobId?._id;
+                        if (!appJobId) return acc;
+                        acc[appJobId] = (acc[appJobId] || 0) + 1;
+                        return acc;
+                    }, {});
+
+                    const summaries = jobs.map(job => ({
+                        id: job._id,
+                        title: job.title || 'Untitled Job',
+                        location: job.location || 'N/A',
+                        type: job.type || 'N/A',
+                        salaryRange: job.salaryRange || 'N/A',
+                        applicantCount: countByJobId[job._id] || 0,
+                    }));
+
+                    setJobSummaries(summaries);
                 }
             } catch (err) {
                 console.error(err);
@@ -59,7 +93,7 @@ const ApplicantList = () => {
             }
         };
 
-        fetchApplicants();
+        fetchData();
 
         return () => {
             isActive = false;
@@ -137,18 +171,45 @@ const ApplicantList = () => {
             </div>
 
             <div className={styles.grid}>
-                {applicants.map(applicant => (
-                    <ApplicantCard 
-                        key={applicant.id} 
-                        applicant={applicant} 
-                        showJobTitle={!jobId}
-                        onProfileClick={() => handleViewProfile(applicant)}
-                    />
-                ))}
+                {jobId ? (
+                    applicants.map(applicant => (
+                        <ApplicantCard 
+                            key={applicant.id} 
+                            applicant={applicant} 
+                            showJobTitle={false}
+                            onProfileClick={() => handleViewProfile(applicant)}
+                        />
+                    ))
+                ) : (
+                    jobSummaries.map(job => (
+                        <button
+                            key={job.id}
+                            type="button"
+                            className={styles.jobSummaryCard}
+                            onClick={() => navigate(`/dashboard/employer/jobs/${job.id}/applicants`)}
+                        >
+                            <div className={styles.jobSummaryTop}>
+                                <h3>{job.title}</h3>
+                                <span className={styles.applicantCountBadge}>{job.applicantCount} Applicants</span>
+                            </div>
+                            <div className={styles.jobSummaryMeta}>
+                                <span><i className="fas fa-map-marker-alt"></i> {job.location}</span>
+                                <span><i className="fas fa-briefcase"></i> {job.type}</span>
+                                <span><i className="fas fa-money-bill-wave"></i> {job.salaryRange}</span>
+                            </div>
+                        </button>
+                    ))
+                )}
                 
-                {applicants.length === 0 && (
+                {jobId && applicants.length === 0 && (
                      <div style={{gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: 'var(--color-text-muted)', background: 'var(--color-surface-muted)', borderRadius: '12px', border: '1px solid var(--color-border)'}}>
                          <p>No applicants found.</p>
+                     </div>
+                 )}
+
+                {!jobId && jobSummaries.length === 0 && (
+                     <div style={{gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: 'var(--color-text-muted)', background: 'var(--color-surface-muted)', borderRadius: '12px', border: '1px solid var(--color-border)'}}>
+                         <p>No jobs found.</p>
                      </div>
                  )}
             </div>

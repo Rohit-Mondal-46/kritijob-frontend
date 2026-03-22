@@ -1,16 +1,11 @@
 // src/components/jobs/JobCard.jsx
 
-import React, { useContext } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
-import api from '../../utils/api';
 import styles from './JobCard.module.css';
 import { differenceInDays } from 'date-fns';
 
-const JobCard = ({ job, onUnsave, isSaved, onToggleSave, actionSlot, disableNavigation = false }) => {
-  const { user } = useContext(AuthContext);
-  const { addToast } = useToast();
+const JobCard = ({ job, actionSlot, disableNavigation = false }) => {
   const navigate = useNavigate();
 
   const displayJob = {
@@ -33,46 +28,6 @@ const JobCard = ({ job, onUnsave, isSaved, onToggleSave, actionSlot, disableNavi
     .join('')
     .toUpperCase()
     .slice(0, 2);
-
-  const toggleSave = async (e) => {
-    e.stopPropagation();
-    const jobId = String(displayJob.id || '');
-
-    if (!jobId) {
-        addToast('Invalid job reference. Please refresh and try again.', 'error');
-        return;
-    }
-
-    if (!user) {
-        addToast('Please login to save jobs', 'info');
-        return;
-    }
-    if (user.role !== 'candidate') {
-        addToast('Only candidates can save jobs', 'warning');
-        return;
-    }
-
-    try {
-        if (onUnsave) {
-        await api.delete(`/candidate/saved-jobs/${jobId}`);
-            addToast('Job removed from saved items', 'success');
-        onUnsave(jobId);
-        } else {
-            if (isSaved) {
-          await api.delete(`/candidate/saved-jobs/${jobId}`);
-                addToast('Job removed from saved items', 'success');
-            } else {
-          await api.post('/candidate/saved-jobs', { jobId });
-                addToast('Job saved successfully!', 'success');
-            }
-            if (onToggleSave) onToggleSave();
-        }
-    } catch (err) {
-        console.error(err);
-      const msg = err?.response?.data?.message || err?.message || err?.error || 'Action failed';
-        addToast(msg, 'error');
-    }
-  };
 
   const handleCardClick = (e) => {
     if (disableNavigation) {
@@ -118,14 +73,6 @@ const JobCard = ({ job, onUnsave, isSaved, onToggleSave, actionSlot, disableNavi
           )}
         </div>
       </div>
-
-      {/* Bookmark */}
-      {(!user || user.role === 'candidate') && (
-        <div className={styles.bookmark} onClick={toggleSave}>
-          <i className={`${(onUnsave || isSaved) ? 'fas' : 'far'} fa-bookmark`}
-             style={{ color: (onUnsave || isSaved) ? '#fbbf24' : 'inherit' }}></i>
-        </div>
-      )}
 
       {actionSlot && <div className={styles.actionSlot}>{actionSlot}</div>}
     </div>

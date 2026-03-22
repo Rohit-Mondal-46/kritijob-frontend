@@ -368,10 +368,6 @@ const FindTalent = () => {
     const [selectedCandidate, setSelectedCandidate] = useState(null);
     const [modalLoading, setModalLoading] = useState(false);
 
-    // Message Modal State
-    const [messageTarget, setMessageTarget] = useState(null);
-    const [showMessageModal, setShowMessageModal] = useState(false);
-
     useEffect(() => {
         // Debounce search
         const timer = setTimeout(() => {
@@ -429,10 +425,7 @@ const FindTalent = () => {
         navigate(`/dashboard/employer/candidate/${id}`);
     };
 
-    // Message Action - show toast (chat removed)
-    const handleMessageClick = (candidate) => {
-        addToast('Messaging feature coming soon!', 'info');
-    };
+
 
     // Calculate total pages
     const totalPages = Math.ceil(total / 12);
@@ -522,16 +515,6 @@ const FindTalent = () => {
                             </div>
                             
                             <div className={styles.cardFooter}>
-                                <button 
-                                    className={`${styles.iconBtn} ${styles.msgBtn}`}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleMessageClick(candidate);
-                                    }}
-                                    title="Send Message"
-                                >
-                                    <i className="fas fa-comment-alt"></i>
-                                </button>
                                 <button
                                     className={`${styles.actionBtn} ${styles.profileBtn}`}
                                     onClick={(e) => {
@@ -595,16 +578,7 @@ const FindTalent = () => {
                                         <i className="fas fa-envelope" style={{marginRight: '8px'}}></i> {selectedCandidate.user.email}
                                     </div>
                                 </div>
-                                <div className={styles.modalHeaderActions}>
-                                    <Button 
-                                        variant="primary" 
-                                        size="lg"
-                                        onClick={() => handleMessageClick({ userId: selectedCandidate.user._id, name: selectedCandidate.user.name })}
-                                        style={{background: 'var(--color-primary)', color: 'white', border: 'none'}}
-                                    >
-                                        <i className="fas fa-paper-plane" style={{marginRight: '8px'}}></i> Send Message
-                                    </Button>
-                                </div>
+
                             </div>
 
                             <div className={styles.modalGrid}>
