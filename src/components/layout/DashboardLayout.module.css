@@ -28,6 +28,10 @@
     background-color: var(--color-surface-muted);
 }
 
+.fullContent {
+    margin-left: 0;
+}
+
 .userInfo {
     display: flex;
     align-items: center;

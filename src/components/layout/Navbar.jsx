@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import styles from './Navbar.module.css';
 import Button from '../ui/Button';
 import { AuthContext } from '../../context/AuthContext';
@@ -8,6 +8,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { token, user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -15,6 +16,90 @@ const Navbar = () => {
     logout();
     navigate('/');
     setIsOpen(false);
+  };
+
+  // Navigation items based on user role
+  const getNavItems = () => {
+    if (!user) {
+      // Non-authenticated users
+      return [
+        { label: 'Home', path: '/' },
+        { label: 'Premium Plans', path: '/pricing' },
+        { label: 'About', path: '/about' }
+      ];
+    }
+
+    if (user.role === 'candidate') {
+      return [
+        { label: 'Find Jobs', path: '/jobs' },
+        { label: 'Companies', path: '/companies' },
+        { label: 'About', path: '/about' },
+        { label: 'Profile', path: '/dashboard/candidate/profile' }
+      ];
+    }
+
+    if (user.role === 'employer') {
+      return [
+        { label: 'Company Profile', path: '/dashboard/employer/company' },
+        { label: 'Dashboard', path: '/dashboard/employer' },
+        { label: 'My Jobs', path: '/dashboard/employer/jobs' },
+        { label: 'More', path: '/dashboard/employer/find-talent' }
+      ];
+    }
+
+    if (user.role === 'admin') {
+      return [
+        { label: 'Dashboard', path: '/dashboard/admin/overview' },
+        { label: 'Users', path: '/dashboard/admin/users' },
+        { label: 'Jobs', path: '/dashboard/admin/jobs' },
+        { label: 'Reports', path: '/dashboard/admin/reports' }
+      ];
+    }
+
+    return [];
+  };
+
+  const navItems = getNavItems();
+
+  const isNavItemActive = (item) => {
+    const currentPath = location.pathname;
+
+    if (item.path === '/') {
+      return currentPath === '/';
+    }
+
+    if (user?.role === 'employer' && item.label === 'Dashboard') {
+      return currentPath === '/dashboard/employer';
+    }
+
+    if (user?.role === 'employer' && item.label === 'Company Profile') {
+      return currentPath === '/dashboard/employer/company' || currentPath.startsWith('/dashboard/employer/company/');
+    }
+
+    if (user?.role === 'employer' && item.label === 'My Jobs') {
+      return currentPath === '/dashboard/employer/jobs' || currentPath.startsWith('/dashboard/employer/jobs/');
+    }
+
+    if (user?.role === 'employer' && item.label === 'More') {
+      return [
+        '/dashboard/employer/find-talent',
+        '/dashboard/employer/subscription',
+      ].some((path) => currentPath === path || currentPath.startsWith(`${path}/`));
+    }
+
+    return currentPath === item.path || currentPath.startsWith(`${item.path}/`);
+  };
+
+  const handleProfileClick = () => {
+    if (user?.role === 'candidate') {
+      navigate('/dashboard/candidate/profile');
+    } else if (user?.role === 'employer') {
+      navigate('/dashboard/employer/company');
+    } else if (user?.role === 'admin') {
+      navigate('/dashboard/admin/overview');
+    } else {
+      navigate('/dashboard');
+    }
   };
 
   return (
@@ -34,14 +119,17 @@ const Navbar = () => {
         </div>
 
         <ul className={`${styles.navLinks} ${isOpen ? styles.active : ''}`}>
-          {user?.role !== 'employer' && (
-            <>
-              <li><Link to="/jobs" onClick={toggleMenu}>Find Jobs</Link></li>
-              <li><Link to="/companies" onClick={toggleMenu}>Companies</Link></li>
-              {/* <li><Link to="/salary-guide" onClick={toggleMenu}>Salary Guide</Link></li> */}
-              <li><Link to="/about" onClick={toggleMenu}>About</Link></li>
-            </>
-          )}
+          {navItems.map((item, index) => (
+            <li key={index}>
+              <Link
+                to={item.path}
+                onClick={toggleMenu}
+                className={isNavItemActive(item) ? styles.activeLink : ''}
+              >
+                {item.label}
+              </Link>
+            </li>
+          ))}
           
           {/* Mobile Only Actions */}
           <div className={styles.navActionsMobile}>
@@ -50,9 +138,12 @@ const Navbar = () => {
                     <div className={styles.mobileUserInfo}>
                         <span className={styles.userName}>{user?.name || 'User'}</span>
                     </div>
-                    <Link to="/dashboard" onClick={toggleMenu}>
-                        <Button variant="outline">Dashboard</Button>
-                    </Link>
+                    <Button variant="outline" onClick={() => {
+                      handleProfileClick();
+                      toggleMenu();
+                    }}>
+                      Profile
+                    </Button>
                     <Button variant="primary" onClick={handleLogout}>Logout</Button>
                   </>
               ) : (
@@ -72,20 +163,9 @@ const Navbar = () => {
         <div className={styles.navActions}>
           {token ? (
               <div className={styles.userControls}>
-                   
-                  
                   <div 
                       className={styles.userProfile} 
-                      onClick={() => {
-
-                        if (user?.role === 'candidate') {
-                            navigate('/dashboard/candidate/profile');
-                        } else if(user?.role === 'admin') {
-                            navigate('/dashboard/admin/overview');
-                        }else {
-                            navigate('/dashboard/employer/company');
-                        }
-                      }}
+                      onClick={handleProfileClick}
                       style={{cursor: 'pointer'}}
                   >
                       <span className={styles.userName}>{user?.name || 'User'}</span>

@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 
-const EmployerAuthGuard = () => {
+const CandidateAuthGuard = () => {
     const { user, loading } = useContext(AuthContext);
 
     if (loading) {
@@ -13,9 +13,9 @@ const EmployerAuthGuard = () => {
         return <Navigate to="/" replace />;
     }
 
-    if (user.role !== 'employer') {
-        if (user.role === 'candidate') {
-            return <Navigate to="/dashboard/candidate/profile" replace />;
+    if (user.role !== 'candidate') {
+        if (user.role === 'employer') {
+            return <Navigate to="/dashboard/employer/company" replace />;
         }
 
         if (user.role === 'admin' || user.role === 'ADMIN') {
@@ -28,4 +28,4 @@ const EmployerAuthGuard = () => {
     return <Outlet />;
 };
 
-export default EmployerAuthGuard;
+export default CandidateAuthGuard;

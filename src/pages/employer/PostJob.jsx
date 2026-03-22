@@ -8,11 +8,11 @@ import Select from '../../components/ui/Select';
 import api from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
 
-const PostJob = () => {
+const PostJob = ({ isAdmin = false }) => {
     const navigate = useNavigate();
     const { addToast } = useToast();
     const [loading, setLoading] = useState(false);
-    const [hasCheckedCompany, setHasCheckedCompany] = useState(false);
+    const [hasCheckedCompany, setHasCheckedCompany] = useState(isAdmin); // Skip check for admin
     const [hasCompany, setHasCompany] = useState(true);
 
     const [jobData, setJobData] = useState({
@@ -28,6 +28,7 @@ const PostJob = () => {
     });
 
     React.useEffect(() => {
+        if (isAdmin) return; // Admin doesn't need a company profile check
         const checkCompany = async () => {
             try {
                 const { data } = await api.get('/company/me');
@@ -44,7 +45,7 @@ const PostJob = () => {
             }
         };
         checkCompany();
-    }, []);
+    }, [isAdmin]);
 
     const handleChange = (e) => {
         setJobData({
@@ -86,7 +87,7 @@ const PostJob = () => {
             });
 
             addToast('Job posted successfully!', 'success');
-            navigate('/dashboard/employer/jobs');
+            navigate(isAdmin ? '/dashboard/admin/jobs' : '/dashboard/employer/jobs');
         } catch (err) {
             console.error(err);
             const msg = err.response?.data?.message || 'Failed to post job';
@@ -105,6 +106,14 @@ const PostJob = () => {
         <div className={styles.pageContainer}>
             <div className={styles.header}>
                 <h1 style={{fontSize: '2rem', margin: 0, color: 'var(--color-text-main)'}}>Post a Job</h1>
+                <button
+                    type="button"
+                    onClick={() => navigate('/dashboard/employer')}
+                    className={styles.backBtn}
+                >
+                    <i className="fas fa-arrow-left" style={{ marginRight: '8px' }}></i>
+                    Back to Dashboard
+                </button>
             </div>
 
             <form className={styles.formGrid} onSubmit={handleSubmit}>

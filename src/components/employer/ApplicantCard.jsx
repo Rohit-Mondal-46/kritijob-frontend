@@ -3,9 +3,16 @@ import styles from '../../pages/employer/Employer.module.css';
 import api from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
 
-const ApplicantCard = ({ applicant, onProfileClick, showJobTitle, onMessageClick }) => {
+const ApplicantCard = ({ applicant, onProfileClick, showJobTitle }) => {
     const { addToast } = useToast();
     const [status, setStatus] = useState(applicant.status || 'Applied');
+
+    const getInitials = (name = '') => {
+        const parts = name.trim().split(/\s+/).filter(Boolean);
+        if (parts.length === 0) return 'NA';
+        if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+        return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    };
 
     const handleStatusChange = async (e) => {
         const newStatus = e.target.value;
@@ -24,12 +31,20 @@ const ApplicantCard = ({ applicant, onProfileClick, showJobTitle, onMessageClick
     };
 
     return (
-        <div className={styles.card} style={{ padding: '20px' }}>
-            <div className={styles.cardHeader} style={{ marginBottom: (applicant.skills && applicant.skills.length > 0) || applicant.bio ? '16px' : '0' }}>
+        <div className={styles.card}>
+            <div className={styles.cardHeader}>
                 <img src={applicant.avatar || `https://ui-avatars.com/api/?name=${applicant.name}`} alt={applicant.name} className={styles.avatar} />
                 <div className={styles.info}>
-                    <h3>{applicant.name}</h3>
-                    <p>{applicant.title} {showJobTitle && `• Apply for: ${applicant.jobTitle}`}</p>
+                    <div className={styles.applicantNameRow}>
+                        <h3>{applicant.name}</h3>
+                        <span className={styles.statusChip}>{status}</span>
+                    </div>
+                    <p>{applicant.title || 'Candidate'} {showJobTitle && `• Applied for: ${applicant.jobTitle}`}</p>
+                    {applicant.email && (
+                        <p className={styles.applicantMetaLine}>
+                            <i className="fas fa-envelope"></i> {applicant.email}
+                        </p>
+                    )}
                 </div>
             </div>
 
@@ -58,19 +73,13 @@ const ApplicantCard = ({ applicant, onProfileClick, showJobTitle, onMessageClick
                 </div>
             )}
 
-            <div className={styles.actions}>
+            <div className={styles.applicantActions}>
                 <button 
                     className={styles.actionBtn} 
                     onClick={() => onProfileClick(applicant)}
                 >
+                    <i className="fas fa-user" style={{ marginRight: '8px' }}></i>
                     Profile
-                </button>
-                <button 
-                    className={`btn-primary ${styles.primaryBtn}`} 
-                    style={{borderRadius:'8px', cursor:'pointer', border:'none', fontWeight:'600'}}
-                    onClick={onMessageClick}
-                >
-                    Message
                 </button>
             </div>
 

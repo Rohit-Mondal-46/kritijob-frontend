@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from '../../context/AuthContext';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '../../context/ToastContext';
 import api from '../../utils/api';
 import styles from './Employer.module.css';
@@ -65,7 +64,6 @@ const MenuBar = ({ editor }) => {
 };
 
 const CompanyProfile = () => {
-    const { user } = useContext(AuthContext);
     const { addToast } = useToast();
     const [loading, setLoading] = useState(true);
     const [companyId, setCompanyId] = useState(null);
@@ -85,7 +83,14 @@ const CompanyProfile = () => {
 
     // Files
     const [logoFile, setLogoFile] = useState(null);
-    const [logoPreview, setLogoPreview] = useState(null);
+
+    const companyInitials = (company.name || 'Company')
+        .split(' ')
+        .filter(Boolean)
+        .map((word) => word[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
 
     // Tiptap Editor
     const editor = useEditor({
@@ -148,7 +153,6 @@ const CompanyProfile = () => {
         const file = e.target.files[0];
         if (file) {
             setLogoFile(file);
-            setLogoPreview(URL.createObjectURL(file));
         }
     };
 
@@ -236,12 +240,7 @@ const CompanyProfile = () => {
                 
                 <div className={styles.companyProfileHeader}>
                     <div className={styles.companyLogoWrapper}>
-                        <img 
-                            src={logoPreview || company.logo || "https://via.placeholder.com/150?text=Logo"} 
-                            alt={company.name} 
-                            className={styles.companyLogo} 
-                            style={{backgroundColor: 'white'}}
-                        />
+                        <div className={styles.companyLogoFallback}>{companyInitials}</div>
                         {isEditing && (
                             <label className={styles.logoEditBtn}>
                                 <i className="fas fa-camera"></i>

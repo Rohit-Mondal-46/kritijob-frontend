@@ -15,6 +15,15 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
+.cardStatic {
+    cursor: default;
+}
+
+.cardStatic:hover {
+    border-color: #e8e8e8;
+    box-shadow: none;
+}
+
 /* Circular company logo */
 .companyIcon {
     width: 48px;
@@ -109,6 +118,12 @@
 
 .bookmark:hover {
     color: var(--color-primary);
+}
+
+.actionSlot {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
 }
 
 /* Tags - hidden in compact view, shown in detail views */

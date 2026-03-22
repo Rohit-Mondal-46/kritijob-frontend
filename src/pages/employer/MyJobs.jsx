@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Employer.module.css'; 
 import JobCard from '../../components/jobs/JobCard'; 
@@ -6,8 +6,10 @@ import api from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
 
 const MyJobs = () => {
+    const JOBS_PER_PAGE = 12;
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
     const navigate = useNavigate();
     const { addToast } = useToast();
 
@@ -15,15 +17,12 @@ const MyJobs = () => {
         navigate(`/dashboard/employer/jobs/edit/${id}`);
     };
 
-    useEffect(() => {
-        fetchMyJobs();
-    }, []);
-
-    const fetchMyJobs = async () => {
+    const fetchMyJobs = useCallback(async () => {
         try {
             const { data } = await api.get('/jobs/my-jobs');
             if (data.success) {
                 setJobs(data.data);
+                setCurrentPage(1);
             }
             setLoading(false);
         } catch (err) {
@@ -31,7 +30,23 @@ const MyJobs = () => {
             addToast('Failed to load jobs', 'error');
             setLoading(false);
         }
-    };
+    }, [addToast]);
+
+    useEffect(() => {
+        const id = setTimeout(() => {
+            fetchMyJobs();
+        }, 0);
+
+        return () => clearTimeout(id);
+    }, [fetchMyJobs]);
+
+    const totalPages = Math.max(1, Math.ceil(jobs.length / JOBS_PER_PAGE));
+    const effectivePage = Math.min(currentPage, totalPages);
+
+    const paginatedJobs = jobs.slice(
+        (effectivePage - 1) * JOBS_PER_PAGE,
+        effectivePage * JOBS_PER_PAGE
+    );
 
     const handleDelete = async (jobId) => {
         if (!window.confirm("Are you sure you want to delete this job?")) return;
@@ -43,20 +58,6 @@ const MyJobs = () => {
         } catch (err) {
             console.error(err);
             addToast('Failed to delete job', 'error');
-        }
-    };
-
-    const handleToggleVisibility = async (jobId) => {
-        try {
-            const { data } = await api.put(`/jobs/${jobId}/toggle-visibility`);
-            if (data.success) {
-                setJobs(jobs.map(j => j._id === jobId ? { ...j, isActive: data.data.isActive } : j));
-                addToast(data.data.isActive ? 'Job is now visible' : 'Job is now hidden', 'success');
-            }
-        } catch (err) {
-            console.error(err);
-            const msg = err.response?.data?.message || 'Failed to toggle visibility';
-            addToast(msg, 'error');
         }
     };
 
@@ -90,11 +91,11 @@ const MyJobs = () => {
             </div>
 
             <div className={styles.grid}>
-                 {jobs.map(job => (
+                 {paginatedJobs.map(job => (
                     <JobCard 
                         key={job._id}
                         job={job} 
-                        hidePostedDate={true} 
+                        disableNavigation={true}
                         actionSlot={(
                             <div className={styles.jobActionButtons}>
                                 <button 
@@ -103,24 +104,6 @@ const MyJobs = () => {
                                     title="Edit Job"
                                 >
                                     <i className="fas fa-edit"></i>
-                                </button>
-                                <button 
-                                    className={styles.jobActionBtn} 
-                                    onClick={(e) => { e.stopPropagation(); navigate(`/dashboard/employer/jobs/${job._id}/applicants`); }}
-                                    title="View Applicants"
-                                >
-                                    <i className="fas fa-users"></i>
-                                </button>
-                                <button 
-                                    className={styles.jobActionBtn} 
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleToggleVisibility(job._id);
-                                    }}
-                                    title={job.isActive ? "Hide Job from Find Jobs" : "Show Job in Find Jobs"}
-                                    style={{ color: job.isActive !== false ? 'var(--color-text-main)' : 'var(--color-text-muted)' }}
-                                >
-                                    <i className={job.isActive !== false ? "fas fa-eye" : "fas fa-eye-slash"}></i>
                                 </button>
                                 <button 
                                     className={`${styles.jobActionBtn} ${styles.jobDeleteBtn}`}
@@ -161,6 +144,61 @@ const MyJobs = () => {
                      </div>
                  )}
             </div>
+
+            {jobs.length > JOBS_PER_PAGE && (
+                <div style={{
+                    marginTop: '24px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '8px',
+                    flexWrap: 'wrap'
+                }}>
+                    <button
+                        type="button"
+                        className={styles.filterBtn}
+                        onClick={() => setCurrentPage((p) => Math.max(1, Math.min(p, totalPages) - 1))}
+                        disabled={effectivePage === 1}
+                        style={{ opacity: effectivePage === 1 ? 0.6 : 1, cursor: effectivePage === 1 ? 'not-allowed' : 'pointer' }}
+                    >
+                        Previous
+                    </button>
+
+                    {Array.from({ length: totalPages }).map((_, index) => {
+                        const page = index + 1;
+                        const isActive = page === effectivePage;
+                        return (
+                            <button
+                                key={page}
+                                type="button"
+                                onClick={() => setCurrentPage(page)}
+                                style={{
+                                    width: '36px',
+                                    height: '36px',
+                                    borderRadius: '8px',
+                                    border: isActive ? 'none' : '1px solid var(--color-border)',
+                                    background: isActive ? 'var(--color-primary)' : '#fff',
+                                    color: isActive ? '#fff' : 'var(--color-text-main)',
+                                    fontWeight: 600,
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                {page}
+                            </button>
+                        );
+                    })}
+
+                    <button
+                        type="button"
+                        className={styles.filterBtn}
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, Math.min(p, totalPages) + 1))}
+                        disabled={effectivePage === totalPages}
+                        style={{ opacity: effectivePage === totalPages ? 0.6 : 1, cursor: effectivePage === totalPages ? 'not-allowed' : 'pointer' }}
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

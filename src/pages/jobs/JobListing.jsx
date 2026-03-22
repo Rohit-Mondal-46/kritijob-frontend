@@ -21,15 +21,19 @@ const JobListing = () => {
   
   // Stable string key for useEffect dependencies — avoids object reference issues
   const queryString = searchParams.toString();
+  const getJobId = (job) => String(job?._id || job?.id || '');
 
   // Memoize filters to pass to JobFilterBar (only recomputes when URL changes)
-  const currentFilters = useMemo(() => ({
-      keyword: searchParams.get('keyword') || '',
-      category: searchParams.get('category') ? searchParams.get('category').split(',') : [],
-      location: searchParams.get('location') ? searchParams.get('location').split(',') : [],
-      experienceLevel: searchParams.get('experienceLevel') ? searchParams.get('experienceLevel').split(',') : [],
-      type: searchParams.get('type') ? searchParams.get('type').split(',') : [],
-  }), [queryString]);
+    const currentFilters = useMemo(() => {
+      const params = new URLSearchParams(queryString);
+      return {
+        keyword: params.get('keyword') || '',
+        category: params.get('category') ? params.get('category').split(',') : [],
+        location: params.get('location') ? params.get('location').split(',') : [],
+        experienceLevel: params.get('experienceLevel') ? params.get('experienceLevel').split(',') : [],
+        type: params.get('type') ? params.get('type').split(',') : [],
+      };
+    }, [queryString]);
 
   // Build URL params from filter object and update the URL
   const handleFilterChange = (newFilters) => {
@@ -59,7 +63,7 @@ const JobListing = () => {
       api.get('/candidate/saved-jobs')
         .then(res => {
           if (res.data.success) {
-            setSavedJobIds(res.data.data.map(j => j._id));
+            setSavedJobIds(res.data.data.map(j => String(j._id || j.id)).filter(Boolean));
           }
         })
         .catch(err => console.error('Failed to fetch saved jobs:', err));
@@ -74,7 +78,7 @@ const JobListing = () => {
       try {
         setLoading(true);
         // Build API query — ensure limit is always set
-        const apiParams = new URLSearchParams(searchParams);
+        const apiParams = new URLSearchParams(queryString);
         if (!apiParams.has('limit')) apiParams.set('limit', '9');
         
         const { data } = await api.get(`/jobs?${apiParams.toString()}`);
@@ -104,15 +108,24 @@ const JobListing = () => {
 
 
   const handleToggleSave = (id) => {
-      const isSaved = savedJobIds.includes(id);
+      const normalizedId = String(id || '');
+      if (!normalizedId) return;
+
+      const isSaved = savedJobIds.includes(normalizedId);
       if (isSaved) {
-        setSavedJobIds(prev => prev.filter(sid => sid !== id));
+        setSavedJobIds(prev => prev.filter(sid => sid !== normalizedId));
       } else {
-        setSavedJobIds(prev => [...prev, id]);
+        setSavedJobIds(prev => [...prev, normalizedId]);
       }
   }
 
-  if (initialLoad) return <div className={`focused-container ${styles.pageContainer}`} style={{textAlign:'center', padding:'50px'}}><i className="fas fa-spinner fa-spin fa-2x"></i></div>;
+  if (initialLoad) {
+    return (
+      <div className={`focused-container ${styles.loadingContainer}`}>
+        <i className="fas fa-spinner fa-spin fa-2x"></i>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -158,14 +171,17 @@ const JobListing = () => {
                 </div>
 
                 <div className={styles.jobsGrid} style={{ opacity: loading ? 0.5 : 1, transition: 'opacity 0.2s' }}>
-                  {jobs.map(job => (
-                      <JobCard 
-                        key={job._id} 
-                        job={job} 
-                        isSaved={savedJobIds.includes(job._id)}
-                        onToggleSave={() => handleToggleSave(job._id)}
-                      />
-                  ))}
+                  {jobs.map(job => {
+                      const jobId = getJobId(job);
+                      return (
+                        <JobCard 
+                          key={jobId} 
+                          job={job} 
+                          isSaved={savedJobIds.includes(jobId)}
+                          onToggleSave={() => handleToggleSave(jobId)}
+                        />
+                      );
+                  })}
                   {jobs.length === 0 && !loading && (
                       <div className={styles.emptyState}>
                           <div className={styles.emptyIcon}>

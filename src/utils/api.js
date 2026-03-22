@@ -46,7 +46,7 @@ api.interceptors.response.use(
              // window.location.href = '/login'; 
         }
     }
-    return Promise.reject(error.response ? error.response.data : { message: 'Network Error' });
+    return Promise.reject(error);
   }
 );
 

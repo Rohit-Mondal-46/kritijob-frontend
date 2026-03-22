@@ -8,6 +8,13 @@ const DashboardLayout = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+    const isEmployer = user?.role === 'employer';
+    const employerMorePaths = [
+        '/dashboard/employer/find-talent',
+        '/dashboard/employer/subscription',
+    ];
+    const isEmployerMoreSection = employerMorePaths.includes(location.pathname);
+    const showSidebar = !isEmployer || isEmployerMoreSection;
 
     // Auto-redirect from /dashboard to default page based on role
     useEffect(() => {
@@ -28,21 +35,25 @@ const DashboardLayout = () => {
         return () => document.body.classList.remove('dashboard-active');
     }, []);
 
+    // Redirect to home if no user
+    useEffect(() => {
+        if (!user) {
+            navigate('/', { replace: true });
+        }
+    }, [user, navigate]);
+
     const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
     const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
     const logoutClick = () => {
-        logout();
-        navigate('/login');
+        const isAdmin = user?.role === 'admin' || user?.role === 'ADMIN';
+        logout(); // This now only clears state, no redirect
+        navigate(isAdmin ? '/login' : '/', { replace: true });
     };
 
-    if (!user) return <div className="container" style={{paddingTop: '100px'}}>Loading...</div>;
+    if (!user) return null;
 
     const employerLinks = [
-        { path: '/dashboard/employer/company', label: 'Company Profile', icon: 'fa-building' },
-        { path: '/dashboard/employer/jobs', label: 'My Jobs', icon: 'fa-briefcase' },
-        { path: '/dashboard/employer/post-job', label: 'Post a Job', icon: 'fa-plus-circle' },
-        { path: '/dashboard/employer/applicants', label: 'Applicants', icon: 'fa-users' },
         { path: '/dashboard/employer/find-talent', label: 'Find Talent', icon: 'fa-search' },
         { path: '/dashboard/employer/subscription', label: 'Premium Plans', icon: 'fa-star' },
     ];
@@ -53,14 +64,13 @@ const DashboardLayout = () => {
         { path: '/dashboard/candidate/resume', label: 'Resume', icon: 'fa-file-upload' },
         { path: '/dashboard/candidate/savedjobs', label: 'Saved Jobs', icon: 'fa-bookmark' },
         { path: '/dashboard/candidate/subscription', label: 'Premium Plans', icon: 'fa-star' },
-        // { path: '/dashboard/candidate/profile', label: 'Profile Settings', icon: 'fa-cog' },
     ];
 
     const adminLinks = [
         { path: '/dashboard/admin/overview', label: 'Overview', icon: 'fa-chart-line' },
         { path: '/dashboard/admin/users', label: 'Users', icon: 'fa-users-cog' },
         { path: '/dashboard/admin/jobs', label: 'Jobs', icon: 'fa-briefcase' },
-        { path: '/dashboard/admin/post-job', label: 'Post Job', icon: 'fa-plus-circle' },
+        // { path: '/dashboard/admin/post-job', label: 'Post Job', icon: 'fa-plus-circle' },
         { path: '/dashboard/admin/content', label: 'Content', icon: 'fa-file-alt' },
         { path: '/dashboard/admin/reports', label: 'Reports', icon: 'fa-chart-bar' },
     ];
@@ -73,7 +83,7 @@ const DashboardLayout = () => {
     return (
         <div className={styles.dashboardContainer}>
             {/* Mobile Header Toggle */}
-            <div className={styles.mobileHeader}>
+            {showSidebar && <div className={styles.mobileHeader}>
                 <Link to="/" className={styles.mobileLogo}>
                     <img src="/images/logo.jpeg" alt="KritiJob" className={styles.mobileLogoImg} />
                     <span className={styles.mobileLogoText}>KritiJob</span>
@@ -84,12 +94,12 @@ const DashboardLayout = () => {
                         <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-chevron-down'} ${styles.toggleIcon}`}></i>
                     </div>
                 </button>
-            </div>
+            </div>}
 
             {/* Overlay */}
-            {isMobileMenuOpen && <div className={styles.overlay} onClick={closeMobileMenu}></div>}
+            {showSidebar && isMobileMenuOpen && <div className={styles.overlay} onClick={closeMobileMenu}></div>}
 
-            <aside className={`${styles.sidebar} ${isMobileMenuOpen ? styles.mobileOpen : ''}`}>
+            {showSidebar && <aside className={`${styles.sidebar} ${isMobileMenuOpen ? styles.mobileOpen : ''}`}>
                 <div className={styles.userInfo}>
                     <div className={styles.avatar}>
                         {user.name.charAt(0)}
@@ -117,8 +127,8 @@ const DashboardLayout = () => {
                         Logout
                     </button>
                 </nav>
-            </aside>
-            <main className={styles.content}>
+            </aside>}
+            <main className={`${styles.content} ${!showSidebar ? styles.fullContent : ''}`}>
                 <Outlet />
             </main>
 

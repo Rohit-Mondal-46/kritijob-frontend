@@ -87,6 +87,19 @@
     background-color: white;
 }
 
+.companyLogoFallback {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--color-primary), #3b82f6);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
 .logoEditBtn {
     position: absolute;
     bottom: -5px;
@@ -504,6 +517,91 @@
     color: var(--color-text-main);
 }
 
+.applicantCard {
+    background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
+}
+
+.applicantAvatarFallback {
+    background: linear-gradient(135deg, var(--color-primary), #1d4ed8);
+    color: #ffffff;
+    border: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    box-shadow: 0 8px 20px rgba(1, 65, 163, 0.25);
+}
+
+.applicantNameRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.statusChip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: rgba(1, 65, 163, 0.1);
+    color: var(--color-primary);
+    border: 1px solid rgba(1, 65, 163, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.applicantMetaLine {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 7px !important;
+    font-size: 0.82rem !important;
+}
+
+.applicantActions {
+    display: flex;
+    margin-top: auto;
+}
+
+.applicantActions .actionBtn {
+    width: 100%;
+    border-width: 1.5px;
+    font-weight: 600;
+}
+
+.loadingSkeletonCard {
+    position: relative;
+    height: 290px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2f7 100%);
+}
+
+.skeletonShimmer {
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.65) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    animation: skeletonSlide 1.2s ease-in-out infinite;
+}
+
+@keyframes skeletonSlide {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
 .modalBanner {
     height: 150px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -552,4 +650,58 @@
     background: #ef4444;
     border-color: #ef4444;
     color: #fff;
+}
+
+.jobSummaryCard {
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 18px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.jobSummaryCard:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+.jobSummaryTop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.jobSummaryTop h3 {
+    margin: 0;
+    color: var(--color-text-main);
+    font-size: 1.05rem;
+}
+
+.applicantCountBadge {
+    background: rgba(1, 65, 163, 0.1);
+    color: var(--color-primary);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    white-space: nowrap;
+}
+
+.jobSummaryMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+.jobSummaryMeta span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }

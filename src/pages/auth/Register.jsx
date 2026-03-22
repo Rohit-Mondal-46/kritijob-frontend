@@ -7,6 +7,7 @@ import Button from '../../components/ui/Button';
 import styles from './Auth.module.css';
 
 const Register = () => {
+    const NAVBAR_HEIGHT = 64;
     const { register, error } = useContext(AuthContext);
     const { addToast } = useToast();
     const navigate = useNavigate();
@@ -61,7 +62,7 @@ const Register = () => {
     };
 
     return (
-        <div className={styles.authContainer} style={{ background: '#f8fafc', backgroundImage: 'none', padding: '12px', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className={styles.authContainer} style={{ background: '#f8fafc', backgroundImage: 'none', padding: '12px', paddingTop: `calc(${NAVBAR_HEIGHT}px + 12px)`, minHeight: `calc(100vh - ${NAVBAR_HEIGHT}px)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div className={styles.authCard} style={{ maxWidth: '450px', width: '100%', border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '24px' }}>
                     <img src="/images/logo.jpeg" alt="KritiJob Logo" style={{ width: '48px', height: '48px', objectFit: 'contain', marginRight: '12px', mixBlendMode: 'multiply' }} />
