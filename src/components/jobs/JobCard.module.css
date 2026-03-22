@@ -8,6 +8,7 @@
     display: flex;
     align-items: center;
     gap: 14px;
+    position: relative;
 }
 
 .card:hover {
@@ -121,9 +122,12 @@
 }
 
 .actionSlot {
-    flex-shrink: 0;
+    position: absolute;
+    bottom: 12px;
+    right: 14px;
     display: flex;
     align-items: center;
+    gap: 4px;
 }
 
 /* Tags - hidden in compact view, shown in detail views */
@@ -148,6 +152,7 @@
     .card {
         padding: 14px 16px;
         gap: 12px;
+        flex-wrap: wrap;
     }
     .companyIcon {
         width: 42px;
@@ -162,6 +167,13 @@
     }
     .metaItem {
         font-size: 0.72rem;
+    }
+    .actionSlot {
+        position: static;
+        width: 100%;
+        justify-content: flex-end;
+        padding-top: 8px;
+        border-top: 1px solid #f3f4f6;
     }
 }
 
@@ -182,7 +194,7 @@
         font-size: 0.72rem;
     }
     .metaRow {
-        gap: 8px;
+        gap: 6px;
     }
     .metaItem {
         font-size: 0.68rem;
@@ -190,4 +202,4 @@
     .bookmark {
         font-size: 0.95rem;
     }
-}
+}

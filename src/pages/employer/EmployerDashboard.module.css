@@ -1,6 +1,7 @@
 .pageContainer {
     padding: 2rem;
     color: var(--color-text-main);
+    background: #ffffff;
 }
 
 .loadingState {
