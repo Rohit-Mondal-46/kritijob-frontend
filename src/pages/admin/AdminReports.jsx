@@ -71,6 +71,46 @@ const AdminReports = () => {
         fetchReports();
     }, []);
 
+    const handleExportCSV = () => {
+        let csvContent = "";
+        
+        // Report Header
+        csvContent += "KritiJob Admin Report\n\n";
+
+        // User Roles
+        csvContent += "User Distribution\n";
+        csvContent += "Role,Count\n";
+        roleData.forEach(r => {
+            csvContent += `"${r.name}",${r.value}\n`;
+        });
+        
+        // Job Stats
+        csvContent += "\nJobs by Type\n";
+        csvContent += "Type,Count\n";
+        jobStats.forEach(j => {
+            csvContent += `"${j.name}",${j.count}\n`;
+        });
+        
+        // User Growth
+        csvContent += "\nUser Growth\n";
+        csvContent += "Period,Users\n";
+        userGrowth.forEach(g => {
+            csvContent += `"${g.name}",${g.users}\n`;
+        });
+
+        // Use Blob for reliable downloading
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        
+        link.setAttribute("href", url);
+        link.setAttribute("download", "kritijob_admin_report.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url); // Clean up memory
+    };
+
     if (loading) return <div style={{padding:'20px', color:'var(--color-text-main)'}}>Loading Reports...</div>;
 
     return (
@@ -83,7 +123,7 @@ const AdminReports = () => {
                         <option>Last Year</option>
                         <option>All Time</option>
                      </select>
-                     <button className={styles.primaryBtn} disabled>Export CSV</button>
+                     <button className={styles.primaryBtn} onClick={handleExportCSV}>Export CSV</button>
                 </div>
             </div>
 
