@@ -34,7 +34,7 @@ const Login = () => {
                 navigate('/dashboard/admin/overview');
             }
         } catch (err) {
-            console.error(err);
+            // console.error(err);
             addToast('Login failed. Please check your credentials.', 'error');
         } finally {
             setIsLoading(false);
