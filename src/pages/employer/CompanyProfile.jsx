@@ -83,6 +83,7 @@ const CompanyProfile = () => {
 
     // Files
     const [logoFile, setLogoFile] = useState(null);
+    const [bannerFile, setBannerFile] = useState(null);
 
     const companyInitials = (company.name || 'Company')
         .split(' ')
@@ -126,7 +127,7 @@ const CompanyProfile = () => {
                         name: c.name || '',
                         location: c.location || '',
                         logo: c.logoUrl || '',
-                        banner: '', 
+                        banner: c.backgroundImageUrl || '',
                         description: c.description || '',
                         website: c.website || ''
                     });
@@ -156,6 +157,14 @@ const CompanyProfile = () => {
         }
     };
 
+    const handleBannerUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setBannerFile(file);
+            setCompany(prev => ({ ...prev, banner: URL.createObjectURL(file) }));
+        }
+    };
+
     const handleSave = async () => {
         // Validation for Creation
         if (!companyId) {
@@ -177,6 +186,7 @@ const CompanyProfile = () => {
             }
 
             let res;
+            let activeCompanyId = companyId;
             if (companyId) {
                 // Update
                 res = await api.put(`/company/${companyId}`, formData, {
@@ -188,8 +198,21 @@ const CompanyProfile = () => {
                 res = await api.post('/company', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
-                setCompanyId(res.data.data._id);
+                activeCompanyId = res.data.data._id;
+                setCompanyId(activeCompanyId);
                 addToast('Company profile created!', 'success');
+            }
+
+            let backgroundImageUrl = company.banner;
+            if (bannerFile && activeCompanyId) {
+                const bgUploadData = new FormData();
+                bgUploadData.append('backgroundImage', bannerFile);
+
+                const bgRes = await api.post(`/company/${activeCompanyId}/background-image`, bgUploadData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+
+                backgroundImageUrl = bgRes?.data?.data?.backgroundImageUrl || backgroundImageUrl;
             }
             
             // Update local state and exit edit mode
@@ -197,12 +220,14 @@ const CompanyProfile = () => {
             setCompany(prev => ({
                 ...prev,
                 logo: updated.logoUrl,
+                banner: backgroundImageUrl,
                 name: updated.name,
                 location: updated.location,
                 description: updated.description,
                 website: updated.website || ''
             }));
             setLogoFile(null); // Reset file input
+            setBannerFile(null);
             setIsEditing(false);
             
         } catch (err) {
@@ -236,11 +261,25 @@ const CompanyProfile = () => {
                     className={styles.companyBanner} 
                     style={company.banner ? { backgroundImage: `url(${company.banner})` } : {}}
                 >
+                    {isEditing && (
+                        <label className={styles.bannerEditBtn} title="Change background image">
+                            <i className="fas fa-image"></i>
+                            <input type="file" hidden accept="image/*" onChange={handleBannerUpload} />
+                        </label>
+                    )}
                 </div>
                 
                 <div className={styles.companyProfileHeader}>
                     <div className={styles.companyLogoWrapper}>
-                        <div className={styles.companyLogoFallback}>{companyInitials}</div>
+                        {company.logo ? (
+                            <img
+                                src={company.logo}
+                                alt={`${company.name || 'Company'} logo`}
+                                className={styles.companyLogo}
+                            />
+                        ) : (
+                            <div className={styles.companyLogoFallback}>{companyInitials}</div>
+                        )}
                         {isEditing && (
                             <label className={styles.logoEditBtn}>
                                 <i className="fas fa-camera"></i>

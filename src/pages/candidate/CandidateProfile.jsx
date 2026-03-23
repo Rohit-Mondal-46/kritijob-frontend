@@ -20,6 +20,7 @@ const CandidateProfile = () => {
     });
 
     const [avatarPreview, setAvatarPreview] = useState(null);
+    const [backgroundPreview, setBackgroundPreview] = useState(null);
 
     // Form Data
     const [formData, setFormData] = useState({
@@ -30,7 +31,8 @@ const CandidateProfile = () => {
         skills: [],
         email: user?.email || '',
         phone: '',
-        avatarUrl: ''
+        avatarUrl: '',
+        backgroundImageUrl: ''
     });
 
     useEffect(() => {
@@ -47,9 +49,11 @@ const CandidateProfile = () => {
                         skills: profile.skills || [],
                         email: user.email,
                         phone: profile.phone || '',
-                        avatarUrl: profile.avatarUrl || ''
+                        avatarUrl: profile.avatarUrl || '',
+                        backgroundImageUrl: profile.backgroundImageUrl || ''
                     });
                     if (profile.avatarUrl) setAvatarPreview(profile.avatarUrl);
+                    if (profile.backgroundImageUrl) setBackgroundPreview(profile.backgroundImageUrl);
                     
                     // Fetch subscription status alongside profile
                     try {
@@ -137,6 +141,38 @@ const CandidateProfile = () => {
         document.getElementById('avatar-upload').click();
     };
 
+    const handleBackgroundFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const previewUrl = URL.createObjectURL(file);
+            setBackgroundPreview(previewUrl);
+
+            const uploadData = new FormData();
+            uploadData.append('backgroundImage', file);
+
+            try {
+                const res = await api.post('/candidate/background-image', uploadData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                if (res.data.success) {
+                    const uploadedUrl = res.data?.data?.backgroundImageUrl;
+                    setFormData(prev => ({ ...prev, backgroundImageUrl: uploadedUrl || prev.backgroundImageUrl }));
+                    if (uploadedUrl) {
+                        setBackgroundPreview(uploadedUrl);
+                    }
+                    addToast('Background image updated!', 'success');
+                }
+            } catch (err) {
+                console.error(err);
+                addToast('Failed to upload background image', 'error');
+            }
+        }
+    };
+
+    const triggerBackgroundInput = () => {
+        document.getElementById('background-upload').click();
+    };
+
     const handleSkillRemove = (skillToRemove) => {
         setFormData(prev => ({
             ...prev,
@@ -167,7 +203,23 @@ const CandidateProfile = () => {
             </button>
             {/* Header Section with Banner */}
             <div className={styles.headerCard}>
-                <div className={styles.banner}></div>
+                <div
+                    className={styles.banner}
+                    style={(backgroundPreview || formData.backgroundImageUrl)
+                        ? { backgroundImage: `url(${backgroundPreview || formData.backgroundImageUrl})` }
+                        : {}}
+                >
+                    <button className={styles.editBannerBtn} onClick={triggerBackgroundInput} title="Change Background">
+                        <i className="fas fa-image"></i>
+                    </button>
+                    <input
+                        type="file"
+                        id="background-upload"
+                        style={{display: 'none'}}
+                        accept="image/*"
+                        onChange={handleBackgroundFileChange}
+                    />
+                </div>
                 
                 <div className={styles.profileHeader}>
                     <div className={styles.avatarWrapper}>
