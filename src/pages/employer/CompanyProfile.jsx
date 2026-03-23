@@ -75,7 +75,8 @@ const CompanyProfile = () => {
         logo: '', // URL
         banner: '', // Mock
         description: '',
-        website: ''
+        website: '',
+        isPremium: false
     });
 
     // Global Edit Mode
@@ -129,7 +130,8 @@ const CompanyProfile = () => {
                         logo: c.logoUrl || '',
                         banner: c.backgroundImageUrl || '',
                         description: c.description || '',
-                        website: c.website || ''
+                        website: c.website || '',
+                        isPremium: Boolean(c.isPremiumEmployer)
                     });
                     if (editor) editor.commands.setContent(c.description || '');
                     setIsEditing(false);
@@ -224,7 +226,8 @@ const CompanyProfile = () => {
                 name: updated.name,
                 location: updated.location,
                 description: updated.description,
-                website: updated.website || ''
+                website: updated.website || '',
+                isPremium: Boolean(updated.isPremiumEmployer ?? prev.isPremium)
             }));
             setLogoFile(null); // Reset file input
             setBannerFile(null);
@@ -291,16 +294,54 @@ const CompanyProfile = () => {
                     <div className={styles.headerContentRow}>
                         <div className={styles.headerLeft}>
                              {isEditing ? (
-                                <input 
-                                    value={company.name} 
-                                    name="name" 
-                                    onChange={handleChange} 
-                                    className={styles.companyNameInput}
-                                    placeholder="Company Name"
-                                    autoFocus
-                                />
+                                <div style={{display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap'}}>
+                                    <input 
+                                        value={company.name} 
+                                        name="name" 
+                                        onChange={handleChange} 
+                                        className={styles.companyNameInput}
+                                        placeholder="Company Name"
+                                        autoFocus
+                                    />
+                                    {company.isPremium && (
+                                        <span style={{
+                                            background: '#fff7db',
+                                            color: '#9a6700',
+                                            border: '1px solid #f3d57a',
+                                            padding: '4px 10px',
+                                            borderRadius: '12px',
+                                            fontSize: '0.8rem',
+                                            fontWeight: 700,
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '6px'
+                                        }}>
+                                            <i className="fas fa-crown"></i>
+                                            Premium
+                                        </span>
+                                    )}
+                                </div>
                             ) : (
-                                <h1 style={{fontSize: '2rem', fontWeight: 'bold', margin: '0 0 5px 0', color: 'var(--color-text-main)'}}>{company.name}</h1>
+                                <div style={{display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '5px'}}>
+                                    <h1 style={{fontSize: '2rem', fontWeight: 'bold', margin: 0, color: 'var(--color-text-main)'}}>{company.name}</h1>
+                                    {company.isPremium && (
+                                        <span style={{
+                                            background: '#fff7db',
+                                            color: '#9a6700',
+                                            border: '1px solid #f3d57a',
+                                            padding: '4px 10px',
+                                            borderRadius: '12px',
+                                            fontSize: '0.8rem',
+                                            fontWeight: 700,
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '6px'
+                                        }}>
+                                            <i className="fas fa-crown"></i>
+                                            Premium
+                                        </span>
+                                    )}
+                                </div>
                             )}
 
                              {isEditing ? (

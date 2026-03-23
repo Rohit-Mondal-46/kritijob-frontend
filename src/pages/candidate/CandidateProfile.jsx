@@ -246,16 +246,21 @@ const CandidateProfile = () => {
                              <h1>{formData.name}</h1>
                              {formData.isPremium && (
                                  <span style={{
-                                     backgroundColor: 'var(--color-primary)',
-                                     color: 'white',
+                                     background: '#fff7db',
+                                     color: '#9a6700',
+                                     border: '1px solid #f3d57a',
                                      padding: '4px 10px',
                                      borderRadius: '12px',
                                      fontSize: '0.8rem',
                                      fontWeight: 'bold',
                                      marginLeft: '10px',
-                                     textTransform: 'uppercase'
+                                     textTransform: 'uppercase',
+                                     display: 'inline-flex',
+                                     alignItems: 'center',
+                                     gap: '6px'
                                  }}>
-                                     ★ Premium
+                                     <i className="fas fa-crown"></i>
+                                     Premium
                                  </span>
                              )}
                         </div>
