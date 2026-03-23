@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../../components/ui/Button';
 import api from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
 import { format } from 'date-fns';
 
 const ResumeManager = () => {
+    const navigate = useNavigate();
     const [resumes, setResumes] = useState([]);
     const [loading, setLoading] = useState(true);
     const { addToast } = useToast();
@@ -68,7 +70,10 @@ const ResumeManager = () => {
     };
 
     return (
-        <div style={{ padding: '2rem' }}>
+        <div style={{ padding: '2rem', maxWidth: '100%', overflow: 'hidden' }}>
+            <button className="mobileBackBtn" onClick={() => navigate('/dashboard/candidate/profile')}>
+                <i className="fas fa-arrow-left"></i> Back to Profile
+            </button>
             <h1 style={{fontSize: '2rem', margin: 0, marginBottom: '1.5rem', color: 'var(--color-text-main)'}}>Resume Manager</h1>
             
             <div style={{ padding: '2rem', marginBottom: '2rem', textAlign: 'center', border: '2px dashed var(--color-border)', background: '#ffffff', borderRadius: '16px' }}>
@@ -90,7 +95,7 @@ const ResumeManager = () => {
             </div>
 
             <h3 style={{ marginBottom: '1rem', color: 'var(--color-text-main)' }}>Uploaded Resumes</h3>
-            <div style={{ padding: '0', background: '#ffffff', borderRadius: '16px', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)', overflow: 'hidden' }}>
+            <div style={{ padding: '0', background: '#ffffff', borderRadius: '16px', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)', overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ background: 'var(--color-surface-muted)', textAlign: 'left', borderBottom: '1px solid var(--color-border)' }}>

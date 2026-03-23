@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import api from '../../utils/api';
@@ -7,6 +8,7 @@ import styles from './Candidate.module.css';
 const CandidateProfile = () => {
     const { user } = useContext(AuthContext);
     const { addToast } = useToast();
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     
     // Toggle States for Edit Mode
@@ -160,6 +162,9 @@ const CandidateProfile = () => {
 
     return (
         <div className={styles.container}>
+            <button className="mobileBackBtn" onClick={() => navigate('/jobs')} style={{marginBottom: '20px', marginLeft: '10px'}}>
+                <i className="fas fa-arrow-left"></i> Back to Jobs
+            </button>
             {/* Header Section with Banner */}
             <div className={styles.headerCard}>
                 <div className={styles.banner}></div>

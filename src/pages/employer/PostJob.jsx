@@ -7,6 +7,7 @@ import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
 import api from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
+import { politicalCategories } from '../../data/politicalCategories';
 
 const PostJob = ({ isAdmin = false }) => {
     const navigate = useNavigate();
@@ -175,18 +176,7 @@ const PostJob = ({ isAdmin = false }) => {
                     value={jobData.category} 
                     onChange={handleChange}
                     placeholder="Select Category"
-                    options={[
-                        "Digital Marketing", 
-                        "Web Developer", 
-                        "Arts & Design", 
-                        "UI-UX Designer", 
-                        "Content Writing", 
-                        "Data Entry", 
-                        "Customer Support", 
-                        "Finance",
-                        "IT Jobs",
-                        "Non-IT"
-                    ]}
+                    options={politicalCategories.map((cat) => cat.name)}
                     required
                 />
                 <Input 

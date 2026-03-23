@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ApplicationDetailsModal from './ApplicationDetailsModal';
 import api from '../../utils/api';
 import { format } from 'date-fns';
 
 const MyApplications = () => {
+    const navigate = useNavigate();
     const [applications, setApplications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedApp, setSelectedApp] = useState(null);
@@ -52,10 +54,13 @@ const MyApplications = () => {
     if (loading) return <div style={{padding: '2rem', textAlign: 'center'}}>Loading...</div>;
 
     return (
-        <div style={{ padding: '2rem' }}>
+        <div style={{ padding: '2rem', maxWidth: '100%', overflow: 'hidden' }}>
+            <button className="mobileBackBtn" onClick={() => navigate('/dashboard/candidate/profile')}>
+                <i className="fas fa-arrow-left"></i> Back to Profile
+            </button>
             <h1 style={{fontSize: '2rem', margin: 0, marginBottom: '1.5rem', color: 'var(--color-text-main)'}}>My Applications</h1>
 
-            <div style={{ padding: '0', background: 'white', borderRadius: '16px', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)', overflow: 'hidden' }}>
+            <div style={{ padding: '0', background: 'white', borderRadius: '16px', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)', overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ background: 'var(--color-surface-muted)', textAlign: 'left', borderBottom: '1px solid var(--color-border)' }}>

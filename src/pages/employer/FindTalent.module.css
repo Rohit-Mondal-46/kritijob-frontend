@@ -1,3 +1,5 @@
+/* FindTalent.module.css */
+
 .container {
     padding: 2rem;
     max-width: 1400px;
@@ -5,6 +7,7 @@
     color: var(--color-text-main);
 }
 
+/* Header Section */
 .header {
     display: flex;
     justify-content: space-between;
@@ -14,11 +17,24 @@
     gap: 1rem;
 }
 
+.titleSection {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
 .pageTitle {
     font-size: 2rem;
     font-weight: 700;
     margin: 0;
     color: var(--color-text-main);
+}
+
+.resultCount {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
 }
 
 .filterBar {
@@ -51,18 +67,69 @@
     background: #ffffff;
 }
 
+/* Loader */
+.loaderContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.emptyState {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid var(--color-border);
+    max-width: 500px;
+    margin: 3rem auto;
+    box-shadow: var(--shadow-sm);
+}
+
+.emptyIcon {
+    font-size: 4rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+}
+
+.emptyTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-main);
+    margin-bottom: 0.5rem;
+}
+
+.emptyText {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+/* Grid Layout */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 2rem;
 }
 
-/* --- Light Theme Card --- */
+/* Card Styles */
 .card {
     background: #ffffff;
     border-radius: 16px;
     border: 1px solid var(--color-border);
-    padding: 0;
     display: flex;
     flex-direction: column;
     transition: all 0.3s ease;
@@ -96,6 +163,18 @@
     box-shadow: var(--shadow-sm);
 }
 
+.headerInfo {
+    flex: 1;
+}
+
+.nameRow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
 .name {
     font-weight: 700;
     color: var(--color-text-main);
@@ -103,10 +182,21 @@
     font-size: 1.15rem;
 }
 
+.premiumBadge {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 .title {
     color: var(--color-text-muted);
     font-size: 0.9rem;
-    margin: 4px 0 0 0;
+    margin: 0;
     font-weight: 500;
 }
 
@@ -118,6 +208,7 @@
 .infoRow {
     display: flex;
     align-items: center;
+    gap: 0.5rem;
     color: var(--color-text-muted);
     font-size: 0.9rem;
     margin-bottom: 1.25rem;
@@ -126,7 +217,7 @@
 
 .infoRow i {
     color: var(--color-primary);
-    margin-right: 8px;
+    width: 1rem;
 }
 
 .skills {
@@ -205,16 +296,68 @@
     border-color: var(--color-primary);
 }
 
+/* Pagination */
 .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 1rem;
     margin-top: 3rem;
-    color: var(--color-text-muted);
+    padding: 2rem 0;
 }
 
-/* Modal Styles - Light Theme Adaptation */
+.pageBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pageInfo {
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+.pageNumbers {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.pageNumber {
+    min-width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    border-radius: 8px;
+    background: white;
+    border: 1px solid var(--color-border, #e2e8f0);
+    color: var(--color-text-main, #1f2937);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.pageNumber:hover:not(:disabled) {
+    background: var(--color-primary-light, #eef2ff);
+    border-color: var(--color-primary, #6366f1);
+    color: var(--color-primary, #6366f1);
+}
+
+.activePage {
+    background: var(--color-primary, #6366f1);
+    border-color: var(--color-primary, #6366f1);
+    color: white;
+    cursor: default;
+}
+
+.ellipsis {
+    color: var(--color-text-muted, #6b7280);
+    padding: 0 4px;
+}
+
+/* Modal Styles */
 .modalOverlay {
     position: fixed;
     top: 0;
@@ -252,6 +395,7 @@
     background: linear-gradient(135deg, var(--color-primary) 0%, #002b6e 100%);
     width: 100%;
     border-bottom: 1px solid var(--color-border);
+    border-radius: 20px 20px 0 0;
 }
 
 .closeBtn {
@@ -288,6 +432,7 @@
     display: flex;
     align-items: flex-end;
     gap: 2rem;
+    flex-wrap: wrap;
 }
 
 .modalAvatar {
@@ -305,6 +450,34 @@
     padding-bottom: 10px;
 }
 
+.modalName {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+    color: var(--color-text-main);
+}
+
+.modalTitle {
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    margin: 0 0 0.5rem;
+}
+
+.modalLocation, .modalEmail {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.modalLocation i, .modalEmail i {
+    width: 1rem;
+    color: var(--color-primary);
+}
+
 .modalHeaderActions {
     padding-bottom: 20px;
 }
@@ -315,6 +488,7 @@
     gap: 3rem;
 }
 
+/* Info Cards */
 .infoCard {
     background: #ffffff;
     border-radius: 16px;
@@ -331,12 +505,37 @@
     margin-bottom: 1.25rem;
     display: flex;
     align-items: center;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--color-border);
+    padding-bottom: 0.75rem;
 }
 
 .cardTitle i {
     color: var(--color-primary);
-    margin-right: 0.5rem;
     font-size: 1.1rem;
+}
+
+.aboutText {
+    color: var(--color-text-main);
+    line-height: 1.6;
+    white-space: pre-line;
+    font-size: 0.9rem;
+}
+
+.skillsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.skillChip {
+    background: var(--color-surface-muted);
+    border: 1px solid var(--color-border);
+    padding: 0.375rem 0.875rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-text-main);
 }
 
 .resumeLink {
@@ -350,6 +549,7 @@
     justify-content: space-between;
     align-items: center;
     color: var(--color-text-main);
+    text-decoration: none;
 }
 
 .resumeLink:hover {
@@ -357,11 +557,137 @@
     background: rgba(1, 65, 163, 0.05);
 }
 
+.resumeContent {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.resumeContent i {
+    font-size: 1.5rem;
+    color: #ef4444;
+}
+
+.resumeTitle {
+    font-weight: 600;
+    color: var(--color-text-main);
+    display: block;
+}
+
+.resumeHint {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+.noResume {
+    padding: 1rem;
+    background: var(--color-surface-muted);
+    border-radius: 12px;
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+}
+
+/* Experience & Education Lists */
+.experienceList, .educationList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.experienceItem {
+    position: relative;
+    padding-left: 1.25rem;
+    border-left: 2px solid var(--color-border);
+    padding-bottom: 0.25rem;
+}
+
+.expTimelineDot {
+    position: absolute;
+    left: -9px;
+    top: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--color-primary);
+}
+
+.expTitle {
+    font-weight: bold;
+    font-size: 1rem;
+    color: var(--color-text-main);
+    margin: 0 0 0.25rem;
+}
+
+.expCompany {
+    color: var(--color-primary);
+    font-weight: 500;
+    margin: 0 0 0.25rem;
+    font-size: 0.875rem;
+}
+
+.expDate {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.expDescription {
+    color: var(--color-text-main);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.educationItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.eduIcon {
+    background: var(--color-surface-muted);
+    padding: 0.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.eduIcon i {
+    color: var(--color-primary);
+    font-size: 1rem;
+}
+
+.eduDetails {
+    flex: 1;
+}
+
+.eduDegree {
+    font-weight: bold;
+    color: var(--color-text-main);
+    margin: 0 0 0.25rem;
+}
+
+.eduSchool {
+    color: var(--color-text-main);
+    margin: 0 0 0.25rem;
+    font-size: 0.875rem;
+}
+
+.eduYear {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+/* Animations */
 @keyframes fadeIn {
     from {
         opacity: 0;
     }
-
     to {
         opacity: 1;
     }
@@ -372,14 +698,18 @@
         transform: translateY(20px);
         opacity: 0;
     }
-
     to {
         transform: translateY(0);
         opacity: 1;
     }
 }
 
+/* Tablet Responsive (768px - 1024px) */
 @media (max-width: 1024px) {
+    .container {
+        padding: 1.5rem;
+    }
+
     .modalGrid {
         grid-template-columns: 1fr;
         gap: 2rem;
@@ -399,12 +729,330 @@
         margin: 0 auto;
     }
 
+    .modalLocation, .modalEmail {
+        justify-content: center;
+    }
+
     .modalHeaderActions {
         width: 100%;
         display: flex;
         justify-content: center;
     }
+
+    .grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
 }
+
+/* Mobile Responsive (up to 768px) */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .titleSection {
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .pageTitle {
+        font-size: 1.5rem;
+    }
+
+    .resultCount {
+        font-size: 0.875rem;
+    }
+
+    .filterBar {
+        max-width: none;
+        width: 100%;
+    }
+
+    .searchInput {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .card {
+        max-width: 100%;
+    }
+
+    .cardHeader {
+        padding: 1rem;
+    }
+
+    .avatar {
+        width: 56px;
+        height: 56px;
+    }
+
+    .name {
+        font-size: 1rem;
+    }
+
+    .title {
+        font-size: 0.8rem;
+    }
+
+    .cardBody {
+        padding: 1rem;
+    }
+
+    .cardFooter {
+        padding: 0.75rem 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .actionBtn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .iconBtn {
+        width: 100%;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .pageBtn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .pageInfo {
+        font-size: 0.875rem;
+    }
+
+    .pageNumbers {
+        gap: 0.25rem;
+    }
+
+    .pageNumber {
+        min-width: 32px;
+        height: 32px;
+        font-size: 0.875rem;
+    }
+
+    .emptyState {
+        padding: 2rem 1rem;
+        margin: 2rem 1rem;
+    }
+
+    .emptyIcon {
+        font-size: 3rem;
+    }
+
+    .emptyTitle {
+        font-size: 1.1rem;
+    }
+
+    /* Modal Mobile */
+    .modalOverlay {
+        padding: 0.5rem;
+    }
+
+    .modalContent {
+        max-width: 100%;
+        max-height: 85vh;
+        border-radius: 16px;
+    }
+
+    .modalHeaderDecor {
+        height: 80px;
+    }
+
+    .modalInner {
+        padding: 0 1rem 1rem 1rem;
+        margin-top: -40px;
+    }
+
+    .closeBtn {
+        top: 1rem;
+        right: 1rem;
+        width: 32px;
+        height: 32px;
+    }
+
+    .modalProfileHeader {
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .modalAvatar {
+        width: 80px;
+        height: 80px;
+        border-width: 3px;
+    }
+
+    .modalName {
+        font-size: 1.4rem;
+    }
+
+    .modalTitle {
+        font-size: 0.9rem;
+    }
+
+    .modalLocation, .modalEmail {
+        font-size: 0.8rem;
+    }
+
+    .infoCard {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .cardTitle {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .aboutText {
+        font-size: 0.85rem;
+    }
+
+    .skillChip {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+    }
+
+    .expTitle {
+        font-size: 0.9rem;
+    }
+
+    .expCompany {
+        font-size: 0.8rem;
+    }
+
+    .expDescription {
+        font-size: 0.8rem;
+    }
+
+    .eduDegree {
+        font-size: 0.9rem;
+    }
+
+    .eduSchool {
+        font-size: 0.8rem;
+    }
+}
+
+/* Small Mobile (up to 480px) */
+@media (max-width: 480px) {
+    .container {
+        padding: 0.75rem;
+    }
+
+    .pageTitle {
+        font-size: 1.35rem;
+    }
+
+    .resultCount {
+        font-size: 0.75rem;
+    }
+
+    .cardHeader {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .avatar {
+        width: 80px;
+        height: 80px;
+    }
+
+    .nameRow {
+        justify-content: center;
+    }
+
+    .infoRow {
+        justify-content: center;
+    }
+
+    .skills {
+        justify-content: center;
+    }
+
+    .pagination {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .pageNumbers {
+        order: -1;
+    }
+
+    .modalName {
+        font-size: 1.2rem;
+    }
+
+    .modalTitle {
+        font-size: 0.85rem;
+    }
+
+    .modalAvatar {
+        width: 70px;
+        height: 70px;
+    }
+
+    .modalHeaderDecor {
+        height: 60px;
+    }
+
+    .modalInner {
+        padding: 0 0.75rem 1rem 0.75rem;
+    }
+
+    .closeBtn {
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 28px;
+        height: 28px;
+    }
+
+    .resumeContent {
+        gap: 0.5rem;
+    }
+
+    .resumeContent i {
+        font-size: 1.2rem;
+    }
+
+    .resumeTitle {
+        font-size: 0.85rem;
+    }
+
+    .resumeHint {
+        font-size: 0.65rem;
+    }
+
+    .educationItem {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .eduIcon {
+        align-self: center;
+    }
+}
+
+/* Add these pagination styles to your FindTalent.module.css if not already present */
 
 .pagination {
     display: flex;
@@ -413,17 +1061,34 @@
     gap: 1rem;
     margin-top: 3rem;
     padding: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.pageBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    min-width: 100px;
+    justify-content: center;
+}
+
+.pageBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .pageNumbers {
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .pageNumber {
-    min-width: 36px;
-    height: 36px;
+    min-width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -435,12 +1100,14 @@
     cursor: pointer;
     transition: all 0.2s;
     font-weight: 500;
+    font-size: 0.875rem;
 }
 
 .pageNumber:hover:not(:disabled) {
     background: var(--color-primary-light, #eef2ff);
     border-color: var(--color-primary, #6366f1);
     color: var(--color-primary, #6366f1);
+    transform: translateY(-2px);
 }
 
 .activePage {
@@ -450,57 +1117,56 @@
     cursor: default;
 }
 
+.activePage:hover {
+    background: var(--color-primary, #6366f1);
+    transform: none;
+}
+
 .ellipsis {
     color: var(--color-text-muted, #6b7280);
     padding: 0 4px;
-}
-
-
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 3rem;
-    padding: 2rem 0;
-}
-
-.pageNumbers {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-.pageNumber {
-    min-width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 8px;
-    border-radius: 8px;
-    background: white;
-    border: 1px solid var(--color-border, #e2e8f0);
-    color: var(--color-text-main, #1f2937);
-    cursor: pointer;
-    transition: all 0.2s;
     font-weight: 500;
 }
 
-.pageNumber:hover:not(:disabled) {
-    background: var(--color-primary-light, #eef2ff);
-    border-color: var(--color-primary, #6366f1);
-    color: var(--color-primary, #6366f1);
+/* Mobile Responsive for Pagination */
+@media (max-width: 768px) {
+    .pagination {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .pageNumbers {
+        order: -1;
+        gap: 0.4rem;
+    }
+    
+    .pageNumber {
+        min-width: 36px;
+        height: 36px;
+        font-size: 0.8rem;
+    }
+    
+    .pageBtn {
+        min-width: 90px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
 }
 
-.activePage {
-    background: var(--color-primary, #6366f1);
-    border-color: var(--color-primary, #6366f1);
-    color: white;
-    cursor: default;
-}
-
-.ellipsis {
-    color: var(--color-text-muted, #6b7280);
-    padding: 0 4px;
+@media (max-width: 480px) {
+    .pageNumber {
+        min-width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+    }
+    
+    .pageBtn {
+        min-width: 80px;
+        padding: 0.35rem 0.7rem;
+        font-size: 0.8rem;
+    }
+    
+    .ellipsis {
+        font-size: 0.75rem;
+    }
 }
