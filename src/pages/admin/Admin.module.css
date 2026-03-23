@@ -76,6 +76,11 @@
     border-radius: 12px;
 }
 
+.kpiIconGold {
+    color: #a15c00;
+    background: #fff6d6;
+}
+
 /* Tables */
 .tableContainer {
     background: #ffffff;
@@ -141,6 +146,17 @@
     border: 1px solid #c7d2fe;
 }
 
+.badgePremium {
+    background: #fff7db;
+    color: #9a6700;
+    border: 1px solid #f3d57a;
+}
+
+.premiumCrownIcon {
+    color: #d4a017;
+    font-size: 0.85rem;
+}
+
 /* Buttons & Actions */
 .actionBtn {
     background: transparent;
@@ -184,6 +200,68 @@
 
 .primaryBtn:hover {
     background: var(--color-primary-dark);
+}
+
+.primaryBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Password Management Panels */
+.passwordPanelGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.passwordPanelCard {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    padding: 20px;
+}
+
+.passwordPanelTitle {
+    margin: 0;
+    color: var(--color-text-main);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.passwordPanelSubtitle {
+    margin: 8px 0 0 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+.passwordForm {
+    display: grid;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.passwordFieldLabel {
+    color: var(--color-text-main);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.passwordFieldInput {
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    color: var(--color-text-main);
+    background: #ffffff;
+}
+
+.passwordFieldInput:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(1, 65, 163, 0.12);
 }
 
 /* Charts Area */
@@ -300,6 +378,10 @@
     
     .card {
         padding: 16px;
+    }
+
+    .passwordPanelGrid {
+        grid-template-columns: 1fr;
     }
 
     .tableContainer {

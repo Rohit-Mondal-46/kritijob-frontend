@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styles from './Admin.module.css';
 import api from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
@@ -9,12 +9,12 @@ const AdminUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
+    const [selfResetForm, setSelfResetForm] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
+    const [userResetForm, setUserResetForm] = useState({ email: '', newPassword: '', confirmPassword: '' });
+    const [selfResetLoading, setSelfResetLoading] = useState(false);
+    const [userResetLoading, setUserResetLoading] = useState(false);
 
-    useEffect(() => {
-        fetchUsers();
-    }, []);
-
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         try {
             // Fetching 100 to show reasonable list
             const { data } = await api.get('/users?limit=100&sort=-createdAt');
@@ -27,7 +27,11 @@ const AdminUsers = () => {
             addToast('Failed to load users', 'error');
             setLoading(false);
         }
-    };
+    }, [addToast]);
+
+    useEffect(() => {
+        fetchUsers();
+    }, [fetchUsers]);
 
     const handleAction = async (action, userId) => {
         try {
@@ -50,6 +54,66 @@ const AdminUsers = () => {
         } catch (err) {
             console.error(err);
             addToast('Action failed', 'error');
+        }
+    };
+
+    const getErrorMessage = (err, fallbackMessage) => {
+        const apiMessage = err?.response?.data?.message;
+        if (apiMessage) return apiMessage;
+
+        const validationError = err?.response?.data?.errors?.[0]?.msg;
+        if (validationError) return validationError;
+
+        return fallbackMessage;
+    };
+
+    const handleSelfPasswordReset = async (e) => {
+        e.preventDefault();
+
+        if (selfResetForm.newPassword !== selfResetForm.confirmPassword) {
+            addToast('New password and confirm password do not match', 'error');
+            return;
+        }
+
+        try {
+            setSelfResetLoading(true);
+            await api.post('/auth/change-password', {
+                oldPassword: selfResetForm.oldPassword,
+                newPassword: selfResetForm.newPassword
+            });
+
+            addToast('Your password has been updated successfully', 'success');
+            setSelfResetForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
+        } catch (err) {
+            console.error(err);
+            addToast(getErrorMessage(err, 'Failed to update your password'), 'error');
+        } finally {
+            setSelfResetLoading(false);
+        }
+    };
+
+    const handleUserPasswordReset = async (e) => {
+        e.preventDefault();
+
+        if (userResetForm.newPassword !== userResetForm.confirmPassword) {
+            addToast('New password and confirm password do not match', 'error');
+            return;
+        }
+
+        try {
+            setUserResetLoading(true);
+            await api.post('/users/reset-password', {
+                email: userResetForm.email,
+                newPassword: userResetForm.newPassword
+            });
+
+            addToast(`Password reset successful for ${userResetForm.email}`, 'success');
+            setUserResetForm({ email: '', newPassword: '', confirmPassword: '' });
+        } catch (err) {
+            console.error(err);
+            addToast(getErrorMessage(err, 'Failed to reset user password'), 'error');
+        } finally {
+            setUserResetLoading(false);
         }
     };
 
@@ -78,6 +142,92 @@ const AdminUsers = () => {
                 </div>
             </div>
 
+            <section className={styles.passwordPanelGrid}>
+                <div className={styles.passwordPanelCard}>
+                    <h3 className={styles.passwordPanelTitle}>Reset My Admin Password</h3>
+                    <p className={styles.passwordPanelSubtitle}>Use your current password to set a new one.</p>
+                    <form className={styles.passwordForm} onSubmit={handleSelfPasswordReset}>
+                        <label className={styles.passwordFieldLabel} htmlFor="admin-old-password">Old Password</label>
+                        <input
+                            id="admin-old-password"
+                            type="password"
+                            className={styles.passwordFieldInput}
+                            value={selfResetForm.oldPassword}
+                            onChange={(e) => setSelfResetForm(prev => ({ ...prev, oldPassword: e.target.value }))}
+                            required
+                        />
+
+                        <label className={styles.passwordFieldLabel} htmlFor="admin-new-password">New Password</label>
+                        <input
+                            id="admin-new-password"
+                            type="password"
+                            className={styles.passwordFieldInput}
+                            value={selfResetForm.newPassword}
+                            onChange={(e) => setSelfResetForm(prev => ({ ...prev, newPassword: e.target.value }))}
+                            minLength={6}
+                            required
+                        />
+
+                        <label className={styles.passwordFieldLabel} htmlFor="admin-confirm-password">Confirm New Password</label>
+                        <input
+                            id="admin-confirm-password"
+                            type="password"
+                            className={styles.passwordFieldInput}
+                            value={selfResetForm.confirmPassword}
+                            onChange={(e) => setSelfResetForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                            minLength={6}
+                            required
+                        />
+
+                        <button className={styles.primaryBtn} type="submit" disabled={selfResetLoading}>
+                            {selfResetLoading ? 'Updating...' : 'Update My Password'}
+                        </button>
+                    </form>
+                </div>
+
+                <div className={styles.passwordPanelCard}>
+                    <h3 className={styles.passwordPanelTitle}>Reset Other User Password</h3>
+                    <p className={styles.passwordPanelSubtitle}>Find the account by email and set a temporary password.</p>
+                    <form className={styles.passwordForm} onSubmit={handleUserPasswordReset}>
+                        <label className={styles.passwordFieldLabel} htmlFor="user-email">User Email</label>
+                        <input
+                            id="user-email"
+                            type="email"
+                            className={styles.passwordFieldInput}
+                            value={userResetForm.email}
+                            onChange={(e) => setUserResetForm(prev => ({ ...prev, email: e.target.value }))}
+                            required
+                        />
+
+                        <label className={styles.passwordFieldLabel} htmlFor="user-new-password">New Password</label>
+                        <input
+                            id="user-new-password"
+                            type="password"
+                            className={styles.passwordFieldInput}
+                            value={userResetForm.newPassword}
+                            onChange={(e) => setUserResetForm(prev => ({ ...prev, newPassword: e.target.value }))}
+                            minLength={6}
+                            required
+                        />
+
+                        <label className={styles.passwordFieldLabel} htmlFor="user-confirm-password">Confirm New Password</label>
+                        <input
+                            id="user-confirm-password"
+                            type="password"
+                            className={styles.passwordFieldInput}
+                            value={userResetForm.confirmPassword}
+                            onChange={(e) => setUserResetForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                            minLength={6}
+                            required
+                        />
+
+                        <button className={styles.primaryBtn} type="submit" disabled={userResetLoading}>
+                            {userResetLoading ? 'Resetting...' : 'Reset User Password'}
+                        </button>
+                    </form>
+                </div>
+            </section>
+
             <div className={styles.tableContainer}>
                 <table className={styles.table}>
                     <thead>
@@ -85,6 +235,7 @@ const AdminUsers = () => {
                             <th>Name</th>
                             <th>Email</th>
                             <th>Role</th>
+                            <th>Premium</th>
                             <th>Status</th>
                             <th>Joined</th>
                             <th>Actions</th>
@@ -98,13 +249,21 @@ const AdminUsers = () => {
                                         <div style={{width: '32px', height: '32px', borderRadius: '50%', background: 'var(--color-surface-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 'bold', overflow: 'hidden', color: 'var(--color-text-main)'}}>
                                             {user.avatarUrl ? <img src={user.avatarUrl} alt="" style={{width:'100%', height:'100%'}}/> : user.name.charAt(0)}
                                         </div>
-                                        {user.name}
+                                        <span style={{display: 'inline-flex', alignItems: 'center', gap: '6px'}}>
+                                            {user.isPremium ? <i className={`fas fa-crown ${styles.premiumCrownIcon}`} title="Premium User"></i> : null}
+                                            {user.name}
+                                        </span>
                                     </div>
                                 </td>
                                 <td>{user.email}</td>
                                 <td>
                                     <span className={`${styles.badge} ${user.role === 'admin' ? styles.badgeAdmin : user.role === 'employer' ? styles.badgeEmployer : styles.badgeActive}`}>
                                         {user.role}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span className={`${styles.badge} ${user.isPremium ? styles.badgePremium : styles.badgeBlocked}`}>
+                                        {user.isPremium ? 'Premium' : 'Free'}
                                     </span>
                                 </td>
                                 <td>

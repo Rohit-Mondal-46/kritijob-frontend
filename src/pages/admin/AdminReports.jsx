@@ -29,14 +29,18 @@ const AdminReports = () => {
     const [userGrowth, setUserGrowth] = useState([]);
     const [jobStats, setJobStats] = useState([]);
     const [roleData, setRoleData] = useState([]);
+    const [premiumUserCount, setPremiumUserCount] = useState(0);
     const [loading, setLoading] = useState(true);
+
+    const premiumRevenue = premiumUserCount * 499;
 
     useEffect(() => {
         const fetchReports = async () => {
              try {
-                 const [statsRes, growthRes] = await Promise.all([
+                 const [statsRes, growthRes, usersRes] = await Promise.all([
                      api.get('/reports/stats'),
-                     api.get('/reports/growth')
+                     api.get('/reports/growth'),
+                     api.get('/users?limit=1000&sort=-createdAt')
                  ]);
 
                  if (statsRes.data.success) {
@@ -61,6 +65,11 @@ const AdminReports = () => {
                      setUserGrowth(growthRes.data.data);
                  }
 
+                 if (usersRes?.data?.success && Array.isArray(usersRes.data.data)) {
+                     const premiumCount = usersRes.data.data.filter((user) => user.isPremium).length;
+                     setPremiumUserCount(premiumCount);
+                 }
+
                  setLoading(false);
              } catch (err) {
                  console.error("Failed to load reports", err);
@@ -76,6 +85,11 @@ const AdminReports = () => {
         
         // Report Header
         csvContent += "KritiJob Admin Report\n\n";
+
+        // Premium Summary
+        csvContent += "Premium Summary\n";
+        csvContent += "Total Premium Users,Estimated Revenue (INR)\n";
+        csvContent += `${premiumUserCount},${premiumRevenue}\n`;
 
         // User Roles
         csvContent += "User Distribution\n";
@@ -124,6 +138,27 @@ const AdminReports = () => {
                         <option>All Time</option>
                      </select>
                      <button className={styles.primaryBtn} onClick={handleExportCSV}>Export CSV</button>
+                </div>
+            </div>
+
+            <div className={styles.kpiGrid}>
+                <div className={styles.kpiCard}>
+                    <div>
+                        <p className={styles.kpiLabel}>Total Premium Users</p>
+                        <h2 className={styles.kpiValue}>{premiumUserCount}</h2>
+                    </div>
+                    <div className={`${styles.kpiIcon} ${styles.kpiIconGold}`}>
+                        <i className="fas fa-crown"></i>
+                    </div>
+                </div>
+                <div className={styles.kpiCard}>
+                    <div>
+                        <p className={styles.kpiLabel}>Estimated Premium Revenue</p>
+                        <h2 className={styles.kpiValue}>INR {premiumRevenue.toLocaleString('en-IN')}</h2>
+                    </div>
+                    <div className={`${styles.kpiIcon} ${styles.kpiIconGold}`}>
+                        <i className="fas fa-indian-rupee-sign"></i>
+                    </div>
                 </div>
             </div>
 

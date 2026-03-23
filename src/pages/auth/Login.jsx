@@ -58,7 +58,6 @@ const Login = () => {
                     Don't have an account? <a href="/role-selection" className={styles.link}>Sign up for free</a>
                 </p>
 
-                {error && <div className={styles.error}>{error}</div>}
 
                 <form onSubmit={handleSubmit}>
                     <Input 
