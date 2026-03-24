@@ -139,9 +139,9 @@ const Navbar = () => {
           <div className={styles.navActionsMobile}>
               {token ? (
                   <>
-                    <div className={styles.mobileUserInfo}>
+                    {/* <div className={styles.mobileUserInfo}>
                         <span className={styles.userName}>{user?.name || 'User'}</span>
-                    </div>
+                    </div> */}
                     <Button variant="outline" onClick={() => {
                       handleProfileClick();
                       toggleMenu();

@@ -7,6 +7,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
+import Placeholder from '@tiptap/extension-placeholder';
 
 const MenuBar = ({ editor }) => {
     if (!editor) return null;
@@ -101,8 +102,11 @@ const CompanyProfile = () => {
             Link.configure({ openOnClick: false }),
             Underline,
             TextAlign.configure({ types: ['heading', 'paragraph'] }),
+            Placeholder.configure({
+                placeholder: 'Write about your company...',
+            }),
         ],
-        content: '<p>Write about your company...</p>',
+        content: '',
         editable: false, // controlled by effect
         onUpdate: ({ editor }) => {
             setCompany(prev => ({ ...prev, description: editor.getHTML() }));
@@ -387,7 +391,7 @@ const CompanyProfile = () => {
                 {isEditing && <MenuBar editor={editor} />}
                 
                 <div className={styles.richTextContent}>
-                     <EditorContent editor={editor} />
+                     <EditorContent editor={editor} className={styles.tiptap} />
                 </div>
             </div>
 
