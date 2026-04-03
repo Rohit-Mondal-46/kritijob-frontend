@@ -1,11 +1,10 @@
-import React, { useState, useContext } from 'react';
-import { AuthContext } from '../../context/AuthContext';
+import React, { useState } from 'react';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
+import api from '../../utils/api';
 import styles from './Employer.module.css';
 
 const CreateCompany = () => {
-    const { token } = useContext(AuthContext);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -21,24 +20,12 @@ const CreateCompany = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('https://kriti-job-backend.vercel.app/api/companies', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(formData)
-            });
-
-            if (response.ok) {
-                setMessage('Company created successfully!');
-                setFormData({ name: '', description: '', website: '', location: '' });
-            } else {
-                setMessage('Failed to create company.');
-            }
+            await api.post('/company', formData);
+            setMessage('Company created successfully!');
+            setFormData({ name: '', description: '', website: '', location: '' });
         } catch (error) {
             console.error(error);
-            setMessage('Error creating company.');
+            setMessage(error?.response?.data?.message || 'Error creating company.');
         }
     };
 
