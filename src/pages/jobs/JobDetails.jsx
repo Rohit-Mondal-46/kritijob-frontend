@@ -150,6 +150,8 @@ const JobDetails = () => {
     const location = job.location || 'Remote';
     const type = job.type || 'Full Time';
     const experience = job.experienceLevel || 'Not Specified';
+    const category = job.category || 'Not Specified';
+    const subcategory = job.subcategory || 'Not Specified';
     const salary = job.salaryRange || 'Not Disclosed';
     const companyName = job.companyId?.name || 'Unknown Company';
     const companyLogo = job.companyId?.logoUrl;
@@ -235,6 +237,16 @@ const JobDetails = () => {
                             <div className={styles.highlightIcon}><i className="fas fa-briefcase"></i></div>
                             <p className={styles.highlightLabel}>Experience</p>
                             <p className={styles.highlightValue}>{experience}</p>
+                        </div>
+                        <div className={styles.highlightCard}>
+                            <div className={styles.highlightIcon}><i className="fas fa-layer-group"></i></div>
+                            <p className={styles.highlightLabel}>Category</p>
+                            <p className={styles.highlightValue}>{category}</p>
+                        </div>
+                        <div className={styles.highlightCard}>
+                            <div className={styles.highlightIcon}><i className="fas fa-tags"></i></div>
+                            <p className={styles.highlightLabel}>Subcategory</p>
+                            <p className={styles.highlightValue}>{subcategory}</p>
                         </div>
                         <div className={styles.highlightCard}>
                             <div className={styles.highlightIcon}><i className="fas fa-wallet"></i></div>

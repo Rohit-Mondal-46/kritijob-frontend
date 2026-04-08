@@ -25,6 +25,7 @@ const JobListing = () => {
       return {
         keyword: params.get('keyword') || '',
         category: params.get('category') ? params.get('category').split(',') : [],
+        subcategory: params.get('subcategory') ? params.get('subcategory').split(',') : [],
         location: params.get('location') ? params.get('location').split(',') : [],
         experienceLevel: params.get('experienceLevel') ? params.get('experienceLevel').split(',') : [],
         type: params.get('type') ? params.get('type').split(',') : [],
@@ -39,6 +40,7 @@ const JobListing = () => {
       
       if (newFilters.keyword) params.set('keyword', newFilters.keyword);
       if (newFilters.category?.length > 0) params.set('category', newFilters.category.join(','));
+      if (newFilters.subcategory?.length > 0) params.set('subcategory', newFilters.subcategory.join(','));
       if (newFilters.location?.length > 0) params.set('location', newFilters.location.join(','));
       if (newFilters.experienceLevel?.length > 0) params.set('experienceLevel', newFilters.experienceLevel.join(','));
       if (newFilters.type?.length > 0) params.set('type', newFilters.type.join(','));

@@ -30,7 +30,12 @@ const Register = () => {
     };
 
     const handlePhoneChange = (e) => {
-        const numericVal = e.target.value.replace(/[^0-9]/g, '');
+        let numericVal = e.target.value.replace(/[^0-9]/g, '');
+        // Restrict to max 10 digits
+    if (numericVal.length > 10) {
+        numericVal = numericVal.slice(0, 10);
+    }
+
         setFormData({ ...formData, phone: numericVal });
     };
 

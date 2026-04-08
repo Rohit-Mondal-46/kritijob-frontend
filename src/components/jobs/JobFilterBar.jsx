@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './JobFilterBar.module.css';
-import { politicalCategories } from '../../data/politicalCategories';
+import { JOB_CATEGORY_OPTIONS, getJobSubcategories } from '../../data/jobCategories';
 
 const JobFilterBar = ({ filters, onFilterChange }) => {
     // Track whether this is the first mount to avoid overwriting user input
@@ -15,6 +15,7 @@ const JobFilterBar = ({ filters, onFilterChange }) => {
     const [keyword, setKeyword] = useState(parseFilterValue(filters?.keyword));
     const [location, setLocation] = useState(parseFilterValue(filters?.location));
     const [category, setCategory] = useState(parseFilterValue(filters?.category));
+    const [subcategory, setSubcategory] = useState(parseFilterValue(filters?.subcategory));
     const [type, setType] = useState(parseFilterValue(filters?.type));
     const [experienceLevel, setExperienceLevel] = useState(parseFilterValue(filters?.experienceLevel));
 
@@ -28,9 +29,16 @@ const JobFilterBar = ({ filters, onFilterChange }) => {
         setKeyword(parseFilterValue(filters?.keyword));
         setLocation(parseFilterValue(filters?.location));
         setCategory(parseFilterValue(filters?.category));
+        setSubcategory(parseFilterValue(filters?.subcategory));
         setType(parseFilterValue(filters?.type));
         setExperienceLevel(parseFilterValue(filters?.experienceLevel));
     }, [filters]);
+
+    useEffect(() => {
+        if (subcategory && !getJobSubcategories(category).includes(subcategory)) {
+            setSubcategory('');
+        }
+    }, [category, subcategory]);
 
     const handleApply = () => {
         if (onFilterChange) {
@@ -38,6 +46,7 @@ const JobFilterBar = ({ filters, onFilterChange }) => {
                 keyword: keyword.trim(),
                 location: location.trim() ? [location.trim()] : [],
                 category: category ? [category] : [],
+                subcategory: subcategory ? [subcategory] : [],
                 type: type ? [type] : [],
                 experienceLevel: experienceLevel ? [experienceLevel] : []
             });
@@ -48,10 +57,11 @@ const JobFilterBar = ({ filters, onFilterChange }) => {
         setKeyword('');
         setLocation('');
         setCategory('');
+        setSubcategory('');
         setType('');
         setExperienceLevel('');
         if (onFilterChange) {
-            onFilterChange({ keyword: '', location: [], category: [], type: [], experienceLevel: [] });
+            onFilterChange({ keyword: '', location: [], category: [], subcategory: [], type: [], experienceLevel: [] });
         }
     };
 
@@ -94,12 +104,30 @@ const JobFilterBar = ({ filters, onFilterChange }) => {
                 <label>Category</label>
                 <select 
                     value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                    onChange={(e) => {
+                        setCategory(e.target.value);
+                        setSubcategory('');
+                    }}
                     className={styles.selectField}
                 >
                     <option value="">All Categories</option>
-                    {politicalCategories.map((cat) => (
-                        <option key={cat.id} value={cat.name}>{cat.name}</option>
+                    {JOB_CATEGORY_OPTIONS.map((cat) => (
+                        <option key={cat.value} value={cat.value}>{cat.label}</option>
+                    ))}
+                </select>
+            </div>
+
+            <div className={styles.formGroup}>
+                <label>Subcategory</label>
+                <select 
+                    value={subcategory}
+                    onChange={(e) => setSubcategory(e.target.value)}
+                    className={styles.selectField}
+                    disabled={!category}
+                >
+                    <option value="">{category ? 'All Subcategories' : 'Select Category First'}</option>
+                    {getJobSubcategories(category).map((item) => (
+                        <option key={item} value={item}>{item}</option>
                     ))}
                 </select>
             </div>

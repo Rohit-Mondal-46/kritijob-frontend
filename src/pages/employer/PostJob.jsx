@@ -7,7 +7,7 @@ import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
 import api from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
-import { politicalCategories } from '../../data/politicalCategories';
+import { JOB_CATEGORY_OPTIONS, getJobSubcategories, isValidJobCategory, isValidJobSubcategory } from '../../data/jobCategories';
 
 const PostJob = ({ isAdmin = false }) => {
     const navigate = useNavigate();
@@ -19,6 +19,7 @@ const PostJob = ({ isAdmin = false }) => {
     const [jobData, setJobData] = useState({
         title: '',
         category: '',
+        subcategory: '',
         experienceLevel: '', 
         type: '', 
         location: '', 
@@ -49,9 +50,21 @@ const PostJob = ({ isAdmin = false }) => {
     }, [isAdmin]);
 
     const handleChange = (e) => {
-        setJobData({
-            ...jobData,
-            [e.target.name]: e.target.value
+        const { name, value } = e.target;
+
+        setJobData((current) => {
+            if (name === 'category') {
+                return {
+                    ...current,
+                    category: value,
+                    subcategory: ''
+                };
+            }
+
+            return {
+                ...current,
+                [name]: value
+            };
         });
     };
 
@@ -74,11 +87,17 @@ const PostJob = ({ isAdmin = false }) => {
         setLoading(true);
 
         try {
+            if (!isValidJobCategory(jobData.category) || !isValidJobSubcategory(jobData.category, jobData.subcategory)) {
+                addToast('Please select a valid job category and subcategory.', 'error');
+                return;
+            }
+
             await api.post('/jobs', {
                 title: jobData.title,
                 description: jobData.description,
                 type: jobData.type,
                 category: jobData.category,
+                subcategory: jobData.subcategory,
                 location: jobData.location,
                 salaryRange: jobData.salaryRange,
                 experienceLevel: jobData.experienceLevel,
@@ -176,7 +195,17 @@ const PostJob = ({ isAdmin = false }) => {
                     value={jobData.category} 
                     onChange={handleChange}
                     placeholder="Select Category"
-                    options={politicalCategories.map((cat) => cat.name)}
+                    options={JOB_CATEGORY_OPTIONS}
+                    required
+                />
+                <Select 
+                    label="Subcategory"
+                    name="subcategory" 
+                    value={jobData.subcategory} 
+                    onChange={handleChange}
+                    placeholder={jobData.category ? 'Select Subcategory' : 'Select Category First'}
+                    options={getJobSubcategories(jobData.category)}
+                    disabled={!jobData.category}
                     required
                 />
                 <Input 
