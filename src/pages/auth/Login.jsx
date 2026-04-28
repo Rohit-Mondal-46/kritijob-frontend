@@ -34,8 +34,17 @@ const Login = () => {
                 navigate('/dashboard/admin/overview');
             }
         } catch (err) {
-            // console.error(err);
-            addToast('Login failed. Please check your credentials.', 'error');
+            // Check if error is due to unverified email
+            if (err.response?.data?.requiresVerification) {
+                addToast('Please verify your email first. Redirecting to verification page...', 'info');
+                setTimeout(() => {
+                    navigate('/verify-email', { 
+                        state: { email: formData.email } 
+                    });
+                }, 1500);
+            } else {
+                addToast(err.response?.data?.message || 'Login failed. Please check your credentials.', 'error');
+            }
         } finally {
             setIsLoading(false);
         }

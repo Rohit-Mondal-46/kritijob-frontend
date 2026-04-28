@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await api.post('/auth/signup', { name, email, password, role });
 
-      if (autoLogin) {
+      if (autoLogin && !data.requiresVerification) {
         localStorage.setItem('token', data.token);
         const userData = data.user;
         
@@ -62,6 +62,34 @@ export const AuthProvider = ({ children }) => {
       return data;
     } catch (err) {
       setError(err.message || 'Registration failed');
+      setLoading(false);
+      throw err;
+    }
+  };
+
+  const verifyEmail = async (email, otp) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await api.post('/auth/verify-email', { email, otp });
+      setLoading(false);
+      return data;
+    } catch (err) {
+      setError(err.response?.data?.message || 'Email verification failed');
+      setLoading(false);
+      throw err;
+    }
+  };
+
+  const resendVerificationOTP = async (email) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await api.post('/auth/resend-verification-otp', { email });
+      setLoading(false);
+      return data;
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to resend OTP');
       setLoading(false);
       throw err;
     }
@@ -80,7 +108,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout, loading, error }}>
+    <AuthContext.Provider value={{ user, token, login, register, logout, verifyEmail, resendVerificationOTP, loading, error }}>
       {children}
     </AuthContext.Provider>
   );

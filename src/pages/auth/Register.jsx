@@ -54,13 +54,23 @@ const Register = () => {
 
         setIsLoading(true);
         try {
-            // Note: phone isn't currently supported by AuthContext.register but passed for completeness if it's updated later.
-            await register(formData.name, formData.email, formData.password, role, false);
-            addToast('Registration successful! Please log in.', 'success');
-            navigate('/login');
+            // Call register without auto login
+            const response = await register(formData.name, formData.email, formData.password, role, false);
+            
+            if (response.requiresVerification) {
+                addToast(response.message || 'Registration successful! Please verify your email.', 'success');
+                // Navigate to email verification page
+                navigate('/verify-email', { 
+                    state: { email: formData.email } 
+                });
+            } else {
+                addToast(response.message || 'Registration successful! Please log in.', 'success');
+                navigate('/login');
+            }
         } catch (err) {
             console.error('Registration failed', err);
-            addToast(err.message || 'Registration failed', 'error');
+            const errorMessage = err.response?.data?.message || err.message || 'Registration failed';
+            addToast(errorMessage, 'error');
         } finally {
             setIsLoading(false);
         }
