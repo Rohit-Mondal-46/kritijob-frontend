@@ -84,7 +84,7 @@ const AdminReports = () => {
         let csvContent = "";
         
         // Report Header
-        csvContent += "KritiJob Admin Report\n\n";
+        csvContent += "KirtiJob Admin Report\n\n";
 
         // Premium Summary
         csvContent += "Premium Summary\n";
@@ -118,7 +118,7 @@ const AdminReports = () => {
         const link = document.createElement("a");
         
         link.setAttribute("href", url);
-        link.setAttribute("download", "kritijob_admin_report.csv");
+        link.setAttribute("download", "KirtiJob_admin_report.csv");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

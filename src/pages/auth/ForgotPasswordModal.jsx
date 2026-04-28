@@ -3,7 +3,7 @@ import styles from './Auth.module.css'; // Reusing Auth styles or create specifi
 import Button from '../../components/ui/Button';
 
 const ForgotPasswordModal = ({ onClose }) => {
-    const supportEmail = 'support@kritijob.com';
+    const supportEmail = 'support@KirtiJob.com';
     const mailToHref = `mailto:${supportEmail}?subject=${encodeURIComponent('Password Reset Request')}`;
 
     return (

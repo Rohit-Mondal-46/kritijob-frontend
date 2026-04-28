@@ -9,8 +9,8 @@ const Footer = () => {
                 <div className={styles.grid}>
                     <div className={styles.companyInfo}>
                         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', marginBottom: '20px' }}>
-                            <img src="/images/logo.jpeg" alt="KritiJob Logo" style={{ height: '42px', width: '42px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
-                            <h2 className="text-gradient" style={{ margin: 0, fontSize: '2rem', fontWeight: '800', letterSpacing: '-0.5px' }}>KritiJob</h2>
+                            <img src="/images/logo.jpeg" alt="KirtiJob Logo" style={{ height: '42px', width: '42px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
+                            <h2 className="text-gradient" style={{ margin: 0, fontSize: '2rem', fontWeight: '800', letterSpacing: '-0.5px' }}>KirtiJob</h2>
                         </Link>
                         <p>Your gateway to premium career opportunities. Connect with top employers and showcase your professional journey with confidence.</p>
                         <div className={styles.socials}>
@@ -44,16 +44,16 @@ const Footer = () => {
                         <ul>
                             <li><Link to="/help-center">Help Center</Link></li>
                             <li><Link to="/contact">Contact Us</Link></li>
-                            <li><Link to="/privacy">Privacy Policy</Link></li>
+                            <li><Link to="/privacy">Policies</Link></li>
                             <li><Link to="/terms">Terms of Service</Link></li>
                         </ul>
                     </div>
                 </div>
                 
                 <div className={styles.bottomBar}>
-                    <p>&copy; {new Date().getFullYear()} KritiJob. Designed & Developed By <span className={styles.credit}><a href="https://www.onlyusmedia.in" target="_blank" rel="noopener noreferrer">OnlyUsMedia</a></span></p>
+                    <p>&copy; {new Date().getFullYear()} KirtiJob. Designed & Developed By <span className={styles.credit}><a href="https://www.onlyusmedia.in" target="_blank" rel="noopener noreferrer">OnlyUsMedia</a></span></p>
                     <div className={styles.legalLinks}>
-                        <Link to="/privacy">Privacy</Link>
+                        <Link to="/privacy">Policies</Link>
                         <Link to="/terms">Terms</Link>
                         <Link to="/contact">Contact</Link>
                     </div>

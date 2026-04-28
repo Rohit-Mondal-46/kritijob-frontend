@@ -111,8 +111,8 @@ const Navbar = () => {
       <div className={`focused-container ${styles.navContainer}`}>
         <div className={styles.logo}>
           <Link to="/" className={styles.logoLink}>
-            <img src="/images/logo.jpeg" alt="KritiJob Logo" className={styles.logoImage} />
-            <span className="text-gradient">KritiJob</span>
+            <img src="/images/logo.jpeg" alt="KirtiJob Logo" className={styles.logoImage} />
+            <span className="text-gradient">KirtiJob</span>
           </Link>
         </div>
         

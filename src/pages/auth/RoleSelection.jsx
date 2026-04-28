@@ -14,7 +14,7 @@ const RoleSelection = () => {
              
 
             <div className={styles.roleHeader}>
-                <h2>How do you want to use KritiJob?</h2>
+                <h2>How do you want to use KirtiJob?</h2>
                 <p>Choose your account type to get started with the right experience.</p>
             </div>
 

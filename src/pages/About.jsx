@@ -6,7 +6,7 @@ const About = () => {
         <div className={styles.container}>
             <div className={`focused-container`}>
                 <div className={styles.heroSection}>
-                    <h1 className="text-gradient">About KritiJob</h1>
+                    <h1 className="text-gradient">About KirtiJob</h1>
                     <p className={styles.tagline}>Empowering Careers, Connecting Futures.</p>
                 </div>
                 
@@ -48,7 +48,7 @@ const About = () => {
                 <div className={styles.storySection} style={{ marginTop: '5rem', padding: '4rem', background: 'var(--color-surface)', borderRadius: '20px', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-md)' }}>
                     <h2 style={{ fontSize: '2.5rem', marginBottom: '2rem', textAlign: 'center' }}>Our <span className="text-gradient">Story</span></h2>
                     <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: 'var(--color-text-muted)', textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
-                        Founded with a vision to revolutionize the recruitment landscape, KritiJob started with a simple yet powerful idea: job hunting and talent acquisition shouldn't be stressful. 
+                        Founded with a vision to revolutionize the recruitment landscape, KirtiJob started with a simple yet powerful idea: job hunting and talent acquisition shouldn't be stressful. 
                         We believe in a transparent, highly efficient, and beautifully designed hiring experience. 
                         By combining modern aesthetics with robust, cutting-edge functionality, we've created a dynamic ecosystem where ambitious careers take flight and businesses find the catalyst for their next big breakthrough. 
                         Welcome to the future of hiring.
