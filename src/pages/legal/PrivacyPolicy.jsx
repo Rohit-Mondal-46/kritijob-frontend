@@ -16,8 +16,9 @@ const tabStyle = (active) => ({
   whiteSpace: 'nowrap',
 });
 
-const tableStyle = { width: '70%', borderCollapse: 'collapse', marginBottom: '1rem', fontSize: '0.95rem' };
-const thStyle = { padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: '#1a1a2e', borderBottom: '1px solid rgba(0,0,0,0.1)' };
+const tableWrapperStyle = { width: '100%', overflowX: 'auto', marginBottom: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '8px' };
+const tableStyle = { width: '100%', minWidth: '500px', borderCollapse: 'collapse', fontSize: '0.95rem' };
+const thStyle = { padding: '12px 12px', textAlign: 'left', fontWeight: 600, color: '#1a1a2e', borderBottom: '1px solid rgba(0,0,0,0.1)', background: 'rgba(0,0,0,0.02)' };
 const tdStyle = { padding: '8px 12px', color: '#5a6070', verticalAlign: 'top', borderBottom: '1px solid rgba(0,0,0,0.06)' };
 const h3Style = { marginTop: '2rem', marginBottom: '1rem', color: NAVY };
 const pStyle = { color: '#5a6070', lineHeight: '1.7', marginBottom: '1rem' };
@@ -35,7 +36,8 @@ const PrivacyPolicy = () => (
     </p>
 
     <h3 style={h3Style}>1. Who We Are (Data Fiduciary)</h3>
-    <table style={tableStyle}>
+    <div style={tableWrapperStyle}>
+      <table style={tableStyle}>
       <tbody>
         {[
           ['Legal Name', 'Sunil Kumar (Sole Proprietor)'],
@@ -52,7 +54,8 @@ const PrivacyPolicy = () => (
           </tr>
         ))}
       </tbody>
-    </table>
+      </table>
+    </div>
     <p style={pStyle}>For the purposes of the DPDP Act, 2023, Sunil Kumar (Proprietor) is the <strong>Data Fiduciary</strong>.</p>
 
     <h3 style={h3Style}>2. Eligibility</h3>
@@ -75,13 +78,15 @@ const PrivacyPolicy = () => (
       <li><strong>Cookies (website only):</strong> session cookies for login. We do not use third-party advertising cookies.</li>
     </ul>
     <p style={subHeadStyle}>3.3 Permissions Requested by the Mobile App</p>
-    <table style={tableStyle}>
+    <div style={tableWrapperStyle}>
+      <table style={tableStyle}>
       <thead><tr>{['Permission','Purpose','Optional?'].map(h => <th key={h} style={thStyle}>{h}</th>)}</tr></thead>
       <tbody>
         <tr><td style={tdStyle}>Storage / Photos</td><td style={tdStyle}>Upload resume or profile photo</td><td style={tdStyle}>Yes — denial only blocks upload</td></tr>
         <tr><td style={{ ...tdStyle, borderBottom: 'none' }}>Notifications</td><td style={{ ...tdStyle, borderBottom: 'none' }}>Job alerts, application status, account notices</td><td style={{ ...tdStyle, borderBottom: 'none' }}>Yes — can be disabled in settings</td></tr>
       </tbody>
-    </table>
+      </table>
+    </div>
     <p style={pStyle}>The app does <strong>not</strong> request camera, location, contacts, microphone, SMS, call logs, or device identifiers.</p>
 
     <h3 style={h3Style}>4. How We Use Your Information</h3>
@@ -100,7 +105,8 @@ const PrivacyPolicy = () => (
     <p style={subHeadStyle}>6.1 With Employers</p>
     <p style={pStyle}>When you apply for a job, the employer receives your profile, resume, and application. Employers are independent Data Fiduciaries and are contractually required to use your data only for recruitment purposes.</p>
     <p style={subHeadStyle}>6.2 With Service Providers (Data Processors)</p>
-    <table style={tableStyle}>
+    <div style={tableWrapperStyle}>
+      <table style={tableStyle}>
       <thead><tr>{['Provider','Purpose','Data Shared','Location'].map(h => <th key={h} style={thStyle}>{h}</th>)}</tr></thead>
       <tbody>
         {[
@@ -109,7 +115,8 @@ const PrivacyPolicy = () => (
           ['Razorpay (Razorpay Software Pvt. Ltd.)','Payment processing (website only)','Name, email, transaction amount','India'],
         ].map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} style={tdStyle}>{cell}</td>)}</tr>)}
       </tbody>
-    </table>
+      </table>
+    </div>
     <p style={subHeadStyle}>6.3 Legal Disclosures</p>
     <p style={pStyle}>We may disclose information when required by law, court order, or a lawful government request, or to protect the rights and safety of Kirti Job, our users, or the public.</p>
     <p style={subHeadStyle}>6.4 Business Transfer</p>
@@ -188,7 +195,8 @@ const RefundPolicy = () => (
 
     <h3 style={h3Style}>4. Refunds</h3>
     <p style={subHeadStyle}>4.1 When Refunds ARE Issued</p>
-    <table style={tableStyle}>
+    <div style={tableWrapperStyle}>
+      <table style={tableStyle}>
       <thead><tr>{['Situation','Refund'].map(h => <th key={h} style={thStyle}>{h}</th>)}</tr></thead>
       <tbody>
         {[
@@ -198,7 +206,8 @@ const RefundPolicy = () => (
           ['Verified unauthorised use of payment method','100% (after investigation)'],
         ].map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} style={tdStyle}>{cell}</td>)}</tr>)}
       </tbody>
-    </table>
+      </table>
+    </div>
     <p style={subHeadStyle}>4.2 When Refunds Are NOT Issued</p>
     <ul style={ulStyle}>
       {['Change of mind after the service has been activated and used.','Failure to receive job applications, candidates, or hires (the Platform provides reach, not guaranteed outcomes).','Account suspension or termination due to violation of our Terms of Service.','Unused portion of a monthly/annual subscription after activation, except as required by law.','Disputes with employers, candidates, or third parties — these are not payment disputes.'].map((item, i) => <li key={i}>{item}</li>)}
@@ -212,12 +221,14 @@ const RefundPolicy = () => (
     <p style={pStyle}>We will acknowledge within <strong>2 working days</strong> and decide within <strong>7 working days</strong>.</p>
 
     <h3 style={h3Style}>6. Refund Timeline</h3>
-    <table style={tableStyle}>
+    <div style={tableWrapperStyle}>
+      <table style={tableStyle}>
       <thead><tr>{['Payment Method','Credit Time'].map(h => <th key={h} style={thStyle}>{h}</th>)}</tr></thead>
       <tbody>
         {[['UPI','1–3 working days'],['Credit / Debit Card','5–7 working days'],['Netbanking','5–7 working days'],['Wallet','1–3 working days']].map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} style={tdStyle}>{cell}</td>)}</tr>)}
       </tbody>
-    </table>
+      </table>
+    </div>
 
     <h3 style={h3Style}>7. Failed Transactions</h3>
     <p style={pStyle}>If your account is debited but the order shows as failed, most banks auto-reverse failed transactions within 5–7 working days. If not reversed, contact <a href="mailto:support@kirtijob.com" style={{ color: 'inherit' }}>support@kirtijob.com</a> with the transaction reference.</p>
@@ -267,7 +278,8 @@ const DeleteAccount = ({ onSwitchTab }) => (
     </ul>
 
     <h3 style={h3Style}>4. What We Retain (and Why)</h3>
-    <table style={tableStyle}>
+    <div style={tableWrapperStyle}>
+      <table style={tableStyle}>
       <thead><tr>{['Data','Retention Period','Reason'].map(h => <th key={h} style={thStyle}>{h}</th>)}</tr></thead>
       <tbody>
         {[
@@ -276,7 +288,8 @@ const DeleteAccount = ({ onSwitchTab }) => (
           ['Backups','Up to 30 days','Disaster recovery; purged on rolling cycle'],
         ].map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} style={tdStyle}>{cell}</td>)}</tr>)}
       </tbody>
-    </table>
+      </table>
+    </div>
 
     <div style={{ borderLeft: '3px solid #e8773a', background: '#fff4ed', borderRadius: '0 6px 6px 0', padding: '0.9rem 1.1rem', marginBottom: '0.75rem', fontSize: '0.92rem', color: '#5a6070' }}>
       <strong style={{ color: '#1a1a2e' }}>⚠️ Important:</strong> Applications you've already submitted to employers cannot be recalled. Employers retain copies under their own privacy policies.
@@ -301,8 +314,8 @@ const KirtiJobPolicies = () => {
   const [active, setActive] = useState('privacy');
 
   return (
-    <div className="focused-container" style={{ padding: '6rem 15px', minHeight: '60vh', color: 'var(--color-text-main)', fontFamily: 'var(--font-main)' }}>
-      <div style={{ width: '95%', margin: '0 auto', background: 'var(--color-surface)', padding: '3rem', borderRadius: 15, boxShadow: '0 2px 16px rgba(0,0,0,0.07)' }}>
+    <div className="focused-container" style={{ padding: '6rem 15px 3rem', minHeight: '60vh', color: 'var(--color-text-main)', fontFamily: 'var(--font-main)' }}>
+      <div style={{ width: '100%', maxWidth: '1000px', margin: '0 auto', background: 'var(--color-surface)', padding: 'clamp(1.5rem, 5vw, 3rem)', borderRadius: 15, boxShadow: '0 2px 16px rgba(0,0,0,0.07)' }}>
 
         {/* Tab bar */}
         <div style={{ display: 'flex', borderBottom: '1px solid rgba(0,0,0,0.1)', marginBottom: '2rem', overflowX: 'auto' }}>

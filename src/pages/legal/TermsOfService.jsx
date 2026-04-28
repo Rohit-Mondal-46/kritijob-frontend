@@ -2,8 +2,8 @@ import React from 'react';
 
 const TermsOfService = () => {
   return (
-    <div className="focused-container" style={{ padding: '6rem 15px', minHeight: '60vh', color: 'var(--color-text-main)' }}>
-      <div style={{ width: '95%', margin: '0 auto', background: 'var(--color-surface)', padding: '3rem', borderRadius: '15px' }}>
+    <div className="focused-container" style={{ padding: '6rem 15px 3rem', minHeight: '60vh', color: 'var(--color-text-main)' }}>
+      <div style={{ width: '100%', maxWidth: '1000px', margin: '0 auto', background: 'var(--color-surface)', padding: 'clamp(1.5rem, 5vw, 3rem)', borderRadius: '15px' }}>
 
         <h1 className="text-gradient" style={{ marginBottom: '0.5rem' }}>Terms of Service</h1>
         <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
@@ -22,13 +22,21 @@ const TermsOfService = () => {
         {/* TOC */}
         <div style={{ background: 'rgba(0,0,0,0.03)', borderRadius: '8px', padding: '1.25rem 1.5rem', marginBottom: '2rem' }}>
           <strong style={{ display: 'block', marginBottom: '0.75rem', color: 'var(--color-text-main)' }}>Contents</strong>
-          <ol style={{ color: 'var(--color-text-muted)', paddingLeft: '1.25rem', lineHeight: '1.9', fontSize: '0.93rem', columns: 2, columnGap: '1.5rem' }}>
+          <ol style={{ 
+            color: 'var(--color-text-muted)', 
+            paddingLeft: '1.25rem', 
+            lineHeight: '1.9', 
+            fontSize: '0.93rem', 
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            columnGap: '1.5rem' 
+          }}>
             {['Eligibility','Accounts','The Service','User Conduct','Job Listings and Applications',
               'Paid Services and Payments','Content Ownership and License','Disclaimers',
               'Limitation of Liability','Indemnity','Termination','Governing Law',
               'Dispute Resolution','Changes to These Terms','Grievance Officer','Contact'
             ].map((item, i) => (
-              <li key={i} style={{ breakInside: 'avoid' }}>{item}</li>
+              <li key={i} style={{ breakInside: 'avoid', marginBottom: '0.25rem' }}>{item}</li>
             ))}
           </ol>
         </div>

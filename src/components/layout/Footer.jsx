@@ -14,10 +14,10 @@ const Footer = () => {
                         </Link>
                         <p>Your gateway to premium career opportunities. Connect with top employers and showcase your professional journey with confidence.</p>
                         <div className={styles.socials}>
-                            <a href="#" aria-label="Instagram"><i className="fab fa-instagram"></i></a>
+                            {/* <a href="#" aria-label="Instagram"><i className="fab fa-instagram"></i></a>
                             <a href="#" aria-label="LinkedIn"><i className="fab fa-linkedin-in"></i></a>
                             <a href="#" aria-label="Twitter"><i className="fab fa-twitter"></i></a>
-                            <a href="#" aria-label="YouTube"><i className="fab fa-youtube"></i></a>
+                            <a href="#" aria-label="YouTube"><i className="fab fa-youtube"></i></a> */}
                         </div>
                     </div>
 
