@@ -354,6 +354,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
+import Placeholder from '@tiptap/extension-placeholder';
 
 const MenuBar = ({ editor }) => {
     if (!editor) return null;
@@ -423,7 +424,8 @@ const CompanyProfile = () => {
         logo: '', // URL
         banner: '', // Mock
         description: '',
-        website: ''
+        website: '',
+        isPremium: false
     });
 
     // Global Edit Mode
@@ -431,6 +433,7 @@ const CompanyProfile = () => {
 
     // Files
     const [logoFile, setLogoFile] = useState(null);
+    const [bannerFile, setBannerFile] = useState(null);
 
     const companyInitials = (company.name || 'Company')
         .split(' ')
@@ -447,8 +450,11 @@ const CompanyProfile = () => {
             Link.configure({ openOnClick: false }),
             Underline,
             TextAlign.configure({ types: ['heading', 'paragraph'] }),
+            Placeholder.configure({
+                placeholder: 'Write about your company...',
+            }),
         ],
-        content: '<p>Write about your company...</p>',
+        content: '',
         editable: false, // controlled by effect
         onUpdate: ({ editor }) => {
             setCompany(prev => ({ ...prev, description: editor.getHTML() }));
@@ -474,9 +480,10 @@ const CompanyProfile = () => {
                         name: c.name || '',
                         location: c.location || '',
                         logo: c.logoUrl || '',
-                        banner: '', 
+                        banner: c.backgroundImageUrl || '',
                         description: c.description || '',
-                        website: c.website || ''
+                        website: c.website || '',
+                        isPremium: Boolean(c.isPremiumEmployer)
                     });
                     if (editor) editor.commands.setContent(c.description || '');
                     setIsEditing(false);
@@ -501,9 +508,14 @@ const CompanyProfile = () => {
         const file = e.target.files[0];
         if (file) {
             setLogoFile(file);
-            // Create a preview URL
-            const previewUrl = URL.createObjectURL(file);
-            setLogoPreview(previewUrl);
+        }
+    };
+
+    const handleBannerUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setBannerFile(file);
+            setCompany(prev => ({ ...prev, banner: URL.createObjectURL(file) }));
         }
     };
 
@@ -528,6 +540,7 @@ const CompanyProfile = () => {
             }
 
             let res;
+            let activeCompanyId = companyId;
             if (companyId) {
                 // Update
                 res = await api.put(`/company/${companyId}`, formData, {
@@ -539,8 +552,21 @@ const CompanyProfile = () => {
                 res = await api.post('/company', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
-                setCompanyId(res.data.data._id);
+                activeCompanyId = res.data.data._id;
+                setCompanyId(activeCompanyId);
                 addToast('Company profile created!', 'success');
+            }
+
+            let backgroundImageUrl = company.banner;
+            if (bannerFile && activeCompanyId) {
+                const bgUploadData = new FormData();
+                bgUploadData.append('backgroundImage', bannerFile);
+
+                const bgRes = await api.post(`/company/${activeCompanyId}/background-image`, bgUploadData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+
+                backgroundImageUrl = bgRes?.data?.data?.backgroundImageUrl || backgroundImageUrl;
             }
             
             // Update local state and exit edit mode
@@ -548,13 +574,15 @@ const CompanyProfile = () => {
             setCompany(prev => ({
                 ...prev,
                 logo: updated.logoUrl,
+                banner: backgroundImageUrl,
                 name: updated.name,
                 location: updated.location,
                 description: updated.description,
-                website: updated.website || ''
+                website: updated.website || '',
+                isPremium: Boolean(updated.isPremiumEmployer ?? prev.isPremium)
             }));
-            setLogoFile(null);
-            setLogoPreview(null); // Clear preview
+            setLogoFile(null); // Reset file input
+            setBannerFile(null);
             setIsEditing(false);
             
         } catch (err) {
@@ -597,22 +625,21 @@ const CompanyProfile = () => {
                     className={styles.companyBanner} 
                     style={company.banner ? { backgroundImage: `url(${company.banner})` } : {}}
                 >
+                    {isEditing && (
+                        <label className={styles.bannerEditBtn} title="Change background image">
+                            <i className="fas fa-image"></i>
+                            <input type="file" hidden accept="image/*" onChange={handleBannerUpload} />
+                        </label>
+                    )}
                 </div>
                 
                 <div className={styles.companyProfileHeader}>
                     <div className={styles.companyLogoWrapper}>
-                        {/* Display logo if available, otherwise show fallback */}
-                        {(logoPreview || company.logo) ? (
-                            <img 
-                                src={logoPreview || company.logo} 
-                                alt={company.name}
+                        {company.logo ? (
+                            <img
+                                src={company.logo}
+                                alt={`${company.name || 'Company'} logo`}
                                 className={styles.companyLogo}
-                                style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover',
-                                    borderRadius: '50%'
-                                }}
                             />
                         ) : (
                             <div className={styles.companyLogoFallback}>{companyInitials}</div>
@@ -628,16 +655,54 @@ const CompanyProfile = () => {
                     <div className={styles.headerContentRow}>
                         <div className={styles.headerLeft}>
                              {isEditing ? (
-                                <input 
-                                    value={company.name} 
-                                    name="name" 
-                                    onChange={handleChange} 
-                                    className={styles.companyNameInput}
-                                    placeholder="Company Name"
-                                    autoFocus
-                                />
+                                <div style={{display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap'}}>
+                                    <input 
+                                        value={company.name} 
+                                        name="name" 
+                                        onChange={handleChange} 
+                                        className={styles.companyNameInput}
+                                        placeholder="Company Name"
+                                        autoFocus
+                                    />
+                                    {company.isPremium && (
+                                        <span style={{
+                                            background: '#fff7db',
+                                            color: '#9a6700',
+                                            border: '1px solid #f3d57a',
+                                            padding: '4px 10px',
+                                            borderRadius: '12px',
+                                            fontSize: '0.8rem',
+                                            fontWeight: 700,
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '6px'
+                                        }}>
+                                            <i className="fas fa-crown"></i>
+                                            Premium
+                                        </span>
+                                    )}
+                                </div>
                             ) : (
-                                <h1 style={{fontSize: '2rem', fontWeight: 'bold', margin: '0 0 5px 0', color: 'var(--color-text-main)'}}>{company.name}</h1>
+                                <div style={{display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '5px'}}>
+                                    <h1 style={{fontSize: '2rem', fontWeight: 'bold', margin: 0, color: 'var(--color-text-main)'}}>{company.name}</h1>
+                                    {company.isPremium && (
+                                        <span style={{
+                                            background: '#fff7db',
+                                            color: '#9a6700',
+                                            border: '1px solid #f3d57a',
+                                            padding: '4px 10px',
+                                            borderRadius: '12px',
+                                            fontSize: '0.8rem',
+                                            fontWeight: 700,
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '6px'
+                                        }}>
+                                            <i className="fas fa-crown"></i>
+                                            Premium
+                                        </span>
+                                    )}
+                                </div>
                             )}
 
                              {isEditing ? (
@@ -683,7 +748,7 @@ const CompanyProfile = () => {
                 {isEditing && <MenuBar editor={editor} />}
                 
                 <div className={styles.richTextContent}>
-                     <EditorContent editor={editor} />
+                     <EditorContent editor={editor} className={styles.tiptap} />
                 </div>
             </div>
 

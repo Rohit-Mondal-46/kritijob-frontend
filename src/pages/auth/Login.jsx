@@ -139,8 +139,17 @@ const Login = () => {
                 navigate('/dashboard/admin/overview');
             }
         } catch (err) {
-            // console.error(err);
-            addToast('Login failed. Please check your credentials.', 'error');
+            // Check if error is due to unverified email
+            if (err.response?.data?.requiresVerification) {
+                addToast('Please verify your email first. Redirecting to verification page...', 'info');
+                setTimeout(() => {
+                    navigate('/verify-email', { 
+                        state: { email: formData.email } 
+                    });
+                }, 1500);
+            } else {
+                addToast(err.response?.data?.message || 'Login failed. Please check your credentials.', 'error');
+            }
         } finally {
             setIsLoading(false);
         }
@@ -154,9 +163,9 @@ const Login = () => {
         <div className={styles.authContainer} style={{ background: '#f8fafc', backgroundImage: 'none', padding: '12px', paddingTop: `calc(${NAVBAR_HEIGHT}px + 12px)`, minHeight: `calc(100vh - ${NAVBAR_HEIGHT}px)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div className={styles.authCard} style={{ maxWidth: '450px', width: '100%', border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '24px' }}>
-                    <img src="/images/logo.jpeg" alt="KritiJob Logo" style={{ width: '48px', height: '48px', objectFit: 'contain', marginRight: '12px', mixBlendMode: 'multiply' }} />
+                    <img src="/images/logo.jpeg" alt="KirtiJob Logo" style={{ width: '48px', height: '48px', objectFit: 'contain', marginRight: '12px', mixBlendMode: 'multiply' }} />
                     <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '600', color: 'var(--color-text-main)', letterSpacing: '-0.3px' }}>
-                        KritiJob
+                        KirtiJob
                     </h2>
                 </div>
 
@@ -167,7 +176,6 @@ const Login = () => {
                     Don't have an account? <a href="/role-selection" className={styles.link}>Sign up for free</a>
                 </p>
 
-                {error && <div className={styles.error}>{error}</div>}
 
                 <form onSubmit={handleSubmit}>
                     <Input 

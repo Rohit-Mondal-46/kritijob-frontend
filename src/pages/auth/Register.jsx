@@ -30,7 +30,12 @@ const Register = () => {
     };
 
     const handlePhoneChange = (e) => {
-        const numericVal = e.target.value.replace(/[^0-9]/g, '');
+        let numericVal = e.target.value.replace(/[^0-9]/g, '');
+        // Restrict to max 10 digits
+    if (numericVal.length > 10) {
+        numericVal = numericVal.slice(0, 10);
+    }
+
         setFormData({ ...formData, phone: numericVal });
     };
 
@@ -49,13 +54,23 @@ const Register = () => {
 
         setIsLoading(true);
         try {
-            // Note: phone isn't currently supported by AuthContext.register but passed for completeness if it's updated later.
-            await register(formData.name, formData.email, formData.password, role, false);
-            addToast('Registration successful! Please log in.', 'success');
-            navigate('/login');
+            // Call register without auto login
+            const response = await register(formData.name, formData.email, formData.password, role, false);
+            
+            if (response.requiresVerification) {
+                addToast(response.message || 'Registration successful! Please verify your email.', 'success');
+                // Navigate to email verification page
+                navigate('/verify-email', { 
+                    state: { email: formData.email } 
+                });
+            } else {
+                addToast(response.message || 'Registration successful! Please log in.', 'success');
+                navigate('/login');
+            }
         } catch (err) {
             console.error('Registration failed', err);
-            addToast(err.message || 'Registration failed', 'error');
+            const errorMessage = err.response?.data?.message || err.message || 'Registration failed';
+            addToast(errorMessage, 'error');
         } finally {
             setIsLoading(false);
         }
@@ -65,9 +80,9 @@ const Register = () => {
         <div className={styles.authContainer} style={{ background: '#f8fafc', backgroundImage: 'none', padding: '12px', paddingTop: `calc(${NAVBAR_HEIGHT}px + 12px)`, minHeight: `calc(100vh - ${NAVBAR_HEIGHT}px)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div className={styles.authCard} style={{ maxWidth: '450px', width: '100%', border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '24px' }}>
-                    <img src="/images/logo.jpeg" alt="KritiJob Logo" style={{ width: '48px', height: '48px', objectFit: 'contain', marginRight: '12px', mixBlendMode: 'multiply' }} />
+                    <img src="/images/logo.jpeg" alt="KirtiJob Logo" style={{ width: '48px', height: '48px', objectFit: 'contain', marginRight: '12px', mixBlendMode: 'multiply' }} />
                     <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '600', color: 'var(--color-text-main)', letterSpacing: '-0.3px' }}>
-                        KritiJob
+                        KirtiJob
                     </h2>
                 </div>
 

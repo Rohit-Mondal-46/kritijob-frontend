@@ -21,6 +21,29 @@
     background: url('/images/profile-banner.png') center/cover no-repeat;
     background-color: var(--color-surface-muted);
     width: 100%;
+    position: relative;
+}
+
+.editBannerBtn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease;
+}
+
+.editBannerBtn:hover {
+    transform: scale(1.06);
 }
 
 .profileHeader {
@@ -268,6 +291,14 @@
 
     .banner {
         height: 120px;
+    }
+
+    .editBannerBtn {
+        width: 32px;
+        height: 32px;
+        top: 8px;
+        right: 8px;
+        font-size: 0.9rem;
     }
 
     .profileHeader {

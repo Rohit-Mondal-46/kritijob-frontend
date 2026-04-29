@@ -451,9 +451,9 @@ const Navbar = () => {
     >
       <div className={styles.navContainer}>
         <div className={styles.logo}>
-          <Link to="/" className={styles.logoLink} onClick={() => setIsOpen(false)}>
-            <img src="/images/logo.jpeg" alt="KritiJob Logo" className={styles.logoImage} />
-            <span className="text-gradient">KritiJob</span>
+          <Link to="/" className={styles.logoLink}>
+            <img src="/images/logo.jpeg" alt="KirtiJob Logo" className={styles.logoImage} />
+            <span className="text-gradient">KirtiJob</span>
           </Link>
         </div>
         
@@ -493,35 +493,18 @@ const Navbar = () => {
             {/* Mobile Only Actions */}
             <div className={styles.navActionsMobile}>
               {token ? (
-                <>
-                  <div className={styles.mobileUserInfo}>
-                    <div className={styles.mobileAvatarCircle}>
-                      {user?.avatar ? (
-                        <img src={user.avatar} alt={user.name} />
-                      ) : (
-                        <span>{getUserInitials()}</span>
-                      )}
-                    </div>
-                    <div className={styles.mobileUserDetails}>
-                      <span className={styles.userName}>{user?.name || 'User'}</span>
-                      <span className={styles.userEmail}>{user?.email}</span>
-                    </div>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    onClick={handleProfileClick}
-                    fullWidth
-                  >
-                    Profile
-                  </Button>
-                  <Button 
-                    variant="primary" 
-                    onClick={handleLogout}
-                    fullWidth
-                  >
-                    Logout
-                  </Button>
-                </>
+                  <>
+                    {/* <div className={styles.mobileUserInfo}>
+                        <span className={styles.userName}>{user?.name || 'User'}</span>
+                    </div> */}
+                    <Button variant="outline" onClick={() => {
+                      handleProfileClick();
+                      toggleMenu();
+                    }}>
+                      Profile
+                    </Button>
+                    <Button variant="primary" onClick={handleLogout}>Logout</Button>
+                  </>
               ) : (
                 <>
                   <Link to="/login" onClick={() => setIsOpen(false)} className={styles.mobileLink}>

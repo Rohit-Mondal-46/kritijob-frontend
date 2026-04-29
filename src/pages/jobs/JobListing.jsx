@@ -219,31 +219,34 @@ const JobListing = () => {
   const queryString = searchParams.toString();
   const getJobId = (job) => String(job?._id || job?.id || '');
 
-  const currentFilters = useMemo(() => {
-    const params = new URLSearchParams(queryString);
-    return {
-      keyword: params.get('keyword') || '',
-      category: params.get('category') ? params.get('category').split(',') : [],
-      location: params.get('location') ? params.get('location').split(',') : [],
-      experienceLevel: params.get('experienceLevel') ? params.get('experienceLevel').split(',') : [],
-      type: params.get('type') ? params.get('type').split(',') : [],
-    };
-  }, [queryString]);
+  // Memoize filters to pass to JobFilterBar (only recomputes when URL changes)
+    const currentFilters = useMemo(() => {
+      const params = new URLSearchParams(queryString);
+      return {
+        keyword: params.get('keyword') || '',
+        category: params.get('category') ? params.get('category').split(',') : [],
+        subcategory: params.get('subcategory') ? params.get('subcategory').split(',') : [],
+        location: params.get('location') ? params.get('location').split(',') : [],
+        experienceLevel: params.get('experienceLevel') ? params.get('experienceLevel').split(',') : [],
+        type: params.get('type') ? params.get('type').split(',') : [],
+      };
+    }, [queryString]);
 
-  const handleFilterChange = useCallback((newFilters) => {
-    const params = new URLSearchParams();
-    
-    params.set('page', '1');
-    
-    if (newFilters.keyword) params.set('keyword', newFilters.keyword);
-    if (newFilters.category?.length > 0) params.set('category', newFilters.category.join(','));
-    if (newFilters.location?.length > 0) params.set('location', newFilters.location.join(','));
-    if (newFilters.experienceLevel?.length > 0) params.set('experienceLevel', newFilters.experienceLevel.join(','));
-    if (newFilters.type?.length > 0) params.set('type', newFilters.type.join(','));
-    
-    setSearchParams(params);
-    setShowMobileFilters(false); // Close mobile filters after applying
-  }, [setSearchParams]);
+  // Build URL params from filter object and update the URL
+  const handleFilterChange = (newFilters) => {
+      const params = new URLSearchParams();
+      
+      params.set('page', '1');
+      
+      if (newFilters.keyword) params.set('keyword', newFilters.keyword);
+      if (newFilters.category?.length > 0) params.set('category', newFilters.category.join(','));
+      if (newFilters.subcategory?.length > 0) params.set('subcategory', newFilters.subcategory.join(','));
+      if (newFilters.location?.length > 0) params.set('location', newFilters.location.join(','));
+      if (newFilters.experienceLevel?.length > 0) params.set('experienceLevel', newFilters.experienceLevel.join(','));
+      if (newFilters.type?.length > 0) params.set('type', newFilters.type.join(','));
+      
+      setSearchParams(params);
+  };
 
   const handlePageChange = useCallback((newPage) => {
     const params = new URLSearchParams(searchParams);

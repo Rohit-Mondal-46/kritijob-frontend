@@ -5,7 +5,7 @@ const HelpCenter = () => {
         <div className="focused-container" style={{ padding: '6rem 15px', minHeight: '60vh' }}>
             <h1 className="text-gradient" style={{ textAlign: 'center', marginBottom: '2rem' }}>Help Center</h1>
             <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-                <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem', textAlign: 'center' }}>Find answers to your questions, guides for using KritiJob, and troubleshooting steps.</p>
+                <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem', textAlign: 'center' }}>Find answers to your questions, guides for using KirtiJob, and troubleshooting steps.</p>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <div style={{ padding: '1.5rem', background: 'var(--color-surface)', borderRadius: '12px', border: '1px solid var(--color-border)' }}>

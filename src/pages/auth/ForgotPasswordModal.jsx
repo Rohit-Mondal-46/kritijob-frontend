@@ -1,71 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './Auth.module.css'; // Reusing Auth styles or create specific
-import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
-import api from '../../utils/api';
-import { useToast } from '../../context/ToastContext';
 
 const ForgotPasswordModal = ({ onClose }) => {
-    const [step, setStep] = useState(1);
-    const [email, setEmail] = useState('');
-    const [otp, setOtp] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [loading, setLoading] = useState(false);
-    
-    const { addToast } = useToast();
-
-    const handleSendOtp = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            const { data } = await api.post('/auth/forgot-password', { email });
-            if (data.success) {
-                addToast('OTP sent successfully to your email!', 'success');
-                // For dev convenience (if present in response)
-                if (data.otp) {
-                    console.log('OTP:', data.otp);
-                }
-                setStep(2);
-            }
-        } catch (error) {
-            addToast(error.response?.data?.message || 'Failed to send OTP', 'error');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleVerifyOtp = (e) => {
-        e.preventDefault();
-        // Just move to next step for UI, actual verification happens at reset or can verify here if needed.
-        // But backend reset-password takes OTP. So we just collect it here.
-        if (otp.length < 6) {
-            addToast('Please enter a valid 6-digit OTP', 'error');
-            return;
-        }
-        setStep(3);
-    };
-
-    const handleResetPassword = async (e) => {
-        e.preventDefault();
-        if (newPassword !== confirmPassword) {
-            addToast('Passwords do not match', 'error');
-            return;
-        }
-        
-        setLoading(true);
-        try {
-            const { data } = await api.post('/auth/reset-password', { email, otp, password: newPassword });
-            if (data.success) {
-                addToast('Password reset successfully! Please login.', 'success');
-                onClose();
-            }
-        } catch (error) {
-           addToast(error.response?.data?.message || 'Failed to reset password', 'error');
-        } finally {
-            setLoading(false);
-        }
-    };
+    const supportEmail = 'support@KirtiJob.com';
+    const mailToHref = `mailto:${supportEmail}?subject=${encodeURIComponent('Password Reset Request')}`;
 
     return (
         <div style={{
@@ -77,63 +16,33 @@ const ForgotPasswordModal = ({ onClose }) => {
                      <h3 className="text-gradient">Reset Password</h3>
                      <i className="fas fa-times" onClick={onClose} style={{cursor:'pointer', color: '#9ca3af'}}></i>
                 </div>
+                <div>
+                    <p style={{color: '#9ca3af', marginBottom: '14px'}}>
+                        Please send a password reset request manually to:
+                    </p>
+                    <p style={{margin: '0 0 18px 0'}}>
+                        <a href={mailToHref} style={{color: '#fbbf24', fontWeight: 700, textDecoration: 'none'}}>
+                            {supportEmail}
+                        </a>
+                    </p>
 
-                {step === 1 && (
-                    <form onSubmit={handleSendOtp}>
-                        <p style={{color: '#9ca3af', marginBottom: '20px'}}>Enter your email to receive an OTP.</p>
-                        <Input 
-                            label="Email Address" 
-                            type="email" 
-                            value={email} 
-                            onChange={(e) => setEmail(e.target.value)} 
-                            required 
-                        />
-                        <Button type="submit" variant="primary" style={{width: '100%'}} disabled={loading}>
-                            {loading ? 'Sending...' : 'Send OTP'}
-                        </Button>
-                    </form>
-                )}
+                    <div style={{
+                        border: '1px solid rgba(255,255,255,0.14)',
+                        borderRadius: '10px',
+                        padding: '14px 16px',
+                        marginBottom: '20px',
+                        background: 'rgba(255,255,255,0.03)'
+                    }}>
+                        <p style={{margin: '0 0 10px 0', color: '#d1d5db', fontWeight: 600}}>Instructions</p>
+                        <p style={{margin: '0 0 6px 0', color: '#9ca3af'}}>1. Subject: Password Reset Request</p>
+                        <p style={{margin: 0, color: '#9ca3af'}}>2. Specify your email in the mail</p>
+                    </div>
 
-                {step === 2 && (
-                    <form onSubmit={handleVerifyOtp}>
-                        <p style={{color: '#9ca3af', marginBottom: '20px'}}>Enter the OTP sent to {email}</p>
-                        <Input 
-                            label="Enter OTP" 
-                            type="text" 
-                            value={otp} 
-                            onChange={(e) => setOtp(e.target.value)} 
-                            placeholder="123456"
-                            required 
-                        />
-                        <Button type="submit" variant="primary" style={{width: '100%'}}>Verify OTP</Button>
-                        <p onClick={() => setStep(1)} style={{textAlign:'center', color:'#fbbf24', cursor:'pointer', marginTop:'10px', fontSize:'0.9rem'}}>Back</p>
-                    </form>
-                )}
+                    <p style={{color: '#9ca3af', marginBottom: '20px'}}>
+                        Our team will reset your password within a few working days.
+                    </p>
 
-                {step === 3 && (
-                    <form onSubmit={handleResetPassword}>
-                        <p style={{color: '#9ca3af', marginBottom: '20px'}}>Create a new password.</p>
-                        <Input 
-                            label="New Password" 
-                            type="password" 
-                            name="newPassword"
-                            value={newPassword} 
-                            onChange={(e) => setNewPassword(e.target.value)} 
-                            required 
-                        />
-                         <Input 
-                            label="Confirm Password" 
-                            type="password" 
-                            name="confirmNewPassword"
-                            value={confirmPassword} 
-                            onChange={(e) => setConfirmPassword(e.target.value)} 
-                            required 
-                        />
-                        <Button type="submit" variant="primary" style={{width: '100%'}} disabled={loading}>
-                             {loading ? 'Resetting...' : 'Reset Password'}
-                        </Button>
-                    </form>
-                )}
+                </div>
             </div>
         </div>
     );

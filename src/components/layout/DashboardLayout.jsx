@@ -92,8 +92,8 @@ const DashboardLayout = () => {
             {/* Mobile Header Toggle */}
             {showSidebar && <div className={styles.mobileHeader}>
                 <Link to="/" className={styles.mobileLogo}>
-                    <img src="/images/logo.jpeg" alt="KritiJob" className={styles.mobileLogoImg} />
-                    <span className={styles.mobileLogoText}>KritiJob</span>
+                    <img src="/images/logo.jpeg" alt="KirtiJob" className={styles.mobileLogoImg} />
+                    <span className={styles.mobileLogoText}>KirtiJob</span>
                 </Link>
                 <button className={styles.menuToggle} onClick={toggleMobileMenu}>
                     <div className={styles.profileToggle}>

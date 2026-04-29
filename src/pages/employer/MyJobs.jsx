@@ -10,6 +10,12 @@ const MyJobs = () => {
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
+    const [deleteConfirm, setDeleteConfirm] = useState({
+        open: false,
+        jobId: null,
+        jobTitle: ''
+    });
+    const [isDeleting, setIsDeleting] = useState(false);
     const navigate = useNavigate();
     const { addToast } = useToast();
 
@@ -48,16 +54,33 @@ const MyJobs = () => {
         effectivePage * JOBS_PER_PAGE
     );
 
-    const handleDelete = async (jobId) => {
-        if (!window.confirm("Are you sure you want to delete this job?")) return;
-        
+    const openDeleteConfirm = (job) => {
+        setDeleteConfirm({
+            open: true,
+            jobId: job._id,
+            jobTitle: job.title || 'this job'
+        });
+    };
+
+    const closeDeleteConfirm = () => {
+        if (isDeleting) return;
+        setDeleteConfirm({ open: false, jobId: null, jobTitle: '' });
+    };
+
+    const handleDelete = async () => {
+        if (!deleteConfirm.jobId) return;
+
+        setIsDeleting(true);
         try {
-            await api.delete(`/jobs/${jobId}`);
-            setJobs(jobs.filter(j => j._id !== jobId));
+            await api.delete(`/jobs/${deleteConfirm.jobId}`);
+            setJobs((prevJobs) => prevJobs.filter((j) => j._id !== deleteConfirm.jobId));
             addToast('Job deleted', 'success');
+            setDeleteConfirm({ open: false, jobId: null, jobTitle: '' });
         } catch (err) {
             console.error(err);
             addToast('Failed to delete job', 'error');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -109,7 +132,7 @@ const MyJobs = () => {
                                     className={`${styles.jobActionBtn} ${styles.jobDeleteBtn}`}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        handleDelete(job._id);
+                                        openDeleteConfirm(job);
                                     }}
                                     title="Delete Job"
                                 >
@@ -197,6 +220,45 @@ const MyJobs = () => {
                     >
                         Next
                     </button>
+                </div>
+            )}
+
+            {deleteConfirm.open && (
+                <div className={styles.confirmOverlay} onClick={closeDeleteConfirm}>
+                    <div
+                        className={styles.confirmModal}
+                        onClick={(e) => e.stopPropagation()}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="delete-confirm-title"
+                    >
+                        <div className={styles.confirmIconWrap}>
+                            <i className="fas fa-trash-alt" aria-hidden="true"></i>
+                        </div>
+                        <h3 id="delete-confirm-title" className={styles.confirmTitle}>Delete job posting?</h3>
+                        <p className={styles.confirmText}>
+                            This will permanently delete
+                            <strong> {deleteConfirm.jobTitle}</strong>.
+                        </p>
+                        <div className={styles.confirmActions}>
+                            <button
+                                type="button"
+                                className={styles.confirmCancelBtn}
+                                onClick={closeDeleteConfirm}
+                                disabled={isDeleting}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                className={styles.confirmDeleteBtn}
+                                onClick={handleDelete}
+                                disabled={isDeleting}
+                            >
+                                {isDeleting ? 'Deleting...' : 'Yes, Delete'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

@@ -73,6 +73,13 @@
     color: var(--color-primary);
 }
 
+.categoryIconCircle span {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--color-primary);
+    letter-spacing: 0.04em;
+}
+
 .categoryName {
     font-size: 14px;
     font-weight: 700;

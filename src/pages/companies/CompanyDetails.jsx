@@ -185,10 +185,10 @@ const CompanyDetails = () => {
                             </div>
 
                             {/* Job Alert CTA */}
-                            <div className={styles.jobAlertCTA}>
+                            {/* <div className={styles.jobAlertCTA}>
                                 <p>Be the first to know when {company.name} posts new roles that match your skills.</p>
                                 <button className={styles.jobAlertBtn}>Create Job Alert</button>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>

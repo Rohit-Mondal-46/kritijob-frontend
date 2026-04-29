@@ -489,3 +489,159 @@
     }
 }
 
+/* src/pages/companies/Companies.module.css */
+/* Keep all your existing styles exactly as they are, just add these media queries at the end */
+
+/* Your existing styles remain unchanged above this line */
+
+/* Mobile Responsive Additions - Only these new styles */
+@media (max-width: 768px) {
+    /* Header section */
+    .headerBlock {
+        padding: 2rem 1rem;
+    }
+
+    .pageTitle {
+        font-size: 1.75rem;
+        padding: 0 1rem;
+    }
+
+    .pageSubtitle {
+        font-size: 1rem;
+        padding: 0 1rem;
+    }
+
+    .searchContainer {
+        margin: 0 1rem;
+        padding: 0.6rem 1.2rem;
+    }
+
+    .searchInput {
+        font-size: 0.95rem;
+    }
+
+    /* Grid layout - make cards stack vertically */
+    .companiesGrid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 0 0.5rem;
+    }
+
+    /* Company card adjustments */
+    .companyCard {
+        padding: 1.25rem;
+        margin: 0;
+    }
+
+    .cardHeader {
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .logoWrapper {
+        width: 60px;
+        height: 60px;
+    }
+
+    .companyName {
+        font-size: 1.2rem;
+    }
+
+    .locationPill {
+        font-size: 0.8rem;
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    .companyDescPreview {
+        font-size: 0.9rem;
+        margin: 0.75rem 0;
+    }
+
+    /* Content container */
+    .contentContainer {
+        padding: 0 1rem;
+    }
+
+    .resultsCount {
+        padding: 0 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    /* Pagination responsive */
+    .pagination {
+        gap: 0.5rem;
+        padding: 0 0.5rem;
+    }
+
+    .pageBtn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .pageNumber {
+        padding: 0.4rem 0.7rem;
+        min-width: 35px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Extra small devices (phones, 480px and down) */
+@media (max-width: 480px) {
+    .headerBlock {
+        padding: 1.5rem 0.75rem;
+    }
+
+    .pageTitle {
+        font-size: 1.5rem;
+    }
+
+    .pageSubtitle {
+        font-size: 0.9rem;
+    }
+
+    .searchContainer {
+        padding: 0.5rem 1rem;
+    }
+
+    .companyCard {
+        padding: 1rem;
+    }
+
+    .logoWrapper {
+        width: 50px;
+        height: 50px;
+    }
+
+    .companyName {
+        font-size: 1.1rem;
+    }
+
+    .industryText {
+        font-size: 0.7rem;
+    }
+
+    .locationPill {
+        font-size: 0.7rem;
+    }
+
+    .companyDescPreview {
+        font-size: 0.85rem;
+    }
+
+    .viewProfileBtn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .pageBtn {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.8rem;
+    }
+
+    .pageNumber {
+        padding: 0.35rem 0.6rem;
+        min-width: 32px;
+        font-size: 0.8rem;
+    }
+}
