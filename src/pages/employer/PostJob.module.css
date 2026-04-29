@@ -1,9 +1,13 @@
+/* src/pages/dashboard/PostJob.module.css */
+
 .pageContainer {
     padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
     color: var(--color-text-main);
     min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
 }
 
 .header {
@@ -12,6 +16,7 @@
     align-items: center;
     gap: 12px;
     margin-bottom: 2rem;
+    flex-wrap: wrap;
 }
 
 .header h1 {
@@ -29,44 +34,68 @@
     border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
+    transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
-@media (max-width: 640px) {
-    .header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+.backBtn:hover {
+    background: var(--color-surface-muted);
+    border-color: var(--color-primary);
 }
 
+/* Form Grid */
 .formGrid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1.5rem;
     background: #ffffff;
-    padding: 2.5rem;
+    padding: 2rem;
     border-radius: 1rem;
     border: 1px solid var(--color-border);
     box-shadow: var(--shadow-md);
+    position: relative;
 }
 
-@media (min-width: 768px) {
-    .formGrid {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-.fullWidth {
-    grid-column: 1 / -1;
+.formField {
+    width: 100%;
+    position: relative;
 }
 
 .label {
     display: block;
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--color-text-moved);
+    color: var(--color-text-muted);
     margin-bottom: 0.5rem;
 }
 
+/* Date Input Styling */
+.dateInput {
+    width: 100%;
+    padding: 10px 12px;
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--color-text-main);
+    outline: none;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.dateInput:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+}
+
+/* Full Width Elements */
+.fullWidth {
+    grid-column: 1 / -1;
+    width: 100%;
+    position: relative;
+}
+
+/* Actions Buttons */
 .actions {
     grid-column: 1 / -1;
     display: flex;
@@ -87,23 +116,260 @@
     box-shadow: var(--shadow-sm);
 }
 
-.submitBtn:hover {
+.submitBtn:hover:not(:disabled) {
     background: var(--color-primary-dark);
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
 }
 
-.draftBtn {
-    background: transparent;
-    color: var(--color-primary);
-    border: 1px solid var(--color-primary);
-    font-weight: 600;
-    padding: 0.75rem 2rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: all 0.2s;
+.submitBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
-.draftBtn:hover {
-    background: var(--color-surface-muted);
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.modalContent {
+    background: var(--color-surface);
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.modalTitle {
+    margin-bottom: 1rem;
+    color: var(--color-text-main);
+    font-size: 1.5rem;
+}
+
+.modalText {
+    color: var(--color-text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.modalButton {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.modalButton:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-1px);
+}
+
+/* Responsive Design */
+/* Tablet View (768px - 1024px) */
+@media (min-width: 768px) {
+    .formGrid {
+        grid-template-columns: 1fr 1fr;
+        padding: 2.5rem;
+    }
+}
+
+/* Mobile View (up to 768px) */
+@media (max-width: 768px) {
+    .pageContainer {
+        padding: 1rem;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .header h1 {
+        font-size: 1.5rem;
+    }
+
+    .backBtn {
+        width: 100%;
+        justify-content: center;
+        display: flex;
+        align-items: center;
+        white-space: normal;
+    }
+
+    .formGrid {
+        padding: 1.25rem;
+        gap: 1.25rem;
+    }
+
+    .formField {
+        width: 100%;
+    }
+
+    .label {
+        font-size: 0.8rem;
+    }
+
+    .dateInput {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .submitBtn {
+        width: 100%;
+        padding: 0.7rem 1.5rem;
+    }
+
+    .modalContent {
+        padding: 1.5rem;
+        width: 95%;
+    }
+
+    .modalTitle {
+        font-size: 1.25rem;
+    }
+
+    .modalText {
+        font-size: 0.9rem;
+    }
+}
+
+/* Small Mobile View (up to 480px) */
+@media (max-width: 480px) {
+    .pageContainer {
+        padding: 0.75rem;
+    }
+
+    .formGrid {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .label {
+        font-size: 0.75rem;
+    }
+
+    .dateInput {
+        padding: 7px 8px;
+        font-size: 0.85rem;
+    }
+
+    .submitBtn {
+        padding: 0.6rem 1.25rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Fix for Select Dropdown Overflow */
+/* This ensures dropdowns stay within viewport on mobile */
+.selectWrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* Override any global select dropdown styles that might cause overflow */
+:global(.select__menu) {
+    position: fixed !important;
+    max-height: 200px !important;
+    overflow-y: auto !important;
+    z-index: 1050 !important;
+}
+
+@media (max-width: 768px) {
+    :global(.select__menu) {
+        position: fixed !important;
+        top: auto !important;
+        bottom: auto !important;
+        max-height: 180px !important;
+        width: calc(100% - 2rem) !important;
+        left: 1rem !important;
+        right: 1rem !important;
+    }
+}
+
+/* Ensure all inputs and selects have proper z-index and positioning */
+.formField select,
+.formField input,
+.selectWrapper select {
+    position: relative;
+    z-index: 1;
+}
+
+/* Fix for Rich Text Editor overflow on mobile */
+@media (max-width: 768px) {
+    :global(.ql-container) {
+        font-size: 14px;
+    }
+    
+    :global(.ql-toolbar) {
+        flex-wrap: wrap;
+    }
+    
+    :global(.ql-formats) {
+        margin-right: 8px;
+        margin-bottom: 4px;
+    }
+}
+
+/* Fix for Tag Input on mobile */
+@media (max-width: 768px) {
+    :global(.tag-input-container) {
+        flex-wrap: wrap;
+    }
+    
+    :global(.tag) {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        margin: 2px;
+    }
+}
+
+/* Landscape mode fixes for mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    .pageContainer {
+        padding: 1rem;
+    }
+    
+    .formGrid {
+        gap: 1rem;
+    }
+    
+    .modalContent {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .submitBtn:active {
+        transform: scale(0.98);
+    }
+    
+    .backBtn:active {
+        background: var(--color-surface-muted);
+    }
 }
