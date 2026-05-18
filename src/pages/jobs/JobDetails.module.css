@@ -18,7 +18,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: white;
+    background-color: var(--color-surface);
     color: var(--color-text-muted);
     padding: 0.5rem 1rem;
     border-radius: 8px;

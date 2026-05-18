@@ -29,7 +29,7 @@
     margin: 0 auto;
     display: flex;
     gap: 12px;
-    background: #fff;
+    background: var(--color-surface);
     padding: 8px;
     border-radius: 50px;
     box-shadow: var(--shadow-md);

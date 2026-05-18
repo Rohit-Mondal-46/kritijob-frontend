@@ -4,14 +4,14 @@
     justify-content: center;
     align-items: center;
     padding: 20px;
-    background-color: #f3f2ef; /* Clean linkedin-style background */
+    background-color: var(--color-background); /* Clean linkedin-style background */
 }
 
 .authCard {
     width: 100%;
     max-width: 450px;
     padding: 40px;
-    background: #ffffff;
+    background: var(--color-surface);
     border-radius: 16px;
     margin-top: 100px;
     box-shadow: var(--shadow-lg);

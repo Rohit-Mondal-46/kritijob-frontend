@@ -14,6 +14,11 @@
     text-transform: uppercase;
 }
 
+.btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 /* Primary: Royal Blue */
 .primary {
     background: var(--color-primary);
@@ -70,4 +75,27 @@
     background: rgba(10, 102, 194, 0.05);
     border-color: var(--color-primary);
     color: var(--color-primary-dark);
+}
+
+/* Danger: Red for destructive actions */
+.danger {
+    background: #dc2626;
+    border: 1px solid #dc2626;
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.2);
+}
+
+.danger:hover {
+    background: #991b1b;
+    border-color: #991b1b;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 10px -1px rgba(220, 38, 38, 0.3);
+}
+
+.danger:disabled {
+    background: #fca5a5;
+    border-color: #fca5a5;
+    cursor: not-allowed;
+    transform: none;
 }

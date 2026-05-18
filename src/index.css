@@ -51,6 +51,53 @@
   --font-heading: 'Outfit', sans-serif;
 }
 
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Primary Brand Color: Professional Blue (adjusted for dark mode) */
+    --color-primary: #5B9FD8;
+    --color-primary-light: #7DB4E8;
+    --color-primary-dark: #3B7DB8;
+
+    /* Secondary/Accent */
+    --color-secondary: #1E293B;
+    --color-secondary-dark: #0F172A;
+    --color-secondary-light: #334155;
+
+    /* Accent: Mapped to Primary Blue for strict monochrome */
+    --color-accent: #5B9FD8;
+    --color-accent-hover: #7DB4E8;
+
+    /* Backgrounds */
+    --color-background: #0F172A;
+    --color-surface: #1E293B;
+    --color-surface-muted: #334155;
+
+    /* Text Colors */
+    --color-text-main: #F1F5F9;
+    --color-text-muted: #CBD5E1;
+    --color-text-tertiary: #94A3B8;
+    --color-text-inverted: #0F172A;
+
+    /* Borders */
+    --color-border: #334155;
+    --color-glass-border: rgba(255, 255, 255, 0.1);
+
+    /* Glassmorphism & Effects (Adjusted for Dark Theme) */
+    --color-glass: rgba(30, 41, 59, 0.8);
+    --backdrop-blur: 12px;
+
+    /* Shadows (stronger for dark mode) */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+
+    /* Glow Effects (Adjusted for Dark Theme) */
+    --glow-primary: 0 0 15px rgba(91, 159, 216, 0.4);
+    --glow-accent: 0 0 15px rgba(91, 159, 216, 0.5);
+  }
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -83,16 +130,16 @@ button {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-secondary);
+  background: var(--color-surface);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--color-border);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--color-text-tertiary);
 }
 
 /* Utilities */

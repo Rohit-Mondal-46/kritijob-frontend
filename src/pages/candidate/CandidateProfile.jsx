@@ -4,6 +4,7 @@ import { AuthContext } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import api from '../../utils/api';
 import styles from './Candidate.module.css';
+import DeleteAccountSettings from '../../components/common/DeleteAccountSettings';
 
 const CandidateProfile = () => {
     const { user } = useContext(AuthContext);
@@ -369,6 +370,9 @@ const CandidateProfile = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Delete Account Section */}
+            <DeleteAccountSettings />
 
         </div>
     );
