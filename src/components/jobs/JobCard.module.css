@@ -82,7 +82,7 @@
 
 .company {
     font-size: 0.8rem;
-    color: #6b7280;
+    color: var(--color-text-muted);
     margin-top: 2px;
 }
 
@@ -100,7 +100,7 @@
     align-items: center;
     gap: 5px;
     font-size: 0.75rem;
-    color: #6b7280;
+    color: var(--color-text-muted);
 }
 
 .metaItem i {
@@ -202,4 +202,4 @@
     .bookmark {
         font-size: 0.95rem;
     }
-}
+}

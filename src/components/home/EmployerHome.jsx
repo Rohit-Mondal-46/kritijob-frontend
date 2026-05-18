@@ -118,7 +118,7 @@ const EmployerHome = () => {
                         <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--color-text-main)', marginBottom: '4px' }}>
                             {statsData.jobsExpiringSoon}
                         </div>
-                        <div style={{ fontSize: '14px', color: '#64748b' }}>
+                        <div style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
                             Jobs Expiring Soon
                         </div>
                     </div>
@@ -149,7 +149,7 @@ const EmployerHome = () => {
                                 <div style={{ fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '4px' }}>
                                     Post a New Job
                                 </div>
-                                <div style={{ fontSize: '14px', color: '#64748b' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
                                     Create a new job posting
                                 </div>
                             </div>
@@ -174,7 +174,7 @@ const EmployerHome = () => {
                                 <div style={{ fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '4px' }}>
                                     View Applicants
                                 </div>
-                                <div style={{ fontSize: '14px', color: '#64748b' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
                                     Review and manage applications
                                 </div>
                             </div>
@@ -199,7 +199,7 @@ const EmployerHome = () => {
                                 <div style={{ fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '4px' }}>
                                     Find Candidates
                                 </div>
-                                <div style={{ fontSize: '14px', color: '#64748b' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
                                     Search our talent database
                                 </div>
                             </div>

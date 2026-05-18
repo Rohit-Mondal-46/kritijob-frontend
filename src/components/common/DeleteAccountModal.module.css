@@ -63,7 +63,7 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #6b7280;
+  color: var(--color-text-muted);
   padding: 0;
   width: 32px;
   height: 32px;
@@ -126,7 +126,7 @@
 }
 
 .deleteInfo li {
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-size: 14px;
   margin-bottom: 8px;
   position: relative;
@@ -185,7 +185,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-size: 16px;
   padding: 4px;
   transition: all 0.2s ease;

@@ -32,7 +32,7 @@ const EmployerOverview = () => {
     }, []);
 
     if (loading) return (
-        <div style={{padding: '50px', textAlign: 'center', color:'#64748b'}}>
+        <div style={{padding: '50px', textAlign: 'center', color:'var(--color-text-muted)'}}>
             Loading Overview...
         </div>
     );

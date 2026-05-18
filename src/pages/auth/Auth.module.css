@@ -163,7 +163,7 @@
 
 .roleHeader p {
     font-size: 0.95rem;
-    color: #718096;
+    color: var(--color-text-muted);
 }
 
 .roleGridWrapper {
@@ -228,7 +228,7 @@
 }
 
 .roleDesc {
-    color: #718096;
+    color: var(--color-text-muted);
     line-height: 1.5;
     margin-bottom: 0;
     font-size: 0.875rem;
@@ -238,7 +238,7 @@
     text-align: center;
     margin-top: 30px;
     font-size: 0.95rem;
-    color: #718096;
+    color: var(--color-text-muted);
 }
 
 .linkText {
