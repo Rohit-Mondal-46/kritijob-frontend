@@ -33,8 +33,8 @@ const EmployerHome = () => {
     }, []);
 
     if (loading) return (
-        <div style={{ backgroundColor: '#f8fafc', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-            <main style={{ flexGrow: 1, padding: '50px', textAlign: 'center', color:'#64748b' }}>
+        <div style={{ backgroundColor: 'var(--color-background)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+            <main style={{ flexGrow: 1, padding: '50px', textAlign: 'center', color:'var(--color-text-muted)' }}>
                 Loading Overview...
             </main>
             <Footer />
@@ -42,12 +42,12 @@ const EmployerHome = () => {
     );
 
     return (
-        <div style={{ backgroundColor: '#f8fafc', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'sans-serif' }}>
+        <div style={{ backgroundColor: 'var(--color-background)', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'sans-serif' }}>
             <main className={`focused-container`} style={{ flexGrow: 1, padding: '40px 20px 60px 20px' , margin: '0 auto', width: '100%' , marginTop:'80px'}}>
                 
                 {/* Header Area */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
-                    <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#1e293b', margin: 0, lineHeight: '1.2' }}>
+                    <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: 'var(--color-text-main)', margin: 0, lineHeight: '1.2' }}>
                         Welcome, {user?.name || "Employer"}
                     </h1>
                     
@@ -57,68 +57,68 @@ const EmployerHome = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '40px' }}>
                     {/* Active Jobs */}
                     <div style={{ 
-                        backgroundColor: '#ffffff', borderRadius: '12px', padding: '20px', 
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.04)', borderLeft: '4px solid #3b82f6',
+                        backgroundColor: 'var(--color-surface)', borderRadius: '12px', padding: '20px', 
+                        boxShadow: 'var(--shadow-sm)', borderLeft: '4px solid #3b82f6',
                         display: 'flex', flexDirection: 'column'
                     }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
                             <i className="fas fa-briefcase" style={{ color: '#3b82f6', fontSize: '16px' }}></i>
                         </div>
-                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0f172a', marginBottom: '4px' }}>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--color-text-main)', marginBottom: '4px' }}>
                             {statsData.activeJobs}
                         </div>
-                        <div style={{ fontSize: '14px', color: '#64748b' }}>
+                        <div style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
                             Active Jobs
                         </div>
                     </div>
 
                     {/* Total Applications */}
                     <div style={{ 
-                        backgroundColor: '#ffffff', borderRadius: '12px', padding: '20px', 
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.04)', borderLeft: '4px solid #10b981',
+                        backgroundColor: 'var(--color-surface)', borderRadius: '12px', padding: '20px', 
+                        boxShadow: 'var(--shadow-sm)', borderLeft: '4px solid #10b981',
                         display: 'flex', flexDirection: 'column'
                     }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
                             <i className="fas fa-user-friends" style={{ color: '#10b981', fontSize: '16px' }}></i>
                         </div>
-                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0f172a', marginBottom: '4px' }}>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--color-text-main)', marginBottom: '4px' }}>
                             {statsData.totalApplications}
                         </div>
-                        <div style={{ fontSize: '14px', color: '#64748b' }}>
+                        <div style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
                             Total Applications
                         </div>
                     </div>
 
                     {/* New Applicants */}
                     <div style={{ 
-                        backgroundColor: '#ffffff', borderRadius: '12px', padding: '20px', 
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.04)', borderLeft: '4px solid #f59e0b',
+                        backgroundColor: 'var(--color-surface)', borderRadius: '12px', padding: '20px', 
+                        boxShadow: 'var(--shadow-sm)', borderLeft: '4px solid #f59e0b',
                         display: 'flex', flexDirection: 'column'
                     }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#fffbeb', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(245, 158, 11, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
                             <i className="fas fa-user-plus" style={{ color: '#f59e0b', fontSize: '16px' }}></i>
                         </div>
-                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0f172a', marginBottom: '4px' }}>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--color-text-main)', marginBottom: '4px' }}>
                             {statsData.newApplications}
                         </div>
-                        <div style={{ fontSize: '14px', color: '#64748b' }}>
+                        <div style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
                             New Applicants
                         </div>
                     </div>
 
                     {/* Jobs Expiring Soon */}
                     <div style={{ 
-                        backgroundColor: '#ffffff', borderRadius: '12px', padding: '20px', 
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.04)', borderLeft: '4px solid #ef4444',
+                        backgroundColor: 'var(--color-surface)', borderRadius: '12px', padding: '20px', 
+                        boxShadow: 'var(--shadow-sm)', borderLeft: '4px solid #ef4444',
                         display: 'flex', flexDirection: 'column'
                     }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(239, 68, 68, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
                             <i className="fas fa-clock" style={{ color: '#ef4444', fontSize: '16px' }}></i>
                         </div>
-                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0f172a', marginBottom: '4px' }}>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--color-text-main)', marginBottom: '4px' }}>
                             {statsData.jobsExpiringSoon}
                         </div>
-                        <div style={{ fontSize: '14px', color: '#64748b' }}>
+                        <div style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
                             Jobs Expiring Soon
                         </div>
                     </div>
@@ -149,7 +149,7 @@ const EmployerHome = () => {
                                 <div style={{ fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '4px' }}>
                                     Post a New Job
                                 </div>
-                                <div style={{ fontSize: '14px', color: '#64748b' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
                                     Create a new job posting
                                 </div>
                             </div>
@@ -174,7 +174,7 @@ const EmployerHome = () => {
                                 <div style={{ fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '4px' }}>
                                     View Applicants
                                 </div>
-                                <div style={{ fontSize: '14px', color: '#64748b' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
                                     Review and manage applications
                                 </div>
                             </div>
@@ -199,7 +199,7 @@ const EmployerHome = () => {
                                 <div style={{ fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '4px' }}>
                                     Find Candidates
                                 </div>
-                                <div style={{ fontSize: '14px', color: '#64748b' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
                                     Search our talent database
                                 </div>
                             </div>

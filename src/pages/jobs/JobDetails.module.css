@@ -18,7 +18,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: white;
+    background-color: var(--color-surface);
     color: var(--color-text-muted);
     padding: 0.5rem 1rem;
     border-radius: 8px;
@@ -50,7 +50,7 @@
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 1rem;
-    background: #ffffff;
+    background: var(--color-surface);
     padding: 24px;
     border-radius: 16px;
     box-shadow: var(--shadow-sm);
@@ -70,7 +70,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background: #ffffff;
+    background: var(--color-surface);
     border: 1px solid var(--color-border);
 }
 
@@ -144,7 +144,7 @@
     gap: 1rem;
     margin: 0;
     padding: 24px;
-    background: #ffffff;
+    background: var(--color-surface);
     border-radius: 16px;
     border: 1px solid var(--color-border);
     box-shadow: var(--shadow-sm);
@@ -185,7 +185,7 @@
 
 /* Sections */
 .section {
-    background: #ffffff;
+    background: var(--color-surface);
     padding: 24px;
     border-radius: 16px;
     border: 1px solid var(--color-border);
@@ -236,7 +236,7 @@
 
 /* Company Section */
 .companySection {
-    background-color: #ffffff;
+    background-color: var(--color-surface);
     padding: 1.5rem;
     border-radius: 12px;
     margin-top: 0;
@@ -277,7 +277,7 @@
     width: 48px;
     height: 48px;
     border-radius: 8px;
-    background: #ffffff;
+    background: var(--color-surface);
     display: flex;
     align-items: center;
     justify-content: center;

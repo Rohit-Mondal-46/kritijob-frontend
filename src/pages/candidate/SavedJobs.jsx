@@ -132,7 +132,7 @@ const SavedJobs = () => {
         },
         company: {
             fontSize: '0.82rem',
-            color: '#6b7280',
+            color: 'var(--color-text-muted)',
             marginTop: '3px',
         },
         metaRow: {
@@ -146,7 +146,7 @@ const SavedJobs = () => {
             alignItems: 'center',
             gap: '6px',
             fontSize: '0.78rem',
-            color: '#6b7280',
+            color: 'var(--color-text-muted)',
         },
         metaIcon: {
             fontSize: '0.72rem',
@@ -187,7 +187,7 @@ const SavedJobs = () => {
         },
         emptyState: {
             textAlign: 'center',
-            color: '#9ca3af',
+            color: 'var(--color-text-tertiary)',
             marginTop: '80px',
             display: 'flex',
             flexDirection: 'column',
@@ -202,11 +202,11 @@ const SavedJobs = () => {
         emptyText: {
             fontSize: '1.1rem',
             fontWeight: 500,
-            color: '#6b7280',
+            color: 'var(--color-text-muted)',
         },
         emptySub: {
             fontSize: '0.88rem',
-            color: '#9ca3af',
+            color: 'var(--color-text-tertiary)',
         },
         browseBtn: {
             marginTop: '12px',

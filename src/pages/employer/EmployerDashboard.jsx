@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
+import DeleteAccountSettings from '../../components/common/DeleteAccountSettings';
 import styles from './EmployerDashboard.module.css';
 
 const EmployerDashboard = () => {
@@ -150,6 +151,10 @@ const EmployerDashboard = () => {
                         </button>
                     ))}
                 </div>
+            </section>
+
+            <section className={styles.settingsSection}>
+                <DeleteAccountSettings />
             </section>
         </div>
     );

@@ -4,14 +4,14 @@
     justify-content: center;
     align-items: center;
     padding: 20px;
-    background-color: #f3f2ef; /* Clean linkedin-style background */
+    background-color: var(--color-background); /* Clean linkedin-style background */
 }
 
 .authCard {
     width: 100%;
     max-width: 450px;
     padding: 40px;
-    background: #ffffff;
+    background: var(--color-surface);
     border-radius: 16px;
     margin-top: 100px;
     box-shadow: var(--shadow-lg);
@@ -163,7 +163,7 @@
 
 .roleHeader p {
     font-size: 0.95rem;
-    color: #718096;
+    color: var(--color-text-muted);
 }
 
 .roleGridWrapper {
@@ -228,7 +228,7 @@
 }
 
 .roleDesc {
-    color: #718096;
+    color: var(--color-text-muted);
     line-height: 1.5;
     margin-bottom: 0;
     font-size: 0.875rem;
@@ -238,7 +238,7 @@
     text-align: center;
     margin-top: 30px;
     font-size: 0.95rem;
-    color: #718096;
+    color: var(--color-text-muted);
 }
 
 .linkText {

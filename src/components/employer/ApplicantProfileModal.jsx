@@ -18,7 +18,7 @@ const modalOverlayStyle = {
 };
 
 const modalContentStyle = {
-    backgroundColor: '#ffffff',
+    backgroundColor: 'var(--color-surface)',
     borderRadius: '16px',
     width: '100%',
     maxWidth: '800px',
