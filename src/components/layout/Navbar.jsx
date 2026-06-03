@@ -452,7 +452,7 @@ const Navbar = () => {
       <div className={styles.navContainer}>
         <div className={styles.logo}>
           <Link to="/" className={styles.logoLink}>
-            <img src="/images/logo.jpeg" alt="KirtiJob Logo" className={styles.logoImage} />
+            <img src="/images/logo.png" alt="KirtiJob Logo" className={styles.logoImage} />
             <span className="text-gradient">KirtiJob</span>
           </Link>
         </div>

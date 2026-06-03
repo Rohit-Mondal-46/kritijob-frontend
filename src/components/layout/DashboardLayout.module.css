@@ -141,8 +141,8 @@
 }
 
 .mobileLogoImg {
-    height: 28px;
-    width: 28px;
+    height: 40px;
+    width: 40px;
     object-fit: contain;
     border-radius: 6px;
 }
@@ -150,7 +150,7 @@
 .mobileLogoText {
     font-size: 1.2rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--color-primary), #3b82f6);
+    background: linear-gradient(90deg, #0ea5a4, #2563eb);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
