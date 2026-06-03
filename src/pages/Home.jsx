@@ -16,7 +16,7 @@ const Home = () => {
     }
 
     return (
-        <main style={{ backgroundColor: 'var(--color-background)', minHeight: '100vh', maxWidth: '1600px', margin: '0 auto', paddingBottom: '32px', paddingTop: '50px' }}>
+        <main style={{ backgroundColor: 'var(--color-background)', minHeight: '100vh', maxWidth: '1600px', margin: '0 auto', paddingBottom: '32px', paddingTop: '10px' }}>
             <Hero />
             <FeaturedJobs />
             <JobCategories />

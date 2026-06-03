@@ -1,6 +1,7 @@
 .section {
     padding: 24px 20px;
     background: var(--color-background);
+    margin-top: 0px;
 }
 
 .sectionHeader {

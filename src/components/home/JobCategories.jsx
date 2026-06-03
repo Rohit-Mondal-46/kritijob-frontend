@@ -36,7 +36,7 @@ const JobCategories = () => {
                              <span>{getCategoryBadge(getJobCategoryLabel(cat.value))}</span>
                         </div>
                         <h3 className={styles.categoryName}>{getJobCategoryLabel(cat.value)}</h3>
-                        <p className={styles.categorySubtitle}>{cat.subcategories.length} subcategories</p>
+                        {/* <p className={styles.categorySubtitle}>{cat.subcategories.length} subcategories</p> */}
                     </div>
                 ))}
             </div>

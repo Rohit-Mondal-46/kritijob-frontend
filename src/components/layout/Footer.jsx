@@ -9,7 +9,7 @@ const Footer = () => {
                 <div className={styles.grid}>
                     <div className={styles.companyInfo}>
                         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', marginBottom: '20px' }}>
-                            <img src="/images/logo.jpeg" alt="KirtiJob Logo" style={{ height: '42px', width: '42px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
+                            <img src="/images/logo.png" alt="KirtiJob Logo" style={{ height: '42px', width: '42px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
                             <h2 className="text-gradient" style={{ margin: 0, fontSize: '2rem', fontWeight: '800', letterSpacing: '-0.5px' }}>KirtiJob</h2>
                         </Link>
                         <p>Your gateway to premium career opportunities. Connect with top employers and showcase your professional journey with confidence.</p>

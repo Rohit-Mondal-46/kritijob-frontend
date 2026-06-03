@@ -107,7 +107,7 @@ const EmailVerification = () => {
             >
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '24px' }}>
                     <img 
-                        src="/images/logo.jpeg" 
+                        src="/images/logo.png" 
                         alt="KirtiJob Logo" 
                         style={{ 
                             width: '48px', 
