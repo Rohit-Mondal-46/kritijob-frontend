@@ -310,8 +310,8 @@ const TABS = [
   
 ];
 
-const KirtiJobPolicies = () => {
-  const [active, setActive] = useState('privacy');
+const KirtiJobPolicies = ({ defaultTab = 'privacy' }) => {
+  const [active, setActive] = useState(defaultTab);
 
   return (
     <div className="focused-container" style={{ padding: '6rem 15px 3rem', minHeight: '60vh', color: 'var(--color-text-main)', fontFamily: 'var(--font-main)' }}>

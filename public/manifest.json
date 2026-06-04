@@ -1,0 +1,21 @@
+{
+  "short_name": "KirtiJob",
+  "name": "KirtiJob - Premium Job Portal",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    },
+    {
+      "src": "/images/logo.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#FFFFFF",
+  "theme_color": "#0A66C2",
+  "display": "standalone",
+  "orientation": "portrait"
+}

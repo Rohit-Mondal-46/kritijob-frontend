@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styles from './Home.module.css';
 import { JOB_CATEGORIES, getJobCategoryLabel } from '../../data/jobCategories';
 
@@ -12,13 +12,8 @@ const getCategoryBadge = (label) => label
     .toUpperCase();
 
 const JobCategories = () => {
-    const navigate = useNavigate();
     const [showAll, setShowAll] = useState(false);
     const visibleCategories = showAll ? JOB_CATEGORIES : JOB_CATEGORIES.slice(0, 8);
-
-    const handleCategoryClick = (title) => {
-        navigate(`/jobs?category=${encodeURIComponent(title)}`);
-    };
 
     return (
         <section className={styles.section} style={{ paddingBottom: '60px' }}>
@@ -27,17 +22,17 @@ const JobCategories = () => {
             </div>
             <div className={styles.categoryGrid}>
                 {visibleCategories.map((cat, index) => (
-                    <div 
+                    <Link 
                         key={cat.value || cat.label || index}
+                        to={`/jobs?category=${encodeURIComponent(cat.value)}`}
                         className={styles.categoryCard} 
-                        onClick={() => handleCategoryClick(cat.value)}
                     >
                         <div className={styles.categoryIconCircle}>
                              <span>{getCategoryBadge(getJobCategoryLabel(cat.value))}</span>
                         </div>
                         <h3 className={styles.categoryName}>{getJobCategoryLabel(cat.value)}</h3>
                         {/* <p className={styles.categorySubtitle}>{cat.subcategories.length} subcategories</p> */}
-                    </div>
+                    </Link>
                 ))}
             </div>
             {!showAll && JOB_CATEGORIES.length > 8 && (

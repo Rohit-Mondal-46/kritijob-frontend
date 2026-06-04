@@ -18,7 +18,7 @@ const HelpCenter = () => {
                     </div>
                     <div style={{ padding: '1.5rem', background: 'var(--color-surface)', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
                         <h3 style={{ marginBottom: '0.5rem' }}>How do employers contact me?</h3>
-                        <p style={{ color: 'var(--color-text-muted)' }}>Founders and recruiters can message you directly through the platform if they are interested in your profile.</p>
+                        <p style={{ color: 'var(--color-text-muted)' }}>Employers and recruiters can message you directly through the platform if they are interested in your profile.</p>
                     </div>
                 </div>
             </div>

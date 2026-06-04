@@ -4,62 +4,62 @@ import styles from './SalaryGuide.module.css';
 const SALARY_DATA = [
   {
     id: 1,
-    role: 'Software Engineer',
-    category: 'Engineering',
-    min: '₹8,00,000',
-    max: '₹25,00,000',
-    avg: '₹15,50,000',
-    growth: '+12%',
-    demand: 'High'
-  },
-  {
-    id: 2,
-    role: 'Product Manager',
-    category: 'Management',
-    min: '₹12,00,000',
-    max: '₹35,00,000',
-    avg: '₹22,00,000',
-    growth: '+10%',
-    demand: 'Moderate'
-  },
-  {
-    id: 3,
-    role: 'UX Designer',
-    category: 'Design',
-    min: '₹6,00,000',
-    max: '₹18,00,000',
-    avg: '₹11,00,000',
+    role: 'Driver',
+    category: 'Logistics & Transport',
+    min: '₹1,80,000',
+    max: '₹3,00,000',
+    avg: '₹2,16,000',
     growth: '+8%',
     demand: 'High'
   },
   {
+    id: 2,
+    role: 'Security Supervisor',
+    category: 'Security Services',
+    min: '₹2,40,000',
+    max: '₹3,60,000',
+    avg: '₹3,00,000',
+    growth: '+5%',
+    demand: 'Moderate'
+  },
+  {
+    id: 3,
+    role: 'AC Technician',
+    category: 'Technical Services',
+    min: '₹2,00,000',
+    max: '₹4,00,000',
+    avg: '₹3,00,000',
+    growth: '+12%',
+    demand: 'High'
+  },
+  {
     id: 4,
-    role: 'Data Scientist',
-    category: 'Data Science',
-    min: '₹10,00,000',
-    max: '₹30,00,000',
-    avg: '₹19,00,000',
+    role: 'Delivery Partner',
+    category: 'Logistics & Transport',
+    min: '₹1,50,000',
+    max: '₹3,50,000',
+    avg: '₹2,40,000',
     growth: '+15%',
     demand: 'Very High'
   },
   {
     id: 5,
-    role: 'Marketing Manager',
-    category: 'Marketing',
-    min: '₹5,00,000',
-    max: '₹15,00,000',
-    avg: '₹9,50,000',
-    growth: '+5%',
-    demand: 'Moderate'
+    role: 'Electrician',
+    category: 'Technical Services',
+    min: '₹1,80,000',
+    max: '₹3,60,000',
+    avg: '₹2,70,000',
+    growth: '+10%',
+    demand: 'High'
   },
   {
     id: 6,
-    role: 'DevOps Engineer',
-    category: 'Engineering',
-    min: '₹9,00,000',
-    max: '₹28,00,000',
-    avg: '₹17,00,000',
-    growth: '+14%',
+    role: 'Sales Executive',
+    category: 'Sales & Business',
+    min: '₹2,00,000',
+    max: '₹4,50,000',
+    avg: '₹3,00,000',
+    growth: '+11%',
     demand: 'High'
   }
 ];

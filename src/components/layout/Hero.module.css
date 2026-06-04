@@ -175,6 +175,7 @@
     display: inline-flex;
     align-items: center;
     white-space: nowrap;
+    text-decoration: none;
 }
 
 .startJourneyBtn:hover {

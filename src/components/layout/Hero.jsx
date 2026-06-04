@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './Hero.module.css';
 
 const Hero = () => {
@@ -88,9 +88,9 @@ const Hero = () => {
                         </div>
                     </div>
 
-                    <button className={styles.startJourneyBtn} onClick={() => navigate('/login')}>
+                    <Link to="/login" className={styles.startJourneyBtn}>
                         Start Your Journey <i className="fas fa-arrow-right" style={{ marginLeft: '8px' }}></i>
-                    </button>
+                    </Link>
                 </div>
             </div>
         </section>

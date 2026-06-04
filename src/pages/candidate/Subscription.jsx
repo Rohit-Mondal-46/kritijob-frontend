@@ -84,7 +84,7 @@ const Subscription = () => {
                     <div className={styles.statusInfo}>
                         <h3>Current Plan: {isPremium ? 'Premium' : 'Free'}</h3>
                         {isPremium ? (
-                            <p>Your subscription is active until {new Date(status.subscriptionExpiresAt).toLocaleDateString()}</p>
+                            <p>Your subscription is active until {new Date(status.subscriptionExpiresAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}</p>
                         ) : (
                             <p>You are on the free tier. Upgrade for unlimited applications!</p>
                         )}
@@ -162,7 +162,7 @@ const Subscription = () => {
                             <tbody>
                                 {history.map(item => (
                                     <tr key={item._id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                                        <td style={{ padding: '1rem' }}>{new Date(item.startDate).toLocaleDateString()}</td>
+                                        <td style={{ padding: '1rem' }}>{new Date(item.startDate).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
                                         <td style={{ padding: '1rem', textTransform: 'capitalize' }}>{item.plan}</td>
                                         <td style={{ padding: '1rem' }}>{item.currency} {(item.amount / 100).toFixed(2)}</td>
                                         <td style={{ padding: '1rem' }}>

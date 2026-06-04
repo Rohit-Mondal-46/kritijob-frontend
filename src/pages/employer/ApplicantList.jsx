@@ -42,7 +42,7 @@ const ApplicantList = () => {
                             email: app.candidateId?.email,
                             avatar: app.candidateId?.avatarUrl,
                             status: app.status,
-                            date: app.createdAt ? new Date(app.createdAt).toLocaleDateString() : '-',
+                            date: app.createdAt ? new Date(app.createdAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) : '-',
                             title: 'Candidate',
                             skills: [],
                             resumeLink: app.resumeUrl,

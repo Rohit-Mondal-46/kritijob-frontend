@@ -105,7 +105,7 @@ const ApplicationDetailsModal = ({ application, onClose }) => {
                     <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '25px'}}>
                         <div>
                              <h4 style={labelStyle}>Applied On</h4>
-                             <p style={valueStyle}>{application.createdAt ? new Date(application.createdAt).toLocaleDateString() : 'N/A'}</p>
+                             <p style={valueStyle}>{application.createdAt ? new Date(application.createdAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'N/A'}</p>
                         </div>
                         <div>
                              <h4 style={labelStyle}>Location</h4>

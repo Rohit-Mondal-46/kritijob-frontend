@@ -3,9 +3,6 @@ import styles from './JobFilterBar.module.css';
 import { JOB_CATEGORY_OPTIONS, getJobSubcategories } from '../../data/jobCategories';
 
 const JobFilterBar = ({ filters, onFilterChange }) => {
-    // Track whether this is the first mount to avoid overwriting user input
-    const isFirstMount = useRef(true);
-
     const parseFilterValue = (val) => {
         if (Array.isArray(val) && val.length > 0) return val[0];
         if (typeof val === 'string') return val;
@@ -19,13 +16,8 @@ const JobFilterBar = ({ filters, onFilterChange }) => {
     const [type, setType] = useState(parseFilterValue(filters?.type));
     const [experienceLevel, setExperienceLevel] = useState(parseFilterValue(filters?.experienceLevel));
 
-    // Only sync from props on the first mount or when URL changes externally (e.g. browser back/forward)
+    // Sync from URL params (for browser back/forward or external navigation)
     useEffect(() => {
-        if (isFirstMount.current) {
-            isFirstMount.current = false;
-            return;
-        }
-        // Sync from URL params (for browser back/forward or external navigation)
         setKeyword(parseFilterValue(filters?.keyword));
         setLocation(parseFilterValue(filters?.location));
         setCategory(parseFilterValue(filters?.category));
@@ -65,44 +57,43 @@ const JobFilterBar = ({ filters, onFilterChange }) => {
         }
     };
 
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter') handleApply();
-    };
+
 
     return (
-        <div className={styles.sidebarCard}>
+        <form className={styles.sidebarCard} onSubmit={(e) => { e.preventDefault(); handleApply(); }}>
             <div className={styles.sidebarHeader}>
                 <i className="fas fa-filter"></i>
                 <span>Filters</span>
             </div>
 
             <div className={styles.formGroup}>
-                <label>Keyword or Title</label>
+                <label htmlFor="filter-keyword">Keyword or Title</label>
                 <input 
+                    id="filter-keyword"
                     type="text" 
-                    placeholder="e.g. React Developer" 
+                    placeholder="e.g. Sales Executive, Delivery Partner, Technician" 
                     value={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
-                    onKeyDown={handleKeyDown}
                     className={styles.inputField}
                 />
             </div>
 
             <div className={styles.formGroup}>
-                <label>Location</label>
+                <label htmlFor="filter-location">Location</label>
                 <input 
+                    id="filter-location"
                     type="text" 
-                    placeholder="e.g. Remote, New York" 
+                    placeholder="e.g. Delhi NCR, Mumbai, Bengaluru" 
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    onKeyDown={handleKeyDown}
                     className={styles.inputField}
                 />
             </div>
 
             <div className={styles.formGroup}>
-                <label>Category</label>
+                <label htmlFor="filter-category">Category</label>
                 <select 
+                    id="filter-category"
                     value={category}
                     onChange={(e) => {
                         setCategory(e.target.value);
@@ -118,8 +109,9 @@ const JobFilterBar = ({ filters, onFilterChange }) => {
             </div>
 
             <div className={styles.formGroup}>
-                <label>Subcategory</label>
+                <label htmlFor="filter-subcategory">Subcategory</label>
                 <select 
+                    id="filter-subcategory"
                     value={subcategory}
                     onChange={(e) => setSubcategory(e.target.value)}
                     className={styles.selectField}
@@ -133,8 +125,9 @@ const JobFilterBar = ({ filters, onFilterChange }) => {
             </div>
 
             <div className={styles.formGroup}>
-                <label>Job Type</label>
+                <label htmlFor="filter-type">Job Type</label>
                 <select 
+                    id="filter-type"
                     value={type}
                     onChange={(e) => setType(e.target.value)}
                     className={styles.selectField}
@@ -149,8 +142,9 @@ const JobFilterBar = ({ filters, onFilterChange }) => {
             </div>
 
             <div className={styles.formGroup}>
-                <label>Experience Level</label>
+                <label htmlFor="filter-experience-level">Experience Level</label>
                 <select 
+                    id="filter-experience-level"
                     value={experienceLevel}
                     onChange={(e) => setExperienceLevel(e.target.value)}
                     className={styles.selectField}
@@ -162,15 +156,15 @@ const JobFilterBar = ({ filters, onFilterChange }) => {
                 </select>
             </div>
 
-            <button className={styles.applyButton} onClick={handleApply}>
+            <button type="submit" className={styles.applyButton}>
                 Show Results
             </button>
 
-            <button className={styles.clearButton} onClick={handleClear}>
+            <button type="button" className={styles.clearButton} onClick={handleClear}>
                 <i className="fas fa-redo" style={{ marginRight: '6px' }}></i>
                 Clear all filters
             </button>
-        </div>
+        </form>
     );
 };
 

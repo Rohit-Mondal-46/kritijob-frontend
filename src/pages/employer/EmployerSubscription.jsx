@@ -89,7 +89,7 @@ const EmployerSubscription = () => {
           <div className={styles.statusInfo}>
             <h3>Current Plan: {isPremium ? 'Premium Employer' : 'Free Employer'}</h3>
             {isPremium ? (
-              <p>Your premium membership is active until {new Date(status.subscriptionExpiresAt).toLocaleDateString()}</p>
+              <p>Your premium membership is active until {new Date(status.subscriptionExpiresAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}</p>
             ) : (
               <p>You are on the free tier. Upgrade for unlimited monthly job posts.</p>
             )}
@@ -160,7 +160,7 @@ const EmployerSubscription = () => {
               <tbody>
                 {history.map(item => (
                   <tr key={item._id}>
-                    <td>{new Date(item.startDate).toLocaleDateString()}</td>
+                    <td>{new Date(item.startDate).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
                     <td style={{ textTransform: 'capitalize' }}>{item.plan}</td>
                     <td>{item.currency} {(item.amount / 100).toFixed(2)}</td>
                     <td>
