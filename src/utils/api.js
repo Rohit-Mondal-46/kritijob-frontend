@@ -1,8 +1,10 @@
 import axios from 'axios';
 import safeStorage from './safeStorage';
 
+const apiBaseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const api = axios.create({
-  baseURL:'https://api.kirtijob.com/api',
+  baseURL: apiBaseURL,
   timeout: 8000,
   headers: {
     'Content-Type': 'application/json'
