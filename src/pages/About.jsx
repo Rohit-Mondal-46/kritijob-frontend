@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from './About.module.css';
+import { updateSEO } from '../utils/seo';
 
 const About = () => {
+    useEffect(() => {
+        updateSEO({
+            title: 'About Us',
+            description: 'Learn about KirtiJob, our mission, our story, and how we empower careers and connect top-tier talent with world-class organizations.',
+        });
+    }, []);
     return (
         <div className={styles.container}>
             <div className={`focused-container`}>

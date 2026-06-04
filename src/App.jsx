@@ -6,6 +6,7 @@ import Navbar from './components/layout/Navbar';
 import Home from './pages/Home';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import ForgotPassword from './pages/auth/ForgotPassword';
 import EmailVerification from './pages/auth/EmailVerification';
 import RoleSelection from './pages/auth/RoleSelection';
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -133,6 +134,7 @@ function App() {
                  <Route path="/company/:id" element={<CompanyDetails />} />
                  <Route path="/login" element={<RedirectAuthenticated><Login /></RedirectAuthenticated>} />
                  <Route path="/register" element={<RedirectAuthenticated><Register /></RedirectAuthenticated>} />
+                 <Route path="/forgot-password" element={<RedirectAuthenticated><ForgotPassword /></RedirectAuthenticated>} />
                  <Route path="/verify-email" element={<RedirectAuthenticated><EmailVerification /></RedirectAuthenticated>} />
                  <Route path="/role-selection" element={<RedirectAuthenticated><RoleSelection /></RedirectAuthenticated>} />
                  <Route path="/contact" element={<ContactUs />} />

@@ -1,7 +1,8 @@
 import axios from 'axios';
+import safeStorage from './safeStorage';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL:'http://localhost:5000/api',
   timeout: 8000,
   headers: {
     'Content-Type': 'application/json'
@@ -11,7 +12,7 @@ const api = axios.create({
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = safeStorage.getItem('token');
     const hasAuthHeader = Boolean(
       config.headers?.Authorization ||
       config.headers?.authorization ||
@@ -20,6 +21,7 @@ api.interceptors.request.use(
 
     // Preserve per-request auth headers (used by payment callback/verification flows).
     if (token && !hasAuthHeader) {
+      if (!config.headers) config.headers = {};
       config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;
@@ -40,8 +42,8 @@ api.interceptors.response.use(
         // For now, just clear storage and redirect to login if it's a hard auth failure
         // But be careful not to redirect on login failure itself
         if (!window.location.pathname.startsWith('/auth') && !isPaymentRoute && !skipAuthReset) {
-             localStorage.removeItem('token');
-             localStorage.removeItem('user');
+             safeStorage.removeItem('token');
+             safeStorage.removeItem('user');
              // window.location.href = '/login'; 
         }
     }

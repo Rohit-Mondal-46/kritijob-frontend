@@ -6,6 +6,7 @@ import api from '../../utils/api';
 import DOMPurify from 'dompurify';
 import { AuthContext } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { updateSEO } from '../../utils/seo';
 
 
 const JobDetails = () => {
@@ -21,6 +22,22 @@ const JobDetails = () => {
     const [candidateStatus, setCandidateStatus] = useState(null);
     const [isSaved, setIsSaved] = useState(false);
     const [saveLoading, setSaveLoading] = useState(false);
+
+    useEffect(() => {
+        if (job) {
+            const companyName = job.companyId?.name || job.companyName || job.company?.name || 'Unknown Company';
+            const cleanDesc = job.description 
+                ? job.description.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').substring(0, 155).trim() + '...'
+                : `Apply for the ${job.title} position at ${companyName} on KirtiJob.`;
+            
+            updateSEO({
+                title: `${job.title} at ${companyName}`,
+                description: cleanDesc,
+                ogType: 'article',
+                ogImage: job.companyId?.logo || '/images/logo.png'
+            });
+        }
+    }, [job]);
 
     const normalizeJobId = (value) => {
         if (!value) return '';

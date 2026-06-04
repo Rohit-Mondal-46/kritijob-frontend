@@ -1,7 +1,7 @@
 /* JobListing.module.css */
 
 .pageContainer {
-    padding-top: 60px;
+    padding-top: 10px;
     padding-bottom: 60px;
     min-height: 100vh;
     background-color: var(--color-background);
@@ -257,7 +257,7 @@
     font-size: 24px;
     font-weight: 700;
     color: var(--color-text-main);
-    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light, #378fe9));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;

@@ -1,14 +1,24 @@
 import React, { createContext, useState, useEffect } from 'react';
 import api from '../utils/api';
+import safeStorage from '../utils/safeStorage';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem('user');
-    return savedUser ? JSON.parse(savedUser) : null;
+    try {
+      const savedUser = safeStorage.getItem('user');
+      if (savedUser && savedUser !== 'undefined') {
+        return JSON.parse(savedUser);
+      }
+      return null;
+    } catch (err) {
+      console.error('Error parsing user from localStorage:', err);
+      safeStorage.removeItem('user');
+      return null;
+    }
   });
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
+  const [token, setToken] = useState(safeStorage.getItem('token') || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -28,32 +38,32 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await api.post('/auth/login', { email, password });
       
-      localStorage.setItem('token', data.token);
+      safeStorage.setItem('token', data.token);
       let userData = data.user;
       
-      localStorage.setItem('user', JSON.stringify(userData));
+      safeStorage.setItem('user', JSON.stringify(userData));
       setToken(data.token);
       setUser(userData);
       setLoading(false);
       return userData;
     } catch (err) {
-      setError(err.message || 'Login failed');
+      setError(err.response?.data?.message || err.message || 'Login failed');
       setLoading(false);
       throw err;
     }
   };
 
-  const register = async (name, email, password, role, autoLogin = true) => {
+  const register = async (name, email, password, role, phone, autoLogin = true) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await api.post('/auth/signup', { name, email, password, role });
+      const { data } = await api.post('/auth/signup', { name, email, password, role, phone });
 
       if (autoLogin && !data.requiresVerification) {
-        localStorage.setItem('token', data.token);
+        safeStorage.setItem('token', data.token);
         const userData = data.user;
         
-        localStorage.setItem('user', JSON.stringify(userData));
+        safeStorage.setItem('user', JSON.stringify(userData));
         setToken(data.token);
         setUser(userData);
       }
@@ -61,7 +71,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
       return data;
     } catch (err) {
-      setError(err.message || 'Registration failed');
+      setError(err.response?.data?.message || err.message || 'Registration failed');
       setLoading(false);
       throw err;
     }
@@ -96,8 +106,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    safeStorage.removeItem('token');
+    safeStorage.removeItem('user');
     setToken(null);
     setUser(null);
     // Optional: Call logout endpoint
@@ -108,7 +118,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout, verifyEmail, resendVerificationOTP, loading, error }}>
+    <AuthContext.Provider value={{ user, token, login, register, logout, verifyEmail, resendVerificationOTP, loading, error, setError }}>
       {children}
     </AuthContext.Provider>
   );

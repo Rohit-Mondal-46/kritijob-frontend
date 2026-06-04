@@ -206,6 +206,7 @@ import Footer from '../../components/layout/Footer';
 import api from '../../utils/api';
 import { useSearchParams } from 'react-router-dom';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { updateSEO } from '../../utils/seo';
 
 const JobListing = () => {
   const [jobs, setJobs] = useState([]);
@@ -218,6 +219,36 @@ const JobListing = () => {
   
   const queryString = searchParams.toString();
   const getJobId = (job) => String(job?._id || job?.id || '');
+
+  useEffect(() => {
+    const category = searchParams.get('category');
+    const keyword = searchParams.get('keyword');
+    const location = searchParams.get('location');
+
+    let title = 'Browse Jobs';
+    let descParts = ['Find premium career opportunities on KirtiJob.'];
+
+    if (category) {
+      const catName = category.split(',')[0].replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      title = `${catName} Jobs`;
+      descParts.push(`Explore top ${catName} positions.`);
+    }
+
+    if (keyword) {
+      title = category ? `${title} for "${keyword}"` : `Jobs for "${keyword}"`;
+      descParts.push(`Search results for ${keyword}.`);
+    }
+
+    if (location) {
+      title = `${title} in ${location.split(',')[0]}`;
+      descParts.push(`Available roles in ${location.split(',')[0]}.`);
+    }
+
+    updateSEO({
+      title,
+      description: descParts.join(' ') + ' Apply today!',
+    });
+  }, [queryString, searchParams]);
 
   // Memoize filters to pass to JobFilterBar (only recomputes when URL changes)
     const currentFilters = useMemo(() => {

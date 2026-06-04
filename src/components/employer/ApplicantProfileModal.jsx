@@ -160,7 +160,7 @@ const ApplicantProfileModal = ({ applicant, onClose }) => {
                                     display: 'inline-flex', 
                                     alignItems: 'center', 
                                     gap: '10px', 
-                                    background: 'var(--color-secondary)', 
+                                    background: 'var(--color-primary)', 
                                     color: 'white', 
                                     padding: '12px 24px', 
                                     borderRadius: '8px', 
