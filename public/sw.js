@@ -38,7 +38,11 @@ self.addEventListener('fetch', event => {
 
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request).catch(() => caches.match('/index.html'))
+      fetch(event.request).catch(() =>
+        caches.match('/index.html').then(cachedResponse =>
+          cachedResponse || new Response('Offline', { status: 503, statusText: 'Service Unavailable' })
+        )
+      )
     );
     return;
   }
@@ -52,11 +56,13 @@ self.addEventListener('fetch', event => {
       return fetch(event.request).then(networkResponse => {
         const responseClone = networkResponse.clone();
 
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, responseClone);
-        });
-
-        return networkResponse;
+        return caches.open(CACHE_NAME)
+          .then(cache => cache.put(event.request, responseClone))
+          .then(() => networkResponse)
+          .catch((error) => {
+            console.warn('Cache write failed:', error);
+            return networkResponse;
+          });
       });
     })
   );
