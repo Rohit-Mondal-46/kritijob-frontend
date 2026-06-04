@@ -17,7 +17,7 @@ const Testimonials = () => {
             id: 2,
             name: "Abhishek Kullu",
             role: "Designer",
-            image: "https://randomuser.me/api/portraits/men/32.jpg",
+            image: avatar2,
             rating: 5,
             text: "Found my dream job within a week! The application process was smooth."
         },
@@ -25,7 +25,7 @@ const Testimonials = () => {
             id: 3,
             name: "Swapnil Pandey",
             role: "Data Scientist",
-            image: "https://randomuser.me/api/portraits/men/86.jpg",
+            image: avatar1,
             rating: 4,
             text: "I secured a job offer within days of applying. Exceptional user experience and support."
         },

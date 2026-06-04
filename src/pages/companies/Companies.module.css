@@ -2,7 +2,7 @@
 
 .loadingContainer {
     min-height: calc(100vh - 64px);
-    padding-top: 64px;
+    padding-top: 10px;
     display: flex;
     align-items: center;
     justify-content: center;

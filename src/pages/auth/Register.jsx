@@ -1,20 +1,30 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import styles from './Auth.module.css';
+import { updateSEO } from '../../utils/seo';
 
 const Register = () => {
     const NAVBAR_HEIGHT = 64;
-    const { register, error } = useContext(AuthContext);
+    const { register, error, setError } = useContext(AuthContext);
     const { addToast } = useToast();
     const navigate = useNavigate();
     const location = useLocation();
-    
-    // Get role from state, default to candidate
-    const role = location.state?.role || 'candidate';
+
+    // Get role from URL query param or state, default to candidate
+    const searchParams = new URLSearchParams(location.search);
+    const role = searchParams.get('role') || location.state?.role || 'candidate';
+
+    useEffect(() => {
+        if (setError) setError(null);
+        updateSEO({
+            title: `Register as ${role.charAt(0).toUpperCase() + role.slice(1)}`,
+            description: 'Create a KirtiJob account today to explore and apply for premium opportunities, or recruit top-tier professionals.',
+        });
+    }, [setError, role]);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -55,7 +65,7 @@ const Register = () => {
         setIsLoading(true);
         try {
             // Call register without auto login
-            const response = await register(formData.name, formData.email, formData.password, role, false);
+            const response = await register(formData.name, formData.email, formData.password, role, formData.phone, false);
             
             if (response.requiresVerification) {
                 addToast(response.message || 'Registration successful! Please verify your email.', 'success');

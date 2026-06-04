@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Pricing.module.css';
+import { updateSEO } from '../utils/seo';
 
 const Pricing = () => {
+    useEffect(() => {
+        updateSEO({
+            title: 'Pricing Plans',
+            description: 'Simple, transparent pricing plans for candidates and employers. Choose the perfect plan to accelerate your career or hire the best talent.',
+        });
+    }, []);
     const [isEmployer, setIsEmployer] = useState(false);
 
     const togglePlans = () => {

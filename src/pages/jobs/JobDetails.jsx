@@ -6,6 +6,8 @@ import api from '../../utils/api';
 import DOMPurify from 'dompurify';
 import { AuthContext } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { updateSEO } from '../../utils/seo';
+import { getJobCategoryLabel } from '../../data/jobCategories';
 
 
 const JobDetails = () => {
@@ -21,6 +23,22 @@ const JobDetails = () => {
     const [candidateStatus, setCandidateStatus] = useState(null);
     const [isSaved, setIsSaved] = useState(false);
     const [saveLoading, setSaveLoading] = useState(false);
+
+    useEffect(() => {
+        if (job) {
+            const companyName = job.companyId?.name || job.companyName || job.company?.name || 'Unknown Company';
+            const cleanDesc = job.description 
+                ? job.description.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').substring(0, 155).trim() + '...'
+                : `Apply for the ${job.title} position at ${companyName} on KirtiJob.`;
+            
+            updateSEO({
+                title: `${job.title} at ${companyName}`,
+                description: cleanDesc,
+                ogType: 'article',
+                ogImage: job.companyId?.logo || '/images/logo.png'
+            });
+        }
+    }, [job]);
 
     const normalizeJobId = (value) => {
         if (!value) return '';
@@ -141,7 +159,25 @@ const JobDetails = () => {
 
     if (loading) return <div className={`focused-container ${styles.container}`} style={{ textAlign: 'center', paddingInline: '50px' }}>Loading...</div>;
 
-    if (!job) return <div className={`focused-container ${styles.container}`} style={{ textAlign: 'center', paddingInline: '50px' }}>Job not found.</div>;
+    if (!job) {
+        return (
+            <div className={`focused-container ${styles.container}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', padding: '40px 20px', textAlign: 'center' }}>
+                <div style={{ fontSize: '4rem', color: 'var(--color-primary)', marginBottom: '20px' }}>
+                    <i className="fas fa-exclamation-triangle"></i>
+                </div>
+                <h1 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '10px', color: 'var(--color-text-main)' }}>Job Not Found</h1>
+                <p style={{ color: 'var(--color-text-muted)', maxWidth: '480px', marginBottom: '30px', fontSize: '1.1rem', lineHeight: '1.6' }}>
+                    The job listing you are looking for does not exist, has been archived, or is no longer accepting applications.
+                </p>
+                <button 
+                    onClick={() => navigate('/jobs')} 
+                    style={{ background: 'var(--color-primary)', color: 'white', border: 'none', padding: '12px 28px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '1rem', transition: 'all 0.2s' }}
+                >
+                    Back to Job Listings
+                </button>
+            </div>
+        );
+    }
 
     // Sanitize HTML description
     const sanitizedDesc = DOMPurify.sanitize(job.description);
@@ -150,7 +186,7 @@ const JobDetails = () => {
     const location = job.location || 'Remote';
     const type = job.type || 'Full Time';
     const experience = job.experienceLevel || 'Not Specified';
-    const category = job.category || 'Not Specified';
+    const category = job.category ? getJobCategoryLabel(job.category) : 'Not Specified';
     const subcategory = job.subcategory || 'Not Specified';
     const salary = job.salaryRange || 'Not Disclosed';
     const companyName = job.companyId?.name || 'Unknown Company';
@@ -177,7 +213,7 @@ const JobDetails = () => {
                                 <div className={styles.companyMeta}>
                                     <span>{companyName}</span>
                                     <span>•</span>
-                                    <span>{new Date(job.createdAt).toLocaleDateString()}</span>
+                                    <span>{new Date(job.createdAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}</span>
                                     <span>•</span>
                                     {/* Status Badge */}
                                     <span style={{
@@ -262,7 +298,7 @@ const JobDetails = () => {
                             <div className={styles.highlightIcon}><i className="fas fa-hourglass-end"></i></div>
                             <p className={styles.highlightLabel}>Deadline</p>
                             <p className={styles.highlightValue}>
-                                {job.applicationDeadline ? new Date(job.applicationDeadline).toLocaleDateString() : 'No Deadline'}
+                                {job.applicationDeadline ? new Date(job.applicationDeadline).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'No Deadline'}
                             </p>
                         </div>
                     </div>

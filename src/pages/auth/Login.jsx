@@ -1,18 +1,27 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import styles from './Auth.module.css';
+import { updateSEO } from '../../utils/seo';
 
 const Login = () => {
     const NAVBAR_HEIGHT = 64;
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [isLoading, setIsLoading] = useState(false);
-    const { login, error } = useContext(AuthContext);
+    const { login, error, setError } = useContext(AuthContext);
     const { addToast } = useToast(); // Use Toast
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (setError) setError(null);
+        updateSEO({
+            title: 'Login',
+            description: 'Log in to your KirtiJob account to apply for jobs or manage job postings.',
+        });
+    }, [setError]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -49,7 +58,7 @@ const Login = () => {
     };
 
     const handleForgotPassword = () => {
-        navigate('/contact');
+        navigate('/forgot-password');
     };
 
     return (
@@ -69,6 +78,7 @@ const Login = () => {
                     Don't have an account? <a href="/role-selection" className={styles.link}>Sign up for free</a>
                 </p>
 
+                {error && <div className={styles.error}>{error}</div>}
 
                 <form onSubmit={handleSubmit}>
                     <Input 

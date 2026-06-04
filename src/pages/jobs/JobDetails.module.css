@@ -1,6 +1,6 @@
 .container {
     /* max-width and side padding handled by global .focused-container */
-    padding-top: 100px;
+    padding-top: 10px;
     padding-bottom: 60px;
     color: var(--color-text-main);
     min-height: 100vh;

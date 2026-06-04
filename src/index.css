@@ -20,7 +20,7 @@
   /* Backgrounds */
   --color-background:#FFFFFF;
   --color-surface: #FFFFFF;
-  --color-surface-muted: #F9FAFB;
+  --color-surface-muted: #FFFFFF;
 
   /* Text Colors */
   --color-text-main: #191919;
@@ -380,5 +380,12 @@ button:active {
 @media (max-width: 1024px) {
   body.dashboard-active #main-navbar {
     display: none !important;
+  }
+}
+
+/* Mobile input auto-zoom fix for iOS */
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
   }
 }
