@@ -1,13 +1,20 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
+import { AuthContext } from '../../context/AuthContext';
 import DeleteAccountSettings from '../../components/common/DeleteAccountSettings';
 import styles from './EmployerDashboard.module.css';
 
 const EmployerDashboard = () => {
     const navigate = useNavigate();
     const { addToast } = useToast();
+    const { logout } = useContext(AuthContext);
+
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
 
     const [loading, setLoading] = useState(true);
     const [companyName, setCompanyName] = useState('Employer');
@@ -210,6 +217,24 @@ const EmployerDashboard = () => {
             </section>
 
             <section className={styles.settingsSection}>
+                <div className={styles.settingsCard}>
+                    <div className={styles.settingsContent}>
+                        <div className={styles.settingsInfo}>
+                            <h3 className={styles.settingsTitle}>Logout</h3>
+                            <p className={styles.settingsDescription}>
+                                Sign out of your account on this device.
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={handleLogout}
+                            className={styles.logoutBtn}
+                        >
+                            Logout
+                        </button>
+                    </div>
+                </div>
+
                 <DeleteAccountSettings />
             </section>
         </div>

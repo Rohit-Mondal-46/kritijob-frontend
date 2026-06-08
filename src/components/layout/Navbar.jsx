@@ -296,7 +296,7 @@ import { AuthContext } from '../../context/AuthContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { token, user, logout } = useContext(AuthContext);
+  const { token, user, logout, companyType } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
   const menuRef = useRef(null);
@@ -385,14 +385,14 @@ const Navbar = () => {
     }
 
     if (user.role === 'employer') {
-      const companyType = user?.companyType || user?.company_type || 'company';
       return [
         { label: 'Dashboard', path: '/dashboard/employer' },
         { label: 'Company Profile', path: '/dashboard/employer/company' },
         { label: 'My Jobs', path: '/dashboard/employer/jobs' },
-        companyType === 'startup'
-          ? { label: 'Listed Fundings', path: '/investors' }
-          : { label: companyType === 'investor' ? 'Find Founders' : 'Find Talent', path: '/dashboard/employer/find-talent' },
+        { 
+          label: companyType === 'startup' ? 'Find Investors' : companyType === 'investor' ? 'Find Founders' : 'Find Talent', 
+          path: '/dashboard/employer/find-talent' 
+        },
         { label: 'About', path: '/about' }
       ];
     }

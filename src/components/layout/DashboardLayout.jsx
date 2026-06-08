@@ -4,7 +4,7 @@ import { AuthContext } from '../../context/AuthContext';
 import styles from './DashboardLayout.module.css';
 
 const DashboardLayout = () => {
-    const { user, logout } = useContext(AuthContext);
+    const { user, logout, companyType } = useContext(AuthContext);
     const location = useLocation();
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
@@ -57,15 +57,15 @@ const DashboardLayout = () => {
 
     if (!user) return null;
 
-    const companyType = user?.companyType || user?.company_type || 'company';
-
     const employerLinks = [
         { path: '/dashboard/employer/company', label: companyType === 'startup' ? 'Startup Profile' : companyType === 'investor' ? 'Fund Profile' : 'Company Profile', icon: 'fa-building' },
         { path: '/dashboard/employer', label: 'Dashboard', icon: 'fa-chart-line', exact: true },
         { path: '/dashboard/employer/jobs', label: companyType === 'startup' ? 'My Listings' : companyType === 'investor' ? 'My Funds' : 'My Jobs', icon: 'fa-briefcase' },
-        companyType === 'startup'
-            ? { path: '/investors', label: 'Listed Fundings', icon: 'fa-hand-holding-usd' }
-            : { path: '/dashboard/employer/find-talent', label: companyType === 'investor' ? 'Find Founders' : 'Find Talent', icon: 'fa-search' },
+        { 
+            path: '/dashboard/employer/find-talent', 
+            label: companyType === 'startup' ? 'Find Investors' : companyType === 'investor' ? 'Find Founders' : 'Find Talent', 
+            icon: 'fa-search' 
+        },
         { path: '/dashboard/employer/subscription', label: 'Premium Plans', icon: 'fa-star' },
     ];
 

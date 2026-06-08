@@ -21,6 +21,13 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(safeStorage.getItem('token') || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [companyType, setCompanyType] = useState(() => {
+    try {
+      return safeStorage.getItem('companyType') || 'company';
+    } catch {
+      return 'company';
+    }
+  });
 
   // You might want to validate user session on mount
   useEffect(() => {
@@ -31,6 +38,23 @@ export const AuthProvider = ({ children }) => {
             .catch(() => logout());
      }
   }, [token]);
+
+  useEffect(() => {
+    if (token && user && user.role === 'employer') {
+      api.get('/company/me')
+        .then(res => {
+          if (res.data?.success && res.data?.data) {
+            const type = res.data.data.companyType || res.data.data.company_type || 'company';
+            setCompanyType(type);
+            safeStorage.setItem('companyType', type);
+          }
+        })
+        .catch(err => console.error(err));
+    } else {
+      setCompanyType('company');
+      safeStorage.removeItem('companyType');
+    }
+  }, [token, user]);
 
   const login = async (email, password) => {
     setLoading(true);
@@ -108,8 +132,10 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     safeStorage.removeItem('token');
     safeStorage.removeItem('user');
+    safeStorage.removeItem('companyType');
     setToken(null);
     setUser(null);
+    setCompanyType('company');
     // Optional: Call logout endpoint
     // api.get('/auth/logout').catch(err => console.error(err)); 
     
@@ -118,7 +144,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout, verifyEmail, resendVerificationOTP, loading, error, setError }}>
+    <AuthContext.Provider value={{ user, token, login, register, logout, verifyEmail, resendVerificationOTP, loading, error, setError, companyType, setCompanyType }}>
       {children}
     </AuthContext.Provider>
   );
