@@ -45,9 +45,8 @@ const InvestorListing = () => {
         setLoading(true);
         const apiParams = new URLSearchParams(queryString);
         if (!apiParams.has('limit')) apiParams.set('limit', '9');
-        apiParams.set('companyType', 'investor');
 
-        const { data } = await api.get(`/company?${apiParams.toString()}`);
+        const { data } = await api.get(`/investors?${apiParams.toString()}`);
         if (!cancelled && data.success) {
           setInvestors(data.data || []);
           setPagination({
