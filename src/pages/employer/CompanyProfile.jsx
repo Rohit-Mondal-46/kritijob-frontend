@@ -355,6 +355,7 @@ import Link from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Placeholder from '@tiptap/extension-placeholder';
+import { COMPANY_TYPE_OPTIONS } from '../../utils/companyTypeLabels';
 
 const MenuBar = ({ editor }) => {
     if (!editor) return null;
@@ -425,7 +426,8 @@ const CompanyProfile = () => {
         banner: '', // Mock
         description: '',
         website: '',
-        isPremium: false
+        isPremium: false,
+        companyType: localStorage.getItem('registered_company_type') || 'company'
     });
 
     // Global Edit Mode
@@ -483,7 +485,8 @@ const CompanyProfile = () => {
                         banner: c.backgroundImageUrl || '',
                         description: c.description || '',
                         website: c.website || '',
-                        isPremium: Boolean(c.isPremiumEmployer)
+                        isPremium: Boolean(c.isPremiumEmployer),
+                        companyType: c.companyType || 'company'
                     });
                     if (editor) editor.commands.setContent(c.description || '');
                     setIsEditing(false);
@@ -534,6 +537,7 @@ const CompanyProfile = () => {
             formData.append('location', company.location);
             formData.append('description', company.description);
             if (company.website) formData.append('website', company.website);
+            if (!companyId) formData.append('companyType', company.companyType);
             
             if (logoFile) {
                 formData.append('logo', logoFile);
@@ -579,7 +583,8 @@ const CompanyProfile = () => {
                 location: updated.location,
                 description: updated.description,
                 website: updated.website || '',
-                isPremium: Boolean(updated.isPremiumEmployer ?? prev.isPremium)
+                isPremium: Boolean(updated.isPremiumEmployer ?? prev.isPremium),
+                companyType: updated.companyType || prev.companyType
             }));
             setLogoFile(null); // Reset file input
             setBannerFile(null);
@@ -654,6 +659,52 @@ const CompanyProfile = () => {
 
                     <div className={styles.headerContentRow}>
                         <div className={styles.headerLeft}>
+                             {/* Company Type Dropdown — only on creation */}
+                             {isEditing && !companyId && (
+                                 <div style={{ marginBottom: '12px' }}>
+                                     <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-muted)', display: 'block', marginBottom: '6px' }}>I am registering as:</label>
+                                     <select
+                                         value={company.companyType}
+                                         onChange={(e) => setCompany(prev => ({ ...prev, companyType: e.target.value }))}
+                                         style={{
+                                             padding: '10px 14px',
+                                             background: '#ffffff',
+                                             border: '1px solid var(--color-border)',
+                                             borderRadius: '8px',
+                                             color: 'var(--color-text-main)',
+                                             fontSize: '0.95rem',
+                                             fontFamily: 'inherit',
+                                             outline: 'none',
+                                             width: '100%',
+                                             maxWidth: '300px',
+                                             cursor: 'pointer'
+                                         }}
+                                     >
+                                         {COMPANY_TYPE_OPTIONS.map(opt => (
+                                             <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                         ))}
+                                     </select>
+                                 </div>
+                             )}
+                             {/* Company Type Badge — after creation */}
+                             {companyId && company.companyType && company.companyType !== 'company' && (
+                                 <span style={{
+                                     display: 'inline-flex',
+                                     alignItems: 'center',
+                                     gap: '6px',
+                                     background: company.companyType === 'startup' ? '#ecfdf5' : '#eff6ff',
+                                     color: company.companyType === 'startup' ? '#047857' : '#1d4ed8',
+                                     border: `1px solid ${company.companyType === 'startup' ? '#a7f3d0' : '#bfdbfe'}`,
+                                     padding: '4px 10px',
+                                     borderRadius: '12px',
+                                     fontSize: '0.8rem',
+                                     fontWeight: 700,
+                                     marginBottom: '8px'
+                                 }}>
+                                     <i className={company.companyType === 'startup' ? 'fas fa-rocket' : 'fas fa-hand-holding-usd'}></i>
+                                     {company.companyType === 'startup' ? 'Startup / Idea' : 'Investor / VC'}
+                                 </span>
+                             )}
                              {isEditing ? (
                                 <div style={{display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap'}}>
                                     <input 

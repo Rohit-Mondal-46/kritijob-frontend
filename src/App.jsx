@@ -15,6 +15,8 @@ import PostJob from './pages/employer/PostJob';
 import EditJob from './pages/employer/EditJob';
 import ApplicantList from './pages/employer/ApplicantList';
 import JobListing from './pages/jobs/JobListing';
+import StartupListing from './pages/startups/StartupListing';
+import InvestorListing from './pages/investors/InvestorListing';
 import MyJobs from './pages/employer/MyJobs';
 import JobDetails from './pages/jobs/JobDetails';
 import CompanyListing from './pages/companies/CompanyListing';
@@ -131,6 +133,8 @@ function App() {
                    <Route path="/pricing" element={<Pricing />} />
                    <Route path="/salary-guide" element={<SalaryGuide />} />
                    <Route path="/jobs" element={<JobListing />} />
+                   <Route path="/startups" element={<StartupListing />} />
+                   <Route path="/investors" element={<InvestorListing />} />
                    <Route path="/jobs/:id" element={<JobDetails />} />
                    <Route path="/companies" element={<CompanyListing />} />
                    <Route path="/company/:id" element={<CompanyDetails />} />

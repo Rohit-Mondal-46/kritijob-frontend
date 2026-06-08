@@ -53,11 +53,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (name, email, password, role, phone, autoLogin = true) => {
+  const register = async (name, email, password, role, phone, autoLogin = true, companyType = 'company') => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await api.post('/auth/signup', { name, email, password, role, phone });
+      const { data } = await api.post('/auth/signup', { name, email, password, role, phone, companyType, company_type: companyType });
 
       if (autoLogin && !data.requiresVerification) {
         safeStorage.setItem('token', data.token);

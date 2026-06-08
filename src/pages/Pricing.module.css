@@ -175,6 +175,15 @@ input:checked + .slider:before {
     font-weight: 500;
 }
 
+.gstText {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    display: block;
+}
+
+
 .planFeatures {
     list-style: none;
     padding: 0;

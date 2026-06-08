@@ -170,12 +170,12 @@ const CompanyDetails = () => {
                                 </div>
                                 <div className={styles.factItem}>
                                     <label><i className="fas fa-user-friends"></i> COMPANY SIZE</label>
-                                    <p>{company.size || '500+ Employees'}</p>
+                                    <p>{company.size }</p>
                                 </div>
-                                <div className={styles.factItem}>
+                                {/* <div className={styles.factItem}>
                                     <label><i className="fas fa-calendar-alt"></i> FOUNDED</label>
                                     <p>2015</p>
-                                </div>
+                                </div> */}
                                 {company.website && (
                                     <div className={styles.factItem}>
                                         <label><i className="fas fa-link"></i> WEBSITE</label>

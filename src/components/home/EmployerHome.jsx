@@ -8,6 +8,7 @@ import { AuthContext } from '../../context/AuthContext';
 const EmployerHome = () => {
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
+    const companyType = user?.companyType || user?.company_type || 'company';
     const [statsData, setStatsData] = useState({
         activeJobs: 0,
         totalApplications: 0,
@@ -181,9 +182,9 @@ const EmployerHome = () => {
                             <i className="fas fa-chevron-right" style={{ color: '#cbd5e1', fontSize: '18px' }}></i>
                         </div>
                         
-                        {/* Action 3: Find Talent */}
+                        {/* Action 3: Find Talent / Investors */}
                         <div 
-                            onClick={() => navigate('/dashboard/employer/find-talent')}
+                            onClick={() => navigate(companyType === 'startup' ? '/investors' : '/dashboard/employer/find-talent')}
                             style={{ 
                                 backgroundColor: '#ffffff', borderRadius: '16px', padding: '24px 20px', 
                                 boxShadow: '0 2px 10px rgba(0,0,0,0.02)', display: 'flex', alignItems: 'center',
@@ -192,15 +193,15 @@ const EmployerHome = () => {
                             onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.05)'}
                             onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.02)'}
                         >
-                            <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '20px', flexShrink: 0 }}>
-                                <i className="fas fa-search" style={{ color: '#d97706', fontSize: '20px' }}></i>
+                            <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: companyType === 'startup' ? 'rgba(59, 130, 246, 0.1)' : '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '20px', flexShrink: 0 }}>
+                                <i className={companyType === 'startup' ? "fas fa-hand-holding-usd" : "fas fa-search"} style={{ color: companyType === 'startup' ? '#3b82f6' : '#d97706', fontSize: '20px' }}></i>
                             </div>
                             <div style={{ flexGrow: 1 }}>
                                 <div style={{ fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '4px' }}>
-                                    Find Candidates
+                                    {companyType === 'startup' ? 'Listed Fundings' : companyType === 'investor' ? 'Find Founders' : 'Find Candidates'}
                                 </div>
                                 <div style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
-                                    Search our talent database
+                                    {companyType === 'startup' ? 'Search our listed funding and investor database' : companyType === 'investor' ? 'Search founder profiles' : 'Search our talent database'}
                                 </div>
                             </div>
                             <i className="fas fa-chevron-right" style={{ color: '#cbd5e1', fontSize: '18px' }}></i>

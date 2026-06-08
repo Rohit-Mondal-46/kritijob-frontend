@@ -8,6 +8,7 @@ import { AuthContext } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { updateSEO } from '../../utils/seo';
 import { getJobCategoryLabel } from '../../data/jobCategories';
+import { getCompanyTypeLabels } from '../../utils/companyTypeLabels';
 
 
 const JobDetails = () => {
@@ -23,6 +24,14 @@ const JobDetails = () => {
     const [candidateStatus, setCandidateStatus] = useState(null);
     const [isSaved, setIsSaved] = useState(false);
     const [saveLoading, setSaveLoading] = useState(false);
+    
+    // Investor startup pitches interaction states
+    const [isShortlisted, setIsShortlisted] = useState(false);
+    const [shortlistLoading, setShortlistLoading] = useState(false);
+    const [connectionRequest, setConnectionRequest] = useState(null);
+    const [connectLoading, setConnectLoading] = useState(false);
+    const [showConnectModal, setShowConnectModal] = useState(false);
+    const [introMessage, setIntroMessage] = useState('');
 
     useEffect(() => {
         if (job) {
@@ -86,6 +95,31 @@ const JobDetails = () => {
                     }
                 } else {
                     setIsSaved(false);
+                }
+
+                // 3. Check investor status (only if investor)
+                const isUserInvestor = user && user.role === 'employer' && (user.companyType === 'investor' || user.company_type === 'investor');
+                if (isUserInvestor) {
+                    const [shortlistResult, connectionResult] = await Promise.allSettled([
+                        api.get('/shortlists'),
+                        api.get('/connections')
+                    ]);
+
+                    if (shortlistResult.status === 'fulfilled' && shortlistResult.value.data.success) {
+                        const shortlisted = shortlistResult.value.data.data.some(s => {
+                            const sid = s.startupId?._id || s.startupId || '';
+                            return String(sid) === String(id);
+                        });
+                        setIsShortlisted(shortlisted);
+                    }
+
+                    if (connectionResult.status === 'fulfilled' && connectionResult.value.data.success) {
+                        const activeConn = connectionResult.value.data.data.find(c => {
+                            const sid = c.startupId?._id || c.startupId || '';
+                            return String(sid) === String(id);
+                        });
+                        setConnectionRequest(activeConn || null);
+                    }
                 }
                 
                 setLoading(false);
@@ -157,6 +191,61 @@ const JobDetails = () => {
         }
     };
 
+    const handleToggleShortlist = async () => {
+        if (!user) {
+            addToast('Please login to shortlist startups', 'info');
+            navigate('/login');
+            return;
+        }
+
+        setShortlistLoading(true);
+        try {
+            if (isShortlisted) {
+                await api.delete(`/shortlists/${id}`);
+                setIsShortlisted(false);
+                addToast('Startup removed from shortlist', 'success');
+            } else {
+                await api.post('/shortlists', { startupId: id });
+                setIsShortlisted(true);
+                addToast('Startup added to shortlist!', 'success');
+            }
+        } catch (err) {
+            console.error(err);
+            const message = err?.response?.data?.message || 'Failed to update shortlist';
+            addToast(message, 'error');
+        } finally {
+            setShortlistLoading(false);
+        }
+    };
+
+    const handleSendConnection = async (e) => {
+        e.preventDefault();
+        if (!introMessage.trim()) {
+            addToast('Please add an intro message', 'warning');
+            return;
+        }
+
+        setConnectLoading(true);
+        try {
+            const { data } = await api.post('/connections', {
+                startupId: id,
+                message: introMessage
+            });
+            if (data.success) {
+                setConnectionRequest(data.data);
+                setShowConnectModal(false);
+                setIntroMessage('');
+                addToast('Connection request sent to founder!', 'success');
+            }
+        } catch (err) {
+            console.error(err);
+            const message = err?.response?.data?.message || 'Failed to send connection request';
+            addToast(message, 'error');
+        } finally {
+            setConnectLoading(false);
+        }
+    };
+
     if (loading) return <div className={`focused-container ${styles.container}`} style={{ textAlign: 'center', paddingInline: '50px' }}>Loading...</div>;
 
     if (!job) {
@@ -192,6 +281,10 @@ const JobDetails = () => {
     const companyName = job.companyId?.name || 'Unknown Company';
     const companyLogo = job.companyId?.logoUrl;
     const skills = job.skillsRequired || [];
+    const companyType = job.companyType || job.companyId?.companyType || 'company';
+    const labels = getCompanyTypeLabels(companyType);
+    const isInvestor = user && user.role === 'employer' && (user.companyType === 'investor' || user.company_type === 'investor');
+    const isStartupPitch = job?.isStartupPitch || companyType === 'startup';
 
     return (
         <div className={`focused-container ${styles.container}`}>
@@ -231,34 +324,74 @@ const JobDetails = () => {
                         </div>
 
                         <div className={styles.headerActions}>
-                            <button 
-                                className={styles.applyButton} 
-                                onClick={handleApplyClick}
-                                disabled={hasApplied || !job.canApply}
-                                style={{ 
-                                    opacity: (hasApplied || !job.canApply) ? 0.7 : 1, 
-                                    cursor: (hasApplied || !job.canApply) ? 'not-allowed' : 'pointer',
-                                    background: hasApplied ? '#10b981' : (!job.canApply ? 'var(--color-text-muted)' : undefined)
-                                }}
-                            >
-                                {hasApplied ? 'Applied' : (!job.canApply ? 'Applications Closed' : 'Apply')} 
-                                <i className={hasApplied ? "fas fa-check" : "fas fa-external-link-alt"} style={{ marginLeft: '8px', fontSize: '0.9em' }}></i>
-                            </button>
-                            <button
-                                className={styles.saveButton}
-                                onClick={handleToggleSave}
-                                disabled={saveLoading}
-                                title={isSaved ? 'Saved job (click to remove)' : 'Save this job'}
-                                style={{
-                                    opacity: saveLoading ? 0.6 : 1,
-                                    cursor: saveLoading ? 'not-allowed' : 'pointer'
-                                }}
-                            >
-                                <i
-                                    className={`${isSaved ? 'fas' : 'far'} fa-bookmark`}
-                                    style={{ color: isSaved ? '#fbbf24' : 'inherit' }}
-                                ></i>
-                            </button>
+                            {isInvestor && isStartupPitch ? (
+                                <>
+                                    <button 
+                                        className={styles.applyButton} 
+                                        onClick={() => {
+                                            if (connectionRequest) return;
+                                            setShowConnectModal(true);
+                                        }}
+                                        disabled={Boolean(connectionRequest) || connectLoading}
+                                        style={{ 
+                                            opacity: connectionRequest ? 0.7 : 1, 
+                                            cursor: connectionRequest ? 'not-allowed' : 'pointer',
+                                            background: connectionRequest?.status === 'accepted' ? '#10b981' : (connectionRequest?.status === 'pending' ? '#f59e0b' : undefined)
+                                        }}
+                                    >
+                                        {connectionRequest 
+                                            ? `Connection ${connectionRequest.status.charAt(0).toUpperCase() + connectionRequest.status.slice(1)}` 
+                                            : 'Connect with Founder'} 
+                                        <i className={connectionRequest ? "fas fa-user-friends" : "fas fa-paper-plane"} style={{ marginLeft: '8px', fontSize: '0.9em' }}></i>
+                                    </button>
+                                    <button
+                                        className={styles.saveButton}
+                                        onClick={handleToggleShortlist}
+                                        disabled={shortlistLoading}
+                                        title={isShortlisted ? 'Shortlisted startup (click to remove)' : 'Shortlist this startup'}
+                                        style={{
+                                            opacity: shortlistLoading ? 0.6 : 1,
+                                            cursor: shortlistLoading ? 'not-allowed' : 'pointer'
+                                        }}
+                                    >
+                                        <i
+                                            className={`${isShortlisted ? 'fas' : 'far'} fa-bookmark`}
+                                            style={{ color: isShortlisted ? '#fbbf24' : 'inherit' }}
+                                        ></i>
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <button 
+                                        className={styles.applyButton} 
+                                        onClick={handleApplyClick}
+                                        disabled={hasApplied || !job.canApply}
+                                        style={{ 
+                                            opacity: (hasApplied || !job.canApply) ? 0.7 : 1, 
+                                            cursor: (hasApplied || !job.canApply) ? 'not-allowed' : 'pointer',
+                                            background: hasApplied ? '#10b981' : (!job.canApply ? 'var(--color-text-muted)' : undefined)
+                                        }}
+                                    >
+                                        {hasApplied ? 'Applied' : (!job.canApply ? 'Applications Closed' : labels.applyButtonText)} 
+                                        <i className={hasApplied ? "fas fa-check" : "fas fa-external-link-alt"} style={{ marginLeft: '8px', fontSize: '0.9em' }}></i>
+                                    </button>
+                                    <button
+                                        className={styles.saveButton}
+                                        onClick={handleToggleSave}
+                                        disabled={saveLoading}
+                                        title={isSaved ? 'Saved job (click to remove)' : 'Save this job'}
+                                        style={{
+                                            opacity: saveLoading ? 0.6 : 1,
+                                            cursor: saveLoading ? 'not-allowed' : 'pointer'
+                                        }}
+                                    >
+                                        <i
+                                            className={`${isSaved ? 'fas' : 'far'} fa-bookmark`}
+                                            style={{ color: isSaved ? '#fbbf24' : 'inherit' }}
+                                        ></i>
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </div>
 
@@ -266,7 +399,7 @@ const JobDetails = () => {
                     <div className={styles.highlightsGrid}>
                         <div className={styles.highlightCard}>
                             <div className={styles.highlightIcon}><i className="fas fa-map-marker-alt"></i></div>
-                            <p className={styles.highlightLabel}>Location</p>
+                            <p className={styles.highlightLabel}>{labels.detailLocationLabel}</p>
                             <p className={styles.highlightValue}>{location}</p>
                         </div>
                         <div className={styles.highlightCard}>
@@ -286,7 +419,7 @@ const JobDetails = () => {
                         </div>
                         <div className={styles.highlightCard}>
                             <div className={styles.highlightIcon}><i className="fas fa-wallet"></i></div>
-                            <p className={styles.highlightLabel}>Salary</p>
+                            <p className={styles.highlightLabel}>{labels.detailSalaryLabel}</p>
                             <p className={styles.highlightValue}>{salary}</p>
                         </div>
                         <div className={styles.highlightCard}>
@@ -317,7 +450,7 @@ const JobDetails = () => {
 
                     {/* About / Description */}
                     <section className={styles.section}>
-                        <h2 className={styles.sectionTitle}>About The Job</h2>
+                        <h2 className={styles.sectionTitle}>{labels.aboutSectionTitle}</h2>
                         <div 
                             className={styles.descriptionBox}
                             dangerouslySetInnerHTML={{ __html: sanitizedDesc }}
@@ -357,6 +490,57 @@ const JobDetails = () => {
                     job={job}
                     onClose={() => setShowModal(false)}
                 />
+            )}
+
+            {showConnectModal && (
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+                    <div style={{ background: 'var(--color-surface)', padding: '2rem', borderRadius: '12px', maxWidth: '500px', width: '90%', boxShadow: '0 10px 15px rgba(0,0,0,0.1)' }}>
+                        <h2 style={{ marginBottom: '1rem', color: 'var(--color-text-main)' }}>Connect with Founder</h2>
+                        <form onSubmit={handleSendConnection}>
+                            <div style={{ marginBottom: '1.5rem' }}>
+                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: 'var(--color-text-secondary)', marginBottom: '0.5rem' }}>
+                                    Introduce yourself & mention why you want to connect (max 300 characters):
+                                </label>
+                                <textarea
+                                    value={introMessage}
+                                    onChange={(e) => setIntroMessage(e.target.value.slice(0, 300))}
+                                    placeholder="Brief intro..."
+                                    required
+                                    style={{
+                                        width: '100%',
+                                        minHeight: '120px',
+                                        padding: '12px',
+                                        borderRadius: '8px',
+                                        border: '1px solid var(--color-border)',
+                                        background: '#ffffff',
+                                        color: 'var(--color-text-main)',
+                                        outline: 'none',
+                                        fontFamily: 'inherit'
+                                    }}
+                                />
+                                <div style={{ textAlign: 'right', fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '4px' }}>
+                                    {introMessage.length}/300
+                                </div>
+                            </div>
+                            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                                <button 
+                                    type="button" 
+                                    onClick={() => setShowConnectModal(false)}
+                                    style={{ background: 'transparent', border: '1px solid var(--color-border)', color: 'var(--color-text-main)', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer' }}
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    disabled={connectLoading}
+                                    style={{ background: 'var(--color-primary)', border: 'none', color: '#fff', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}
+                                >
+                                    {connectLoading ? 'Sending...' : 'Send Request'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             )}
         </div>
     );

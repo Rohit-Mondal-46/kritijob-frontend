@@ -34,6 +34,7 @@ const Register = () => {
         confirmPassword: ''
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [companyType, setCompanyType] = useState('company');
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -64,8 +65,11 @@ const Register = () => {
 
         setIsLoading(true);
         try {
+            if (role === 'employer') {
+                localStorage.setItem('registered_company_type', companyType);
+            }
             // Call register without auto login
-            const response = await register(formData.name, formData.email, formData.password, role, formData.phone, false);
+            const response = await register(formData.name, formData.email, formData.password, role, formData.phone, false, companyType);
             
             if (response.requiresVerification) {
                 addToast(response.message || 'Registration successful! Please verify your email.', 'success');
@@ -107,6 +111,31 @@ const Register = () => {
                 {error && <div className={styles.error}>{error}</div>}
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {role === 'employer' && (
+                        <div style={{ marginBottom: '8px' }}>
+                            <label style={{ fontSize: '14px', fontWeight: '500', color: 'var(--color-text-main)', display: 'block', marginBottom: '6px' }}>I am registering as:</label>
+                            <select
+                                value={companyType}
+                                onChange={(e) => setCompanyType(e.target.value)}
+                                style={{
+                                    padding: '10px 14px',
+                                    background: '#ffffff',
+                                    border: '1px solid var(--color-border)',
+                                    borderRadius: '8px',
+                                    color: 'var(--color-text-main)',
+                                    fontSize: '0.95rem',
+                                    fontFamily: 'inherit',
+                                    outline: 'none',
+                                    width: '100%',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                <option value="company">Hiring Company</option>
+                                <option value="startup">Startup / Idea</option>
+                                <option value="investor">Investor / VC</option>
+                            </select>
+                        </div>
+                    )}
                     <Input 
                         label="Full Name"
                         type="text"

@@ -8,6 +8,7 @@ import Select from '../../components/ui/Select';
 import api from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
 import { JOB_CATEGORY_OPTIONS, getJobSubcategories, isValidJobCategory, isValidJobSubcategory } from '../../data/jobCategories';
+import { getCompanyTypeLabels } from '../../utils/companyTypeLabels';
 
 const normalizeDateInput = (value) => {
     if (!value) return '';
@@ -34,7 +35,24 @@ const EditJob = () => {
         skillsRequired: [],
         description: '',
         status: 'Open',
-        applicationDeadline: ''
+        applicationDeadline: '',
+        companyType: 'company',
+        tagline: '',
+        problem: '',
+        solution: '',
+        stage: 'Idea',
+        fundingStage: 'Bootstrapped',
+        lookingFor: [],
+        mrrInr: 0,
+        activeUsers: 0,
+        momGrowthPct: 0,
+        deckUrl: '',
+        founderLinkedin: '',
+        founderName: '',
+        contactEmail: '',
+        contactPhone: '',
+        foundingYear: new Date().getFullYear(),
+        teamSize: '1'
     });
 
     useEffect(() => {
@@ -55,7 +73,24 @@ const EditJob = () => {
                         skillsRequired: job.skillsRequired || [],
                         description: job.description || '',
                         status: job.status || 'Open',
-                        applicationDeadline: normalizedDeadline
+                        applicationDeadline: normalizedDeadline,
+                        companyType: job.companyType || job.companyId?.companyType || 'company',
+                        tagline: job.tagline || '',
+                        problem: job.problem || '',
+                        solution: job.solution || '',
+                        stage: job.stage || 'Idea',
+                        fundingStage: job.fundingStage || 'Bootstrapped',
+                        lookingFor: job.lookingFor || [],
+                        mrrInr: job.mrrInr || 0,
+                        activeUsers: job.activeUsers || 0,
+                        momGrowthPct: job.momGrowthPct || 0,
+                        deckUrl: job.deckUrl || '',
+                        founderLinkedin: job.founderLinkedin || '',
+                        founderName: job.founderName || '',
+                        contactEmail: job.contactEmail || '',
+                        contactPhone: job.contactPhone || '',
+                        foundingYear: job.foundingYear || new Date().getFullYear(),
+                        teamSize: job.teamSize || '1'
                     });
                 }
             } catch (err) {
@@ -118,9 +153,16 @@ const EditJob = () => {
             const payload = { ...jobData };
             delete payload.applicationDeadline;
 
-            await api.put(`/jobs/${id}`, {
-                ...payload
-            });
+            if (jobData.companyType === 'startup') {
+                payload.description = `<p><strong>Problem:</strong></p><p>${jobData.problem}</p><p><strong>Solution:</strong></p><p>${jobData.solution}</p>`;
+                payload.isStartupPitch = true;
+                payload.mrrInr = Number(jobData.mrrInr || 0);
+                payload.activeUsers = Number(jobData.activeUsers || 0);
+                payload.momGrowthPct = Number(jobData.momGrowthPct || 0);
+                payload.foundingYear = Number(jobData.foundingYear || 2015);
+            }
+
+            await api.put(`/jobs/${id}`, payload);
 
             addToast('Job updated successfully!', 'success');
             navigate('/dashboard/employer/jobs');
@@ -137,10 +179,12 @@ const EditJob = () => {
         return <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-main)' }}>Loading job...</div>;
     }
 
+    const labels = getCompanyTypeLabels(jobData.companyType);
+
     return (
         <div className={styles.pageContainer}>
             <div className={styles.header}>
-                <h1 style={{fontSize: '2rem', margin: 0, color: 'var(--color-text-main)'}}>Edit Job</h1>
+                <h1 style={{fontSize: '2rem', margin: 0, color: 'var(--color-text-main)'}}>{labels.editHeading}</h1>
                 <button
                     type="button"
                     onClick={() => navigate('/dashboard/employer/jobs')}
@@ -153,96 +197,104 @@ const EditJob = () => {
 
             <form className={styles.formGrid} onSubmit={handleSubmit}>
                 {/* Row 1 */}
-                <Input 
-                    label="Job Title"
-                    name="title" 
-                    value={jobData.title} 
-                    onChange={handleChange} 
-                    required
-                />
+                <div className={styles.formField}>
+                    <Input 
+                        label={labels.titleLabel}
+                        name="title" 
+                        value={jobData.title} 
+                        onChange={handleChange} 
+                        required
+                    />
+                </div>
                  
-                <div style={{display:'flex', flexDirection:'column', gap:'0.5rem'}}>
-                    <label style={{fontSize:'0.875rem', color:'var(--color-text-muted)', fontWeight:'600'}}>Application Deadline</label>
+                <div className={styles.formField}>
+                    <label className={styles.label}>Application Deadline</label>
                     <input 
                         type="date"
                         name="applicationDeadline"
                         value={jobData.applicationDeadline}
                         onChange={handleChange}
-                        style={{
-                            padding: '10px',
-                            background: '#ffffff',
-                            border: '1px solid var(--color-border)',
-                            borderRadius: '8px',
-                            color: 'var(--color-text-main)',
-                            outline: 'none',
-                            fontFamily: 'inherit'
-                        }}
+                        className={styles.dateInput}
                     />
                 </div>
                 
                 {/* Row 2 */}
-                <Select 
-                    label="Category"
-                    name="category" 
-                    value={jobData.category} 
-                    onChange={handleChange}
-                    placeholder="Select Category"
-                    options={JOB_CATEGORY_OPTIONS}
-                    required
-                />
+                <div className={styles.formField}>
+                    <Select 
+                        label="Category"
+                        name="category" 
+                        value={jobData.category} 
+                        onChange={handleChange}
+                        placeholder="Select Category"
+                        options={JOB_CATEGORY_OPTIONS}
+                        required
+                    />
+                </div>
 
-                <Select 
-                    label="Subcategory"
-                    name="subcategory" 
-                    value={jobData.subcategory} 
-                    onChange={handleChange}
-                    placeholder={jobData.category ? 'Select Subcategory' : 'Select Category First'}
-                    options={getJobSubcategories(jobData.category)}
-                    disabled={!jobData.category}
-                    required
-                />
+                <div className={styles.formField}>
+                    <Select 
+                        label="Subcategory"
+                        name="subcategory" 
+                        value={jobData.subcategory} 
+                        onChange={handleChange}
+                        placeholder={jobData.category ? 'Select Subcategory' : 'Select Category First'}
+                        options={getJobSubcategories(jobData.category)}
+                        disabled={!jobData.category}
+                        required
+                    />
+                </div>
                 
-                <Select 
-                    label="Experience"
-                    name="experienceLevel" 
-                    value={jobData.experienceLevel} 
-                    onChange={handleChange}
-                    options={["Entry Level", "Intermediate", "Expert"]}
-                    required
-                />
-                <Select 
-                    label="Job Type"
-                    name="type" 
-                    value={jobData.type} 
-                    onChange={handleChange}
-                    options={["Full-Time", "Part-Time", "Contract", "Freelance", "Internship"]}
-                    required
-                />
+                <div className={styles.formField}>
+                    <Select 
+                        label="Experience"
+                        name="experienceLevel" 
+                        value={jobData.experienceLevel} 
+                        onChange={handleChange}
+                        options={["Entry Level", "Intermediate", "Expert"]}
+                        required
+                    />
+                </div>
+                <div className={styles.formField}>
+                    <Select 
+                        label="Job Type"
+                        name="type" 
+                        value={jobData.type} 
+                        onChange={handleChange}
+                        options={["Full-Time", "Part-Time", "Contract", "Freelance", "Internship"]}
+                        required
+                    />
+                </div>
 
                 {/* Row 3 */}
-                <Input 
-                    label="Location"
-                    name="location" 
-                    value={jobData.location} 
-                    onChange={handleChange} 
-                    required
-                />
-                <Input 
-                    label="Salary Range"
-                    name="salaryRange" 
-                    value={jobData.salaryRange} 
-                    onChange={handleChange} 
-                    required
-                />
+                <div className={styles.formField}>
+                    <Input 
+                        label={labels.locationLabel}
+                        name="location" 
+                        value={jobData.location} 
+                        onChange={handleChange} 
+                        required
+                    />
+                </div>
+                <div className={styles.formField}>
+                    <Input 
+                        label={labels.salaryLabel}
+                        name="salaryRange" 
+                        value={jobData.salaryRange} 
+                        onChange={handleChange} 
+                        required
+                    />
+                </div>
 
-                <Select 
-                    label="Status"
-                    name="status" 
-                    value={jobData.status} 
-                    onChange={handleChange}
-                    options={["Open", "Closed"]}
-                    required
-                />
+                <div className={styles.formField}>
+                    <Select 
+                        label="Status"
+                        name="status" 
+                        value={jobData.status} 
+                        onChange={handleChange}
+                        options={["Open", "Closed"]}
+                        required
+                    />
+                </div>
 
                 {/* Row 4 */}
                 <div className={styles.fullWidth}>
@@ -253,14 +305,240 @@ const EditJob = () => {
                     />
                 </div>
 
-                {/* Row 5 */}
-                <div className={styles.fullWidth}>
-                    <label className={styles.label}>Job Description</label>
-                    <RichTextEditor 
-                        content={jobData.description} 
-                        onChange={handleDescriptionChange} 
-                    />
-                </div>
+                {/* Startup fields */}
+                {jobData.companyType === 'startup' && (
+                    <>
+                        <div className={styles.formField}>
+                            <Input 
+                                label="Tagline"
+                                name="tagline" 
+                                value={jobData.tagline} 
+                                onChange={handleChange} 
+                                placeholder="What you do in 1 line (20-120 chars)"
+                                required
+                            />
+                        </div>
+                        <div className={styles.formField}>
+                            <Select 
+                                label="Stage"
+                                name="stage" 
+                                value={jobData.stage} 
+                                onChange={handleChange}
+                                options={["Idea", "MVP", "Beta", "Revenue", "Scaling"]}
+                                required
+                            />
+                        </div>
+                        <div className={styles.formField}>
+                            <label className={styles.label}>Founded In</label>
+                            <input 
+                                type="number"
+                                name="foundingYear" 
+                                value={jobData.foundingYear} 
+                                onChange={handleChange} 
+                                placeholder="e.g. 2021"
+                                min={2015}
+                                max={new Date().getFullYear()}
+                                required
+                                className={styles.dateInput}
+                                style={{
+                                    padding: '10px',
+                                    background: '#ffffff',
+                                    border: '1px solid var(--color-border)',
+                                    borderRadius: '8px',
+                                    color: 'var(--color-text-main)',
+                                    outline: 'none',
+                                    width: '100%',
+                                    fontFamily: 'inherit'
+                                }}
+                            />
+                        </div>
+                        <div className={styles.formField}>
+                            <Select 
+                                label="Team Size"
+                                name="teamSize" 
+                                value={jobData.teamSize} 
+                                onChange={handleChange}
+                                options={["1", "2-5", "6-10", "11-25", "26-50", "50+"]}
+                                required
+                            />
+                        </div>
+                        <div className={styles.formField}>
+                            <Select 
+                                label="Current Funding Stage"
+                                name="fundingStage" 
+                                value={jobData.fundingStage} 
+                                onChange={handleChange}
+                                options={["Bootstrapped", "Pre-seed", "Seed", "Pre-A", "Series A+", "Not raising"]}
+                                required
+                            />
+                        </div>
+                        <div className={styles.fullWidth} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                            <label className={styles.label}>What You're Looking For (Select 1-5)</label>
+                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                {["Funding", "Co-founder", "Talent", "Mentor", "Pilot"].map(chip => {
+                                    const selected = jobData.lookingFor.includes(chip);
+                                    return (
+                                        <button
+                                            key={chip}
+                                            type="button"
+                                            onClick={() => {
+                                                setJobData(prev => {
+                                                    const current = prev.lookingFor.includes(chip)
+                                                        ? prev.lookingFor.filter(x => x !== chip)
+                                                        : [...prev.lookingFor, chip];
+                                                    return { ...prev, lookingFor: current };
+                                                });
+                                            }}
+                                            style={{
+                                                padding: '6px 14px',
+                                                borderRadius: '20px',
+                                                border: '1px solid var(--color-border)',
+                                                cursor: 'pointer',
+                                                background: selected ? 'var(--color-primary)' : 'var(--color-surface)',
+                                                color: selected ? '#ffffff' : 'var(--color-text-main)',
+                                                fontWeight: '600',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            {chip}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                        <div className={styles.formField}>
+                            <Input 
+                                label="Monthly Revenue (INR)"
+                                type="number"
+                                name="mrrInr" 
+                                value={jobData.mrrInr} 
+                                onChange={handleChange} 
+                                placeholder="0 if pre-revenue"
+                            />
+                        </div>
+                        <div className={styles.formField}>
+                            <Input 
+                                label="Active Users"
+                                type="number"
+                                name="activeUsers" 
+                                value={jobData.activeUsers} 
+                                onChange={handleChange} 
+                                placeholder="0 if none"
+                            />
+                        </div>
+                        <div className={styles.formField}>
+                            <Input 
+                                label="MoM Growth %"
+                                type="number"
+                                name="momGrowthPct" 
+                                value={jobData.momGrowthPct} 
+                                onChange={handleChange} 
+                                placeholder="e.g. 15"
+                            />
+                        </div>
+                        <div className={styles.formField}>
+                            <Input 
+                                label="Pitch Deck Link"
+                                name="deckUrl" 
+                                value={jobData.deckUrl} 
+                                onChange={handleChange} 
+                                placeholder="Drive / Notion / DocSend URL"
+                            />
+                        </div>
+                        <div className={styles.formField}>
+                            <Input 
+                                label="Founder Name"
+                                name="founderName" 
+                                value={jobData.founderName} 
+                                onChange={handleChange} 
+                                placeholder="Full name"
+                                required
+                            />
+                        </div>
+                        <div className={styles.formField}>
+                            <Input 
+                                label="Founder LinkedIn"
+                                name="founderLinkedin" 
+                                value={jobData.founderLinkedin} 
+                                onChange={handleChange} 
+                                placeholder="https://linkedin.com/in/..."
+                                required
+                            />
+                        </div>
+                        <div className={styles.formField}>
+                            <Input 
+                                label="Contact Email"
+                                type="email"
+                                name="contactEmail" 
+                                value={jobData.contactEmail} 
+                                onChange={handleChange} 
+                                placeholder="gated contact email"
+                                required
+                            />
+                        </div>
+                        <div className={styles.formField}>
+                            <Input 
+                                label="Contact Phone"
+                                name="contactPhone" 
+                                value={jobData.contactPhone} 
+                                onChange={handleChange} 
+                                placeholder="Indian +91 mobile"
+                            />
+                        </div>
+                        <div className={styles.fullWidth} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                            <label className={styles.label}>Problem You Solve</label>
+                            <textarea
+                                name="problem"
+                                value={jobData.problem}
+                                onChange={handleChange}
+                                placeholder="Who hurts, how badly? (80-500 chars)"
+                                required
+                                style={{
+                                    width: '100%',
+                                    minHeight: '100px',
+                                    padding: '12px',
+                                    borderRadius: '8px',
+                                    border: '1px solid var(--color-border)',
+                                    background: '#ffffff',
+                                    color: 'var(--color-text-main)',
+                                    outline: 'none',
+                                    fontFamily: 'inherit'
+                                }}
+                            />
+                        </div>
+                        <div className={styles.fullWidth} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                            <label className={styles.label}>Solution / Pitch</label>
+                            <textarea
+                                name="solution"
+                                value={jobData.solution}
+                                onChange={handleChange}
+                                placeholder="How you solve it + why now (150-1500 chars)"
+                                required
+                                style={{
+                                    width: '100%',
+                                    minHeight: '120px',
+                                    padding: '12px',
+                                    borderRadius: '8px',
+                                    border: '1px solid var(--color-border)',
+                                    background: '#ffffff',
+                                    color: 'var(--color-text-main)',
+                                    outline: 'none',
+                                    fontFamily: 'inherit'
+                                }}
+                            />
+                        </div>
+                    </>
+                )}
+
+                {jobData.companyType !== 'startup' && (
+                    <div className={styles.fullWidth}>
+                        <label className={styles.label}>{labels.descriptionLabel}</label>
+                        <RichTextEditor 
+                            content={jobData.description} 
+                            onChange={handleDescriptionChange} 
+                        />
+                    </div>
+                )}
 
                 <div className={styles.actions}>
                     <button type="button" className={styles.draftBtn} onClick={() => navigate('/dashboard/employer/jobs')}>Cancel</button>

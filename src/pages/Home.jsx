@@ -3,6 +3,8 @@ import { AuthContext } from '../context/AuthContext';
 import EmployerHome from '../components/home/EmployerHome';
 import Hero from '../components/layout/Hero';
 import FeaturedJobs from '../components/home/FeaturedJobs';
+import FeaturedStartups from '../components/home/FeaturedStartups';
+import FeaturedInvestors from '../components/home/FeaturedInvestors';
 import JobCategories from '../components/home/JobCategories';
 import CareerCTA from '../components/home/CareerCTA';
 import FeaturesStrip from '../components/home/FeaturesStrip';
@@ -34,6 +36,8 @@ const Home = () => {
         <main style={{ backgroundColor: 'var(--color-background)', minHeight: '100vh', maxWidth: '1600px', margin: '0 auto', paddingBottom: '32px', paddingTop: '10px' }}>
             <Hero />
             <FeaturedJobs />
+            <FeaturedStartups />
+            <FeaturedInvestors />
             <JobCategories />
             <CareerCTA />
             <FeaturesStrip />

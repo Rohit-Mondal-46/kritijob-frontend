@@ -11,6 +11,7 @@ const EmployerDashboard = () => {
 
     const [loading, setLoading] = useState(true);
     const [companyName, setCompanyName] = useState('Employer');
+    const [companyType, setCompanyType] = useState('company');
     const [stats, setStats] = useState({
         activeJobs: 0,
         totalApplications: 0,
@@ -37,6 +38,7 @@ const EmployerDashboard = () => {
 
             if (companyRes.data?.success && companyRes.data?.data?.name) {
                 setCompanyName(companyRes.data.data.name);
+                setCompanyType(companyRes.data.data.companyType || companyRes.data.data.company_type || 'company');
             }
         } catch (error) {
             console.error('Failed to load employer dashboard', error);
@@ -50,27 +52,81 @@ const EmployerDashboard = () => {
         loadDashboard();
     }, [loadDashboard]);
 
+    const config = {
+        company: {
+            active: 'Active Jobs',
+            total: 'Total Applications',
+            new: 'New Applicants',
+            expiring: 'Jobs Expiring Soon',
+            post: 'Post a New Job',
+            postDesc: 'Create a new job posting',
+            manage: 'Manage Jobs',
+            manageDesc: 'View and update your current jobs',
+            view: 'View Applicants',
+            viewDesc: 'See all applicants for active jobs',
+            subtitle: 'Here is a quick snapshot of your hiring activity.'
+        },
+        startup: {
+            active: 'Active Listings',
+            total: 'Total Candidates',
+            new: 'New Candidates',
+            expiring: 'Listings Expiring Soon',
+            post: 'Post Your Startup',
+            postDesc: 'Create a new startup pitch',
+            manage: 'Manage Listings',
+            manageDesc: 'View and update your startup pitches',
+            view: 'View Candidates',
+            viewDesc: 'See all candidates interested in your startup',
+            subtitle: 'Here is a quick snapshot of your startup activity.'
+        },
+        investor: {
+            active: 'Active Funds',
+            total: 'Founder Applications',
+            new: 'New Founder Requests',
+            expiring: 'Funds Expiring Soon',
+            post: 'Post Your Fund',
+            postDesc: 'Create a new VC / investment fund',
+            manage: 'Manage Funds',
+            manageDesc: 'View and update your funds',
+            view: 'View Founders',
+            viewDesc: 'See all founders connecting for funding',
+            subtitle: 'Here is a quick snapshot of your funding activity.'
+        }
+    }[companyType] || {
+        active: 'Active Jobs',
+        total: 'Total Applications',
+        new: 'New Applicants',
+        expiring: 'Jobs Expiring Soon',
+        post: 'Post a New Job',
+        postDesc: 'Create a new job posting',
+        manage: 'Manage Jobs',
+        manageDesc: 'View and update your current jobs',
+        view: 'View Applicants',
+        viewDesc: 'See all applicants for active jobs',
+        subtitle: 'Here is a quick snapshot of your hiring activity.'
+    };
+
     const statCards = [
         {
-            title: 'Active Jobs',
+            title: config.active,
             value: stats.activeJobs,
             icon: 'fa-briefcase',
             color: '#2563eb',
         },
         {
-            title: 'Total Applications',
+            title: config.total,
             value: stats.totalApplications,
             icon: 'fa-users',
             color: '#10b981',
         },
         {
-            title: 'New Applicants',
+            title: config.new,
             value: stats.newApplications,
             icon: 'fa-user-plus',
             color: '#f59e0b',
         },
         {
-            title: 'Jobs Expiring Soon',
+            title: config.expiring,
             value: stats.jobsExpiringSoon,
             icon: 'fa-clock',
             color: '#ef4444',
@@ -79,22 +135,22 @@ const EmployerDashboard = () => {
 
     const quickActions = [
         {
-            title: 'Post a New Job',
-            subtitle: 'Create a new job posting',
+            title: config.post,
+            subtitle: config.postDesc,
             icon: 'fa-plus-circle',
             color: '#10b981',
             path: '/dashboard/employer/post-job',
         },
         {
-            title: 'View Applicants',
-            subtitle: 'See all applicants for active jobs',
+            title: config.view,
+            subtitle: config.viewDesc,
             icon: 'fa-users',
             color: '#2563eb',
             path: '/dashboard/employer/applicants',
         },
         {
-            title: 'Manage Jobs',
-            subtitle: 'View and update your current jobs',
+            title: config.manage,
+            subtitle: config.manageDesc,
             icon: 'fa-clipboard-list',
             color: '#f59e0b',
             path: '/dashboard/employer/jobs',
@@ -110,7 +166,7 @@ const EmployerDashboard = () => {
             <div className={styles.headerRow}>
                 <div>
                     <h1 className={styles.pageTitle}>Welcome, {companyName}!</h1>
-                    <p className={styles.pageSubtitle}>Here is a quick snapshot of your hiring activity.</p>
+                    <p className={styles.pageSubtitle}>{config.subtitle}</p>
                 </div>
             </div>
 
