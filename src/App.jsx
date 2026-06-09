@@ -43,6 +43,8 @@ import PrivacyPolicy from './pages/legal/PrivacyPolicy';
 import TermsOfService from './pages/legal/TermsOfService';
 import AdminAuthGuard from './components/auth/AdminAuthGuard';
 import EmployerAuthGuard from './components/auth/EmployerAuthGuard';
+import FounderConnections from './pages/founder/FounderConnections';
+import InvestorConnections from './pages/investor/InvestorConnections';
 const AdminOverview = React.lazy(() => import('./pages/admin/AdminOverview'));
 const AdminUsers = React.lazy(() => import('./pages/admin/AdminUsers'));
 const AdminJobs = React.lazy(() => import('./pages/admin/AdminJobs'));
@@ -118,6 +120,18 @@ const ProtectedRoute = ({ children }) => {
     return children;
 };
 
+const ConnectionsWrapper = () => {
+  const { user } = useContext(AuthContext);
+  const companyType = user?.companyType || user?.company_type || 'company';
+  if (companyType === 'startup') {
+    return <FounderConnections />;
+  }
+  if (companyType === 'investor') {
+    return <InvestorConnections />;
+  }
+  return <Navigate to="/dashboard" replace />;
+};
+
 function App() {
   return (
     <AuthProvider>
@@ -172,6 +186,7 @@ function App() {
                           <Route path="find-talent" element={<FindTalent />} />
                           <Route path="subscription" element={<EmployerSubscription />} />
                           <Route path="candidate/:id" element={<CandidateDetails />} />
+                          <Route path="connections" element={<ConnectionsWrapper />} />
                       </Route>
                       
                       {/* Admin Routes */}

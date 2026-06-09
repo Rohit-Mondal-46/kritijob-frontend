@@ -345,10 +345,8 @@
 // export default CompanyProfile;
 
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '../../context/ToastContext';
-import { AuthContext } from '../../context/AuthContext';
-import safeStorage from '../../utils/safeStorage';
 import api from '../../utils/api';
 import styles from './Employer.module.css';
 import { useEditor, EditorContent } from '@tiptap/react';
@@ -416,7 +414,6 @@ const MenuBar = ({ editor }) => {
 
 const CompanyProfile = () => {
     const { addToast } = useToast();
-    const { setCompanyType } = useContext(AuthContext);
     const [loading, setLoading] = useState(true);
     const [companyId, setCompanyId] = useState(null);
     const [logoPreview, setLogoPreview] = useState(null); // Add this state for preview
@@ -578,9 +575,6 @@ const CompanyProfile = () => {
             
             // Update local state and exit edit mode
             const updated = res.data.data;
-            const finalType = updated.companyType || company.companyType || 'company';
-            setCompanyType(finalType);
-            safeStorage.setItem('companyType', finalType);
             setCompany(prev => ({
                 ...prev,
                 logo: updated.logoUrl,
@@ -590,7 +584,7 @@ const CompanyProfile = () => {
                 description: updated.description,
                 website: updated.website || '',
                 isPremium: Boolean(updated.isPremiumEmployer ?? prev.isPremium),
-                companyType: finalType
+                companyType: updated.companyType || prev.companyType
             }));
             setLogoFile(null); // Reset file input
             setBannerFile(null);

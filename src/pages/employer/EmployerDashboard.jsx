@@ -1,20 +1,13 @@
-import React, { useCallback, useEffect, useState, useContext } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
-import { AuthContext } from '../../context/AuthContext';
 import DeleteAccountSettings from '../../components/common/DeleteAccountSettings';
 import styles from './EmployerDashboard.module.css';
 
 const EmployerDashboard = () => {
     const navigate = useNavigate();
     const { addToast } = useToast();
-    const { logout } = useContext(AuthContext);
-
-    const handleLogout = () => {
-        logout();
-        navigate('/');
-    };
 
     const [loading, setLoading] = useState(true);
     const [companyName, setCompanyName] = useState('Employer');
@@ -74,30 +67,30 @@ const EmployerDashboard = () => {
             subtitle: 'Here is a quick snapshot of your hiring activity.'
         },
         startup: {
-            active: 'Active Listings',
-            total: 'Total Candidates',
-            new: 'New Candidates',
-            expiring: 'Listings Expiring Soon',
-            post: 'Post Your Startup',
-            postDesc: 'Create a new startup pitch',
-            manage: 'Manage Listings',
-            manageDesc: 'View and update your startup pitches',
-            view: 'View Candidates',
-            viewDesc: 'See all candidates interested in your startup',
+            active: 'Active Pitch',
+            total: 'Shortlist Requests',
+            new: 'Pending Requests',
+            expiring: 'Listing Status',
+            post: 'Post Startup Pitch',
+            postDesc: 'Submit your startup pitch card',
+            manage: 'Manage Pitch',
+            manageDesc: 'View and edit your pitch card',
+            view: 'View Requests',
+            viewDesc: 'Manage connection requests from investors',
             subtitle: 'Here is a quick snapshot of your startup activity.'
         },
         investor: {
-            active: 'Active Funds',
-            total: 'Founder Applications',
-            new: 'New Founder Requests',
-            expiring: 'Funds Expiring Soon',
-            post: 'Post Your Fund',
-            postDesc: 'Create a new VC / investment fund',
-            manage: 'Manage Funds',
-            manageDesc: 'View and update your funds',
-            view: 'View Founders',
-            viewDesc: 'See all founders connecting for funding',
-            subtitle: 'Here is a quick snapshot of your funding activity.'
+            active: 'Shortlisted Startups',
+            total: 'Sent Requests',
+            new: 'Accepted Connections',
+            expiring: 'Active Status',
+            post: 'Edit Profile',
+            postDesc: 'Update your investor profile',
+            manage: 'Browse Startups',
+            manageDesc: 'Explore and filter startup pitches',
+            view: 'Manage Connections',
+            viewDesc: 'View connection requests and status',
+            subtitle: 'Here is a quick snapshot of your investment activity.'
         }
     }[companyType] || {
         active: 'Active Jobs',
@@ -117,25 +110,25 @@ const EmployerDashboard = () => {
         {
             title: config.active,
             value: stats.activeJobs,
-            icon: 'fa-briefcase',
+            icon: companyType === 'startup' ? 'fa-rocket' : (companyType === 'investor' ? 'fa-heart' : 'fa-briefcase'),
             color: '#2563eb',
         },
         {
             title: config.total,
             value: stats.totalApplications,
-            icon: 'fa-users',
+            icon: companyType === 'startup' ? 'fa-inbox' : (companyType === 'investor' ? 'fa-paper-plane' : 'fa-users'),
             color: '#10b981',
         },
         {
             title: config.new,
             value: stats.newApplications,
-            icon: 'fa-user-plus',
+            icon: companyType === 'startup' ? 'fa-envelope-open-text' : (companyType === 'investor' ? 'fa-handshake' : 'fa-user-plus'),
             color: '#f59e0b',
         },
         {
             title: config.expiring,
-            value: stats.jobsExpiringSoon,
-            icon: 'fa-clock',
+            value: companyType === 'startup' ? (stats.activeJobs > 0 ? 'Active' : 'Draft/None') : (companyType === 'investor' ? 'Active' : stats.jobsExpiringSoon),
+            icon: companyType === 'company' ? 'fa-clock' : 'fa-info-circle',
             color: '#ef4444',
         },
     ];
@@ -144,9 +137,9 @@ const EmployerDashboard = () => {
         {
             title: config.post,
             subtitle: config.postDesc,
-            icon: 'fa-plus-circle',
+            icon: companyType === 'investor' ? 'fa-edit' : 'fa-plus-circle',
             color: '#10b981',
-            path: '/dashboard/employer/post-job',
+            path: companyType === 'investor' ? '/dashboard/employer/company' : '/dashboard/employer/post-job',
         },
         {
             title: config.view,
@@ -158,9 +151,9 @@ const EmployerDashboard = () => {
         {
             title: config.manage,
             subtitle: config.manageDesc,
-            icon: 'fa-clipboard-list',
+            icon: companyType === 'investor' ? 'fa-search' : 'fa-clipboard-list',
             color: '#f59e0b',
-            path: '/dashboard/employer/jobs',
+            path: companyType === 'investor' ? '/startups' : '/dashboard/employer/jobs',
         },
     ];
 
@@ -217,24 +210,6 @@ const EmployerDashboard = () => {
             </section>
 
             <section className={styles.settingsSection}>
-                <div className={styles.settingsCard}>
-                    <div className={styles.settingsContent}>
-                        <div className={styles.settingsInfo}>
-                            <h3 className={styles.settingsTitle}>Logout</h3>
-                            <p className={styles.settingsDescription}>
-                                Sign out of your account on this device.
-                            </p>
-                        </div>
-                        <button
-                            type="button"
-                            onClick={handleLogout}
-                            className={styles.logoutBtn}
-                        >
-                            Logout
-                        </button>
-                    </div>
-                </div>
-
                 <DeleteAccountSettings />
             </section>
         </div>

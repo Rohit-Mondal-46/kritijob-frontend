@@ -19,7 +19,7 @@ const ApplicantList = () => {
     const [jobSummaries, setJobSummaries] = useState([]);
     const [connections, setConnections] = useState([]);
     const [shortlists, setShortlists] = useState([]);
-    const [activeTab, setActiveTab] = useState('applicants');
+    const [activeTab, setActiveTab] = useState(companyType === 'investor' || companyType === 'startup' ? 'connections' : 'applicants');
     const [loading, setLoading] = useState(true);
     const [statusActionLoading, setStatusActionLoading] = useState(false);
 

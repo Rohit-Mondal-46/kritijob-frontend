@@ -332,11 +332,22 @@ const PostJob = ({ isAdmin = false }) => {
         if (isAdmin) return;
         const checkCompany = async () => {
             try {
-                const { data } = await api.get('/company/me');
-                if (!data.data) {
+                const [companyRes, jobsRes] = await Promise.all([
+                    api.get('/company/me'),
+                    api.get('/jobs/my-jobs')
+                ]);
+                if (!companyRes.data.data) {
                     setHasCompany(false);
                 } else {
-                    setCompanyType(data.data.companyType || 'company');
+                    const type = companyRes.data.data.companyType || 'company';
+                    setCompanyType(type);
+                    if (type === 'startup') {
+                        const existingPitch = (jobsRes.data.data || []).find(j => j.isStartupPitch);
+                        if (existingPitch) {
+                            addToast('Startups are limited to posting exactly one pitch card. Redirecting to edit...', 'warning');
+                            navigate(`/dashboard/employer/jobs/edit/${existingPitch._id || existingPitch.id}`);
+                        }
+                    }
                 }
             } catch (err) {
                 console.error(err);
@@ -348,7 +359,7 @@ const PostJob = ({ isAdmin = false }) => {
             }
         };
         checkCompany();
-    }, [isAdmin]);
+    }, [isAdmin, navigate, addToast]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;

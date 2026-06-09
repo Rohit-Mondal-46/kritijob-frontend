@@ -706,7 +706,15 @@ const FindTalent = () => {
     const [total, setTotal] = useState(0);
     const { addToast } = useToast();
     const navigate = useNavigate();
-    const { user, companyType } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
+
+    const companyType = user?.companyType || user?.company_type || 'company';
+
+    useEffect(() => {
+        if (companyType === 'startup') {
+            navigate('/investors', { replace: true });
+        }
+    }, [companyType, navigate]);
 
     // Profile Modal State
     const [selectedCandidate, setSelectedCandidate] = useState(null);
@@ -726,29 +734,22 @@ const FindTalent = () => {
                 ...(filters.keyword && { keyword: filters.keyword }),
                 ...(filters.location && { location: filters.location })
             });
-
-            let endpoint = '/employer/candidates';
-            if (companyType === 'investor') {
-                endpoint = '/startups';
-            } else if (companyType === 'startup') {
-                endpoint = '/investors';
-            }
             
-            const res = await api.get(`${endpoint}?${queryParams}`);
+            const res = await api.get(`/employer/candidates?${queryParams}`);
             
             if (res.data.success) {
                 setCandidates(res.data.data || []);
-                setTotal(res.data.total || res.data.count || 0);
+                setTotal(res.data.total || 0);
             } else {
-                addToast(res.data.message || 'Failed to fetch results', 'error');
+                addToast(res.data.message || 'Failed to fetch candidates', 'error');
             }
         } catch (err) {
-            console.error('Error fetching results:', err);
-            addToast('Failed to fetch results', 'error');
+            console.error('Error fetching candidates:', err);
+            addToast('Failed to fetch candidates', 'error');
         } finally {
             setLoading(false);
         }
-    }, [page, filters, addToast, companyType]);
+    }, [page, filters, addToast]);
 
     useEffect(() => {
         // Debounce search
@@ -812,13 +813,7 @@ const FindTalent = () => {
 
     // View Profile Action
     const handleViewProfile = (id) => {
-        if (companyType === 'investor') {
-            navigate(`/jobs/${id}`);
-        } else if (companyType === 'startup') {
-            navigate(`/company/${id}`);
-        } else {
-            navigate(`/dashboard/employer/candidate/${id}`);
-        }
+        navigate(`/dashboard/employer/candidate/${id}`);
     };
 
     const handleMessageClick = (candidate) => {
@@ -829,38 +824,14 @@ const FindTalent = () => {
         setSelectedCandidate(null);
     };
 
-    const pageTitle = companyType === 'startup' 
-        ? 'Find Investors' 
-        : companyType === 'investor' 
-            ? 'Find Founders' 
-            : 'Find Talent';
-
-    const itemLabel = companyType === 'startup' 
-        ? 'investor' 
-        : companyType === 'investor' 
-            ? 'startup' 
-            : 'candidate';
-
-    const searchPlaceholder = companyType === 'startup' 
-        ? 'Search by name, thesis, or sector...' 
-        : companyType === 'investor' 
-            ? 'Search by name, title, or stage...' 
-            : 'Search by name, title, or skills...';
-
-    const emptyTitle = companyType === 'startup' 
-        ? 'No investors found' 
-        : companyType === 'investor' 
-            ? 'No startups found' 
-            : 'No candidates found';
-
     return (
         <div className={styles.container}>
             <div className={styles.header}>
                 <div className={styles.titleSection}>
-                    <h1 className={styles.pageTitle}>{pageTitle}</h1>
+                    <h1 className={styles.pageTitle}>Find Talent</h1>
                     {!loading && total > 0 && (
                         <span className={styles.resultCount}>
-                            {total} {itemLabel}{total !== 1 ? 's' : ''} found
+                            {total} candidate{total !== 1 ? 's' : ''} found
                         </span>
                     )}
                 </div>
@@ -868,7 +839,7 @@ const FindTalent = () => {
                     <input 
                         type="text" 
                         name="keyword"
-                        placeholder={searchPlaceholder} 
+                        placeholder="Search by name, title, or skills..." 
                         value={filters.keyword}
                         onChange={handleFilterChange}
                         className={styles.searchInput}
@@ -885,7 +856,7 @@ const FindTalent = () => {
                     <div className={styles.emptyIcon}>
                         <i className="fas fa-search"></i>
                     </div>
-                    <h3 className={styles.emptyTitle}>{emptyTitle}</h3>
+                    <h3 className={styles.emptyTitle}>No candidates found</h3>
                     <p className={styles.emptyText}>
                         Try adjusting your search keywords or location filters.
                     </p>
@@ -893,97 +864,63 @@ const FindTalent = () => {
             ) : (
                 <>
                     <div className={styles.grid}>
-                        {candidates.map(item => {
-                            let avatarUrl = '';
-                            let name = '';
-                            let title = '';
-                            let location = '';
-                            let tags = [];
-                            let isPremium = false;
-
-                            if (companyType === 'investor') {
-                                // Startup pitch
-                                const company = item.companyId || {};
-                                name = company.name || item.companyName || 'Stealth Startup';
-                                avatarUrl = company.logoUrl;
-                                title = item.title || 'Startup Pitch';
-                                location = item.location || company.location || 'Remote';
-                                tags = [item.sector, item.stage || company.startupStage, item.fundingStage || company.fundingStage].filter(Boolean);
-                            } else if (companyType === 'startup') {
-                                // Investor
-                                name = item.name || 'Anonymous Investor';
-                                avatarUrl = item.logoUrl;
-                                title = item.investorType || 'Investor';
-                                location = item.location || 'Remote';
-                                tags = item.sectorsOfInterest || [];
-                            } else {
-                                // Candidate
-                                name = item.name;
-                                avatarUrl = item.avatarUrl;
-                                title = item.title || 'Open to Work';
-                                location = item.location || 'Remote';
-                                tags = item.skills || [];
-                                isPremium = item.isPremium;
-                            }
-
-                            return (
-                                <div 
-                                    key={item._id} 
-                                    className={styles.card}
-                                    onClick={() => handleViewProfile(item._id)}
-                                >
-                                    <div className={styles.cardHeader}>
-                                        <img 
-                                            src={avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff`} 
-                                            alt={name} 
-                                            className={styles.avatar}
-                                        />
-                                        <div className={styles.headerInfo}>
-                                            <div className={styles.nameRow}>
-                                                <h3 className={styles.name}>{name}</h3>
-                                                {isPremium && (
-                                                    <span className={styles.premiumBadge}>★ Premium</span>
-                                                )}
-                                            </div>
-                                            <p className={styles.title}>
-                                                {title}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className={styles.cardBody}>
-                                        <div className={styles.infoRow}>
-                                            <i className="fas fa-map-marker-alt"></i>
-                                            <span>{location}</span>
-                                        </div>
-                                        <div className={styles.skills}>
-                                            {tags.slice(0, 3).map((tag, index) => (
-                                                <span key={index} className={styles.skillTag}>
-                                                    {tag}
-                                                </span>
-                                            ))}
-                                            {tags.length > 3 && (
-                                                <span className={styles.moreSkills}>
-                                                    +{tags.length - 3}
-                                                </span>
+                        {candidates.map(candidate => (
+                            <div 
+                                key={candidate._id} 
+                                className={styles.card}
+                                onClick={() => handleViewProfile(candidate._id)}
+                            >
+                                <div className={styles.cardHeader}>
+                                    <img 
+                                        src={candidate.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(candidate.name)}&background=random&color=fff`} 
+                                        alt={candidate.name} 
+                                        className={styles.avatar}
+                                    />
+                                    <div className={styles.headerInfo}>
+                                        <div className={styles.nameRow}>
+                                            <h3 className={styles.name}>{candidate.name}</h3>
+                                            {candidate.isPremium && (
+                                                <span className={styles.premiumBadge}>★ Premium</span>
                                             )}
                                         </div>
-                                    </div>
-                                    
-                                    <div className={styles.cardFooter}>
-                                        <button
-                                            className={`${styles.actionBtn} ${styles.profileBtn}`}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleViewProfile(item._id);
-                                            }}
-                                        >
-                                            View Profile
-                                        </button>
+                                        <p className={styles.title}>
+                                            {candidate.title || 'Open to Work'}
+                                        </p>
                                     </div>
                                 </div>
-                            );
-                        })}
+                                
+                                <div className={styles.cardBody}>
+                                    <div className={styles.infoRow}>
+                                        <i className="fas fa-map-marker-alt"></i>
+                                        <span>{candidate.location || 'Remote'}</span>
+                                    </div>
+                                    <div className={styles.skills}>
+                                        {candidate.skills?.slice(0, 3).map((skill, index) => (
+                                            <span key={index} className={styles.skillTag}>
+                                                {skill}
+                                            </span>
+                                        ))}
+                                        {(candidate.skills?.length || 0) > 3 && (
+                                            <span className={styles.moreSkills}>
+                                                +{candidate.skills.length - 3}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                                
+                                <div className={styles.cardFooter}>
+                                    <button
+                                        className={`${styles.actionBtn} ${styles.profileBtn}`}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleViewProfile(candidate._id);
+                                        }}
+                                    >
+                                        View Profile
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
                     </div>
 
                     {/* Enhanced Pagination Controls */}
