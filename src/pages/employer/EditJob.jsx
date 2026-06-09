@@ -21,7 +21,11 @@ import {
     HUBS, 
     FOUNDER_LOOKING_FOR, 
     STARTUP_LOOKING_FOR,
-    INVESTOR_INSTRUMENTS 
+    INVESTOR_INSTRUMENTS,
+    INVESTOR_TICKET_MIN_OPTIONS,
+    INVESTOR_TICKET_MAX_OPTIONS,
+    INVESTOR_GEOGRAPHY_OPTIONS,
+    INVESTOR_STAGES_FUNDED
 } from '../../data/masterData';
 
 const normalizeDateInput = (value) => {
@@ -29,6 +33,22 @@ const normalizeDateInput = (value) => {
     const parsed = new Date(value);
     if (Number.isNaN(parsed.getTime())) return '';
     return parsed.toISOString().split('T')[0];
+};
+
+const formatTicket = (min, max) => {
+  const fmt = (v) => {
+    if (!v) return null;
+    if (v >= 10000000) return `₹${(v / 10000000).toFixed(1)}Cr`;
+    if (v >= 100000) return `₹${(v / 100000).toFixed(0)}L`;
+    if (v >= 1000) return `₹${(v / 1000).toFixed(0)}K`;
+    return `₹${v}`;
+  };
+  const a = fmt(min);
+  const b = fmt(max);
+  if (a && b) return `${a} – ${b}`;
+  if (a) return `${a}+`;
+  if (b) return `Up to ${b}`;
+  return '—';
 };
 
 const EditJob = () => {
@@ -74,7 +94,17 @@ const EditJob = () => {
         teamSize: '1',
         sector: '',
         businessModel: '',
-        website: ''
+        website: '',
+        // Investor specific fields
+        investorType: 'Angel',
+        investorThesis: '',
+        sectorsOfInterest: [],
+        stagesFunded: [],
+        ticketSizeMin: 500000,
+        ticketSizeMax: 10000000,
+        geographyFocus: [],
+        portfolioCompanies: [],
+        contactPreference: 'In-app Connect'
     });
 
     useEffect(() => {
@@ -108,7 +138,7 @@ const EditJob = () => {
                         activeUsers: job.activeUsers || 0,
                         momGrowthPct: job.momGrowthPct || 0,
                         deckUrl: job.deckUrl || '',
-                        founderLinkedin: job.founderLinkedin || '',
+                        founderLinkedin: companyData.founderLinkedin || job.founderLinkedin || '',
                         founderName: job.founderName || '',
                         contactEmail: job.contactEmail || '',
                         contactPhone: job.contactPhone || '',
@@ -116,7 +146,17 @@ const EditJob = () => {
                         teamSize: job.teamSize || '1',
                         sector: job.sector || '',
                         businessModel: job.businessModel || '',
-                        website: companyData.website || ''
+                        website: companyData.website || '',
+                        // Investor specific fields
+                        investorType: companyData.investorType || 'Angel',
+                        investorThesis: companyData.investorThesis || '',
+                        sectorsOfInterest: companyData.sectorsOfInterest || [],
+                        stagesFunded: companyData.stagesFunded || [],
+                        ticketSizeMin: companyData.ticketSizeMin || 500000,
+                        ticketSizeMax: companyData.ticketSizeMax || 10000000,
+                        geographyFocus: companyData.geographyFocus || [],
+                        portfolioCompanies: companyData.portfolioCompanies || [],
+                        contactPreference: companyData.contactPreference || 'In-app Connect'
                     });
                     setCompanyId(companyData._id || companyData.id);
                     if (companyData.logoUrl) {
@@ -282,6 +322,67 @@ const EditJob = () => {
                     setSaving(false);
                     return;
                 }
+            } else if (jobData.companyType === 'investor') {
+                if (!jobData.title || jobData.title.length < 2 || jobData.title.length > 100) {
+                    addToast('Firm / Individual Name must be between 2 and 100 characters.', 'error');
+                    setSaving(false);
+                    return;
+                }
+                if (!jobData.location) {
+                    addToast('Headquarters city is required.', 'error');
+                    setSaving(false);
+                    return;
+                }
+                if (jobData.website && !/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(jobData.website)) {
+                    addToast('Please provide a valid website URL.', 'error');
+                    setSaving(false);
+                    return;
+                }
+                if (!jobData.investorType) {
+                    addToast('Investor Type is required.', 'error');
+                    setSaving(false);
+                    return;
+                }
+                if (!jobData.investorThesis || jobData.investorThesis.length > 1000) {
+                    addToast('Investment Thesis is required and must be 1000 characters or less.', 'error');
+                    setSaving(false);
+                    return;
+                }
+                if (!jobData.sectorsOfInterest || jobData.sectorsOfInterest.length < 1 || jobData.sectorsOfInterest.length > 5) {
+                    addToast('Sectors of Interest must have between 1 and 5 selections.', 'error');
+                    setSaving(false);
+                    return;
+                }
+                if (!jobData.stagesFunded || jobData.stagesFunded.length < 1) {
+                    addToast('At least one Stage Funded must be selected.', 'error');
+                    setSaving(false);
+                    return;
+                }
+                if (!jobData.ticketSizeMin || !jobData.ticketSizeMax) {
+                    addToast('Typical Ticket Size range is required.', 'error');
+                    setSaving(false);
+                    return;
+                }
+                if (Number(jobData.ticketSizeMin) > Number(jobData.ticketSizeMax)) {
+                    addToast('Minimum Ticket Size cannot be greater than Maximum Ticket Size.', 'error');
+                    setSaving(false);
+                    return;
+                }
+                if (!jobData.geographyFocus || jobData.geographyFocus.length < 1) {
+                    addToast('At least one Geography Focus must be selected.', 'error');
+                    setSaving(false);
+                    return;
+                }
+                if (!jobData.founderLinkedin || !/^(https?:\/\/)?(www\.)?linkedin\.com\/(in|company)\/[a-zA-Z0-9_-]+\/?$/.test(jobData.founderLinkedin)) {
+                    addToast('Please provide a valid LinkedIn URL (linkedin.com/in/username or linkedin.com/company/name).', 'error');
+                    setSaving(false);
+                    return;
+                }
+                if (!jobData.contactPreference) {
+                    addToast('Contact preference is required.', 'error');
+                    setSaving(false);
+                    return;
+                }
             } else {
                 if (!isValidJobCategory(jobData.category) || !isValidJobSubcategory(jobData.category, jobData.subcategory)) {
                     addToast('Please select a valid job category and subcategory.', 'error');
@@ -290,7 +391,7 @@ const EditJob = () => {
                 }
             }
 
-            // Sync to Company profile first if startup
+            // Sync to Company profile first if startup or investor
             if (jobData.companyType === 'startup' && companyId) {
                 const companyForm = new FormData();
                 companyForm.append('name', jobData.title);
@@ -305,15 +406,43 @@ const EditJob = () => {
                 await api.put(`/company/${companyId}`, companyForm, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
+            } else if (jobData.companyType === 'investor' && companyId) {
+                const companyForm = new FormData();
+                companyForm.append('name', jobData.title);
+                companyForm.append('location', jobData.location);
+                companyForm.append('website', jobData.website || '');
+                companyForm.append('investorType', jobData.investorType);
+                companyForm.append('investorThesis', jobData.investorThesis);
+                companyForm.append('ticketSizeMin', Number(jobData.ticketSizeMin));
+                companyForm.append('ticketSizeMax', Number(jobData.ticketSizeMax));
+                companyForm.append('founderLinkedin', jobData.founderLinkedin);
+                companyForm.append('contactPreference', jobData.contactPreference);
+                
+                if (jobData.sectorsOfInterest && jobData.sectorsOfInterest.length > 0) {
+                    jobData.sectorsOfInterest.forEach(s => companyForm.append('sectorsOfInterest', s));
+                }
+                if (jobData.stagesFunded && jobData.stagesFunded.length > 0) {
+                    jobData.stagesFunded.forEach(s => companyForm.append('stagesFunded', s));
+                }
+                if (jobData.geographyFocus && jobData.geographyFocus.length > 0) {
+                    jobData.geographyFocus.forEach(g => companyForm.append('geographyFocus', g));
+                }
+                if (jobData.portfolioCompanies && jobData.portfolioCompanies.length > 0) {
+                    jobData.portfolioCompanies.forEach(p => companyForm.append('portfolioCompanies', p));
+                }
+                if (logoFile) {
+                    companyForm.append('logo', logoFile);
+                }
+                await api.put(`/company/${companyId}`, companyForm, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
             }
 
             // Prepare update payload
             const payload = {
                 title: jobData.title,
                 location: jobData.location,
-                salaryRange: jobData.salaryRange,
                 status: jobData.status,
-                skillsRequired: jobData.skillsRequired
             };
 
             if (jobData.companyType === 'startup') {
@@ -337,17 +466,22 @@ const EditJob = () => {
                 payload.solution = jobData.solution;
                 payload.sector = jobData.sector;
                 payload.businessModel = jobData.businessModel;
+            } else if (jobData.companyType === 'investor') {
+                payload.description = `<p><strong>Investment Thesis:</strong></p><p>${jobData.investorThesis}</p>`;
+                payload.salaryRange = formatTicket(Number(jobData.ticketSizeMin), Number(jobData.ticketSizeMax));
             } else {
                 payload.category = jobData.category;
                 payload.subcategory = jobData.subcategory;
                 payload.experienceLevel = jobData.experienceLevel;
                 payload.type = jobData.type;
                 payload.description = jobData.description;
+                payload.salaryRange = jobData.salaryRange;
+                payload.skillsRequired = jobData.skillsRequired;
             }
 
             await api.put(`/jobs/${id}`, payload);
 
-            addToast(jobData.companyType === 'startup' ? 'Startup pitch updated successfully!' : 'Job updated successfully!', 'success');
+            addToast(jobData.companyType === 'startup' ? 'Startup pitch updated successfully!' : jobData.companyType === 'investor' ? 'Investor fund listing updated successfully!' : 'Job updated successfully!', 'success');
             navigate('/dashboard/employer/jobs');
         } catch (err) {
             console.error(err);
@@ -720,8 +854,302 @@ const EditJob = () => {
                             />
                         </div>
                     </>
+                ) : jobData.companyType === 'investor' ? (
+                    // INVESTOR OVERHAULED EXACTLY 13 FIELDS FLOW
+                    <>
+                        {/* Section 1: Fund Profile */}
+                        <div className={styles.fullWidth} style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: '0.75rem', marginBottom: '0.5rem' }}>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0, color: 'var(--color-primary)' }}>1. Fund Profile</h2>
+                        </div>
+
+                        <div className={styles.formField}>
+                            <Input 
+                                label="Firm / Individual Name"
+                                name="title" 
+                                value={jobData.title} 
+                                onChange={handleChange} 
+                                placeholder="e.g. Sequoia India / Ratan Tata"
+                                required
+                            />
+                        </div>
+
+                        <div className={styles.formField}>
+                            <Select 
+                                label="Investor Type"
+                                name="investorType" 
+                                value={jobData.investorType} 
+                                onChange={handleChange} 
+                                placeholder="Select Investor Type"
+                                options={[
+                                    "Angel", "Angel Network", "Syndicate", "Micro-VC", "VC", "CVC", 
+                                    "Family Office", "Accelerator", "Incubator", "Govt Fund", "Crowdfunding"
+                                ]}
+                                required
+                            />
+                        </div>
+
+                        <div className={styles.formField} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                            <div style={{ flex: 1 }}>
+                                <label className={styles.label}>Profile Photo / Logo *</label>
+                                <input 
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleLogoChange}
+                                    style={{
+                                        display: 'block',
+                                        width: '100%',
+                                        padding: '6px',
+                                        border: '1px solid var(--color-border)',
+                                        borderRadius: '8px',
+                                        background: '#fff'
+                                    }}
+                                />
+                                <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '4px', display: 'block' }}>
+                                    ≤ 2 MB, 512×512 recommended
+                                </span>
+                            </div>
+                            {logoPreview && (
+                                <div style={{ width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '1.5rem' }}>
+                                    <img src={logoPreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className={styles.formField}>
+                            <Select 
+                                label="Headquarters"
+                                name="location" 
+                                value={jobData.location} 
+                                onChange={handleChange} 
+                                placeholder="Select Headquarters"
+                                options={[...HUBS, "Singapore", "Dubai", "Other"]}
+                                required
+                            />
+                        </div>
+
+                        <div className={styles.formField}>
+                            <label className={styles.label}>Website</label>
+                            <input 
+                                type="text"
+                                name="website"
+                                value={jobData.website}
+                                onChange={handleChange}
+                                placeholder="https://..."
+                                className={styles.dateInput}
+                            />
+                        </div>
+
+                        <div className={styles.formField}>
+                            <Input 
+                                label="LinkedIn"
+                                name="founderLinkedin" 
+                                value={jobData.founderLinkedin} 
+                                onChange={handleChange} 
+                                placeholder="linkedin.com/in/username or linkedin.com/company/name"
+                                required
+                            />
+                        </div>
+
+                        {/* Section 2: Investment Strategy */}
+                        <div className={styles.fullWidth} style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: '0.75rem', marginTop: '1.5rem', marginBottom: '0.5rem' }}>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0, color: 'var(--color-primary)' }}>2. Investment Strategy</h2>
+                        </div>
+
+                        <div className={styles.fullWidth} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                            <label className={styles.label}>Investment Thesis * (≤ 1000 chars)</label>
+                            <textarea
+                                name="investorThesis"
+                                value={jobData.investorThesis}
+                                onChange={handleChange}
+                                placeholder="Describe your investment focus, value-add, or thesis (max 1000 chars)..."
+                                required
+                                maxLength={1000}
+                                className={styles.dateInput}
+                                style={{ minHeight: '100px', resize: 'vertical' }}
+                            />
+                        </div>
+
+                        <div className={styles.fullWidth} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                            <label className={styles.label}>Sectors of Interest (Select 1-5) *</label>
+                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                {SECTORS.map(chip => {
+                                    const selected = jobData.sectorsOfInterest.includes(chip);
+                                    return (
+                                        <button
+                                            key={chip}
+                                            type="button"
+                                            onClick={() => {
+                                                setJobData(prev => {
+                                                    const current = prev.sectorsOfInterest.includes(chip)
+                                                        ? prev.sectorsOfInterest.filter(x => x !== chip)
+                                                        : prev.sectorsOfInterest.length < 5
+                                                        ? [...prev.sectorsOfInterest, chip]
+                                                        : prev.sectorsOfInterest;
+                                                    return { ...prev, sectorsOfInterest: current };
+                                                });
+                                            }}
+                                            style={{
+                                                padding: '6px 14px',
+                                                borderRadius: '20px',
+                                                border: '1px solid var(--color-border)',
+                                                cursor: 'pointer',
+                                                background: selected ? 'var(--color-primary)' : 'var(--color-surface)',
+                                                color: selected ? '#ffffff' : 'var(--color-text-main)',
+                                                fontWeight: '600',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            {chip}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        <div className={styles.fullWidth} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                            <label className={styles.label}>Stages Funded *</label>
+                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                {INVESTOR_STAGES_FUNDED.map(chip => {
+                                    const selected = jobData.stagesFunded.includes(chip);
+                                    return (
+                                        <button
+                                            key={chip}
+                                            type="button"
+                                            onClick={() => {
+                                                setJobData(prev => {
+                                                    const current = prev.stagesFunded.includes(chip)
+                                                        ? prev.stagesFunded.filter(x => x !== chip)
+                                                        : [...prev.stagesFunded, chip];
+                                                    return { ...prev, stagesFunded: current };
+                                                });
+                                            }}
+                                            style={{
+                                                padding: '6px 14px',
+                                                borderRadius: '20px',
+                                                border: '1px solid var(--color-border)',
+                                                cursor: 'pointer',
+                                                background: selected ? 'var(--color-primary)' : 'var(--color-surface)',
+                                                color: selected ? '#ffffff' : 'var(--color-text-main)',
+                                                fontWeight: '600',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            {chip}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        <div className={styles.formField}>
+                            <Select 
+                                label="Minimum Ticket Size"
+                                name="ticketSizeMin" 
+                                value={jobData.ticketSizeMin} 
+                                onChange={handleChange} 
+                                placeholder="Select Min Ticket"
+                                options={INVESTOR_TICKET_MIN_OPTIONS.map(opt => ({ value: opt.value, label: opt.label }))}
+                                required
+                            />
+                        </div>
+
+                        <div className={styles.formField}>
+                            <Select 
+                                label="Maximum Ticket Size"
+                                name="ticketSizeMax" 
+                                value={jobData.ticketSizeMax} 
+                                onChange={handleChange} 
+                                placeholder="Select Max Ticket"
+                                options={INVESTOR_TICKET_MAX_OPTIONS.map(opt => ({ value: opt.value, label: opt.label }))}
+                                required
+                            />
+                        </div>
+
+                        <div className={styles.fullWidth} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                            <label className={styles.label}>Geography Focus *</label>
+                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                {INVESTOR_GEOGRAPHY_OPTIONS.map(chip => {
+                                    const selected = jobData.geographyFocus.includes(chip);
+                                    return (
+                                        <button
+                                            key={chip}
+                                            type="button"
+                                            onClick={() => {
+                                                setJobData(prev => {
+                                                    const current = prev.geographyFocus.includes(chip)
+                                                        ? prev.geographyFocus.filter(x => x !== chip)
+                                                        : [...prev.geographyFocus, chip];
+                                                    return { ...prev, geographyFocus: current };
+                                                });
+                                            }}
+                                            style={{
+                                                padding: '6px 14px',
+                                                borderRadius: '20px',
+                                                border: '1px solid var(--color-border)',
+                                                cursor: 'pointer',
+                                                background: selected ? 'var(--color-primary)' : 'var(--color-surface)',
+                                                color: selected ? '#ffffff' : 'var(--color-text-main)',
+                                                fontWeight: '600',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            {chip}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        <div className={styles.fullWidth}>
+                            <TagInput 
+                                label="Notable Portfolio"
+                                tags={jobData.portfolioCompanies} 
+                                onChange={(tags) => setJobData(prev => ({ ...prev, portfolioCompanies: tags }))} 
+                                placeholder="Add portfolio company + Enter (e.g. Zerodha)"
+                            />
+                        </div>
+
+                        {/* Section 3: Contact Preferences */}
+                        <div className={styles.fullWidth} style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: '0.75rem', marginTop: '1.5rem', marginBottom: '0.5rem' }}>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0, color: 'var(--color-primary)' }}>3. Reachability</h2>
+                        </div>
+
+                        <div className={styles.fullWidth} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                            <label className={styles.label}>How founders reach you *</label>
+                            <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', marginTop: '4px' }}>
+                                {[
+                                    { value: 'In-app Connect', label: 'In-app Connect' },
+                                    { value: 'Email intro', label: 'Email intro' },
+                                    { value: 'Warm referral only', label: 'Warm referral only' }
+                                ].map(option => (
+                                    <label key={option.value} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: '600', color: 'var(--color-text-main)' }}>
+                                        <input 
+                                            type="radio" 
+                                            name="contactPreference" 
+                                            value={option.value} 
+                                            checked={jobData.contactPreference === option.value} 
+                                            onChange={handleChange}
+                                            style={{ width: '18px', height: '18px', accentColor: 'var(--color-primary)' }}
+                                        />
+                                        {option.label}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className={styles.formField}>
+                            <Select 
+                                label="Status"
+                                name="status" 
+                                value={jobData.status} 
+                                onChange={handleChange}
+                                options={["Open", "Closed"]}
+                                required
+                            />
+                        </div>
+                    </>
                 ) : (
-                    // STANDARD / INVESTOR FORM FLOW
+                    // STANDARD FORM FLOW
                     <>
                         {/* Row 1 */}
                         <div className={styles.formField}>

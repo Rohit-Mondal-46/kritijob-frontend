@@ -83,7 +83,20 @@ const Register = () => {
             }
         } catch (err) {
             console.error('Registration failed', err);
-            const errorMessage = err.response?.data?.message || err.message || 'Registration failed';
+            const resData = err.response?.data;
+            if (resData?.requiresVerification) {
+                addToast(resData.message || 'User already registered. Redirecting to verification...', 'warning');
+                navigate('/verify-email', { state: { email: formData.email } });
+                return;
+            }
+            if (resData?.message === 'User already exists') {
+                const confirmLogin = window.confirm("An account with this email already exists. Would you like to log in instead?");
+                if (confirmLogin) {
+                    navigate('/login', { state: { email: formData.email } });
+                }
+                return;
+            }
+            const errorMessage = resData?.message || err.message || 'Registration failed';
             addToast(errorMessage, 'error');
         } finally {
             setIsLoading(false);

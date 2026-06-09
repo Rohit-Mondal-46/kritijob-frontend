@@ -396,8 +396,46 @@ const JobDetails = () => {
                     </div>
 
                     {/* Highlights Grid */}
-                    {/* Highlights Grid */}
-                    {isStartupPitch ? (
+                    {companyType === 'investor' ? (
+                        <div className={styles.highlightsGrid}>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-map-marker-alt"></i></div>
+                                <p className={styles.highlightLabel}>Headquarters</p>
+                                <p className={styles.highlightValue}>{job.location || '—'}</p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-user-tie"></i></div>
+                                <p className={styles.highlightLabel}>Investor Type</p>
+                                <p className={styles.highlightValue}>{job.companyId?.investorType || '—'}</p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-wallet"></i></div>
+                                <p className={styles.highlightLabel}>Ticket Size Range</p>
+                                <p className={styles.highlightValue}>{job.salaryRange || '—'}</p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-globe"></i></div>
+                                <p className={styles.highlightLabel}>Geography Focus</p>
+                                <p className={styles.highlightValue}>{job.companyId?.geographyFocus?.join(', ') || '—'}</p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fab fa-linkedin"></i></div>
+                                <p className={styles.highlightLabel}>LinkedIn</p>
+                                <p className={styles.highlightValue}>
+                                    {job.companyId?.founderLinkedin ? (
+                                        <a href={job.companyId.founderLinkedin.startsWith('http') ? job.companyId.founderLinkedin : `https://${job.companyId.founderLinkedin}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>
+                                            Profile
+                                        </a>
+                                    ) : '—'}
+                                </p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-envelope-open-text"></i></div>
+                                <p className={styles.highlightLabel}>How to Reach</p>
+                                <p className={styles.highlightValue}>{job.companyId?.contactPreference || '—'}</p>
+                            </div>
+                        </div>
+                    ) : isStartupPitch ? (
                         <div className={styles.highlightsGrid}>
                             <div className={styles.highlightCard}>
                                 <div className={styles.highlightIcon}><i className="fas fa-map-marker-alt"></i></div>
@@ -482,8 +520,46 @@ const JobDetails = () => {
                         </div>
                     )}
 
+                    {/* Investor Specific Sections */}
+                    {companyType === 'investor' && (
+                        <>
+                            {job.companyId?.sectorsOfInterest && job.companyId.sectorsOfInterest.length > 0 && (
+                                <section className={styles.section}>
+                                    <h2 className={styles.sectionTitle}>Sectors of Interest</h2>
+                                    <div className={styles.skillsContainer}>
+                                        {job.companyId.sectorsOfInterest.map(sector => (
+                                            <span key={sector} className={styles.skillTag}>{sector}</span>
+                                        ))}
+                                    </div>
+                                </section>
+                            )}
+
+                            {job.companyId?.stagesFunded && job.companyId.stagesFunded.length > 0 && (
+                                <section className={styles.section}>
+                                    <h2 className={styles.sectionTitle}>Stages Funded</h2>
+                                    <div className={styles.skillsContainer}>
+                                        {job.companyId.stagesFunded.map(stage => (
+                                            <span key={stage} className={styles.skillTag}>{stage}</span>
+                                        ))}
+                                    </div>
+                                </section>
+                            )}
+
+                            {job.companyId?.portfolioCompanies && job.companyId.portfolioCompanies.length > 0 && (
+                                <section className={styles.section}>
+                                    <h2 className={styles.sectionTitle}>Notable Portfolio</h2>
+                                    <div className={styles.skillsContainer}>
+                                        {job.companyId.portfolioCompanies.map(port => (
+                                            <span key={port} className={styles.skillTag}>{port}</span>
+                                        ))}
+                                    </div>
+                                </section>
+                            )}
+                        </>
+                    )}
+
                     {/* Required Skills */}
-                    {!isStartupPitch && skills.length > 0 && (
+                    {companyType !== 'investor' && !isStartupPitch && skills.length > 0 && (
                         <section className={styles.section}>
                             <h2 className={styles.sectionTitle}>Required Skills</h2>
                             <div className={styles.skillsContainer}>

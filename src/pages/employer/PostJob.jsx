@@ -848,8 +848,291 @@ const PostJob = ({ isAdmin = false }) => {
                             />
                         </div>
                     </>
+                ) : companyType === 'investor' ? (
+                    // INVESTOR OVERHAULED EXACTLY 13 FIELDS FLOW
+                    <>
+                        {/* Section 1: Fund Profile */}
+                        <div className={styles.fullWidth} style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: '0.75rem', marginBottom: '0.5rem' }}>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0, color: 'var(--color-primary)' }}>1. Fund Profile</h2>
+                        </div>
+
+                        <div className={styles.formField}>
+                            <Input 
+                                label="Firm / Individual Name"
+                                name="title" 
+                                value={jobData.title} 
+                                onChange={handleChange} 
+                                placeholder="e.g. Sequoia India / Ratan Tata"
+                                required
+                            />
+                        </div>
+
+                        <div className={styles.formField}>
+                            <Select 
+                                label="Investor Type"
+                                name="investorType" 
+                                value={jobData.investorType} 
+                                onChange={handleChange} 
+                                placeholder="Select Investor Type"
+                                options={[
+                                    "Angel", "Angel Network", "Syndicate", "Micro-VC", "VC", "CVC", 
+                                    "Family Office", "Accelerator", "Incubator", "Govt Fund", "Crowdfunding"
+                                ]}
+                                required
+                            />
+                        </div>
+
+                        <div className={styles.formField} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                            <div style={{ flex: 1 }}>
+                                <label className={styles.label}>Profile Photo / Logo *</label>
+                                <input 
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleLogoChange}
+                                    style={{
+                                        display: 'block',
+                                        width: '100%',
+                                        padding: '6px',
+                                        border: '1px solid var(--color-border)',
+                                        borderRadius: '8px',
+                                        background: '#fff'
+                                    }}
+                                />
+                                <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '4px', display: 'block' }}>
+                                    ≤ 2 MB, 512×512 recommended
+                                </span>
+                            </div>
+                            {logoPreview && (
+                                <div style={{ width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '1.5rem' }}>
+                                    <img src={logoPreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className={styles.formField}>
+                            <Select 
+                                label="Headquarters"
+                                name="location" 
+                                value={jobData.location} 
+                                onChange={handleChange} 
+                                placeholder="Select Headquarters"
+                                options={[...HUBS, "Singapore", "Dubai", "Other"]}
+                                required
+                            />
+                        </div>
+
+                        <div className={styles.formField}>
+                            <label className={styles.label}>Website</label>
+                            <input 
+                                type="text"
+                                name="website"
+                                value={jobData.website}
+                                onChange={handleChange}
+                                placeholder="https://..."
+                                className={styles.dateInput}
+                            />
+                        </div>
+
+                        <div className={styles.formField}>
+                            <Input 
+                                label="LinkedIn"
+                                name="founderLinkedin" 
+                                value={jobData.founderLinkedin} 
+                                onChange={handleChange} 
+                                placeholder="linkedin.com/in/username or linkedin.com/company/name"
+                                required
+                            />
+                        </div>
+
+                        {/* Section 2: Investment Strategy */}
+                        <div className={styles.fullWidth} style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: '0.75rem', marginTop: '1.5rem', marginBottom: '0.5rem' }}>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0, color: 'var(--color-primary)' }}>2. Investment Strategy</h2>
+                        </div>
+
+                        <div className={styles.fullWidth} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                            <label className={styles.label}>Investment Thesis * (≤ 1000 chars)</label>
+                            <textarea
+                                name="investorThesis"
+                                value={jobData.investorThesis}
+                                onChange={handleChange}
+                                placeholder="Describe your investment focus, value-add, or thesis (max 1000 chars)..."
+                                required
+                                maxLength={1000}
+                                className={styles.dateInput}
+                                style={{ minHeight: '100px', resize: 'vertical' }}
+                            />
+                        </div>
+
+                        <div className={styles.fullWidth} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                            <label className={styles.label}>Sectors of Interest (Select 1-5) *</label>
+                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                {SECTORS.map(chip => {
+                                    const selected = jobData.sectorsOfInterest.includes(chip);
+                                    return (
+                                        <button
+                                            key={chip}
+                                            type="button"
+                                            onClick={() => {
+                                                setJobData(prev => {
+                                                    const current = prev.sectorsOfInterest.includes(chip)
+                                                        ? prev.sectorsOfInterest.filter(x => x !== chip)
+                                                        : prev.sectorsOfInterest.length < 5
+                                                        ? [...prev.sectorsOfInterest, chip]
+                                                        : prev.sectorsOfInterest;
+                                                    return { ...prev, sectorsOfInterest: current };
+                                                });
+                                            }}
+                                            style={{
+                                                padding: '6px 14px',
+                                                borderRadius: '20px',
+                                                border: '1px solid var(--color-border)',
+                                                cursor: 'pointer',
+                                                background: selected ? 'var(--color-primary)' : 'var(--color-surface)',
+                                                color: selected ? '#ffffff' : 'var(--color-text-main)',
+                                                fontWeight: '600',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            {chip}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        <div className={styles.fullWidth} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                            <label className={styles.label}>Stages Funded *</label>
+                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                {INVESTOR_STAGES_FUNDED.map(chip => {
+                                    const selected = jobData.stagesFunded.includes(chip);
+                                    return (
+                                        <button
+                                            key={chip}
+                                            type="button"
+                                            onClick={() => {
+                                                setJobData(prev => {
+                                                    const current = prev.stagesFunded.includes(chip)
+                                                        ? prev.stagesFunded.filter(x => x !== chip)
+                                                        : [...prev.stagesFunded, chip];
+                                                    return { ...prev, stagesFunded: current };
+                                                });
+                                            }}
+                                            style={{
+                                                padding: '6px 14px',
+                                                borderRadius: '20px',
+                                                border: '1px solid var(--color-border)',
+                                                cursor: 'pointer',
+                                                background: selected ? 'var(--color-primary)' : 'var(--color-surface)',
+                                                color: selected ? '#ffffff' : 'var(--color-text-main)',
+                                                fontWeight: '600',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            {chip}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        <div className={styles.formField}>
+                            <Select 
+                                label="Minimum Ticket Size"
+                                name="ticketSizeMin" 
+                                value={jobData.ticketSizeMin} 
+                                onChange={handleChange} 
+                                placeholder="Select Min Ticket"
+                                options={INVESTOR_TICKET_MIN_OPTIONS.map(opt => ({ value: opt.value, label: opt.label }))}
+                                required
+                            />
+                        </div>
+
+                        <div className={styles.formField}>
+                            <Select 
+                                label="Maximum Ticket Size"
+                                name="ticketSizeMax" 
+                                value={jobData.ticketSizeMax} 
+                                onChange={handleChange} 
+                                placeholder="Select Max Ticket"
+                                options={INVESTOR_TICKET_MAX_OPTIONS.map(opt => ({ value: opt.value, label: opt.label }))}
+                                required
+                            />
+                        </div>
+
+                        <div className={styles.fullWidth} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                            <label className={styles.label}>Geography Focus *</label>
+                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                {INVESTOR_GEOGRAPHY_OPTIONS.map(chip => {
+                                    const selected = jobData.geographyFocus.includes(chip);
+                                    return (
+                                        <button
+                                            key={chip}
+                                            type="button"
+                                            onClick={() => {
+                                                setJobData(prev => {
+                                                    const current = prev.geographyFocus.includes(chip)
+                                                        ? prev.geographyFocus.filter(x => x !== chip)
+                                                        : [...prev.geographyFocus, chip];
+                                                    return { ...prev, geographyFocus: current };
+                                                });
+                                            }}
+                                            style={{
+                                                padding: '6px 14px',
+                                                borderRadius: '20px',
+                                                border: '1px solid var(--color-border)',
+                                                cursor: 'pointer',
+                                                background: selected ? 'var(--color-primary)' : 'var(--color-surface)',
+                                                color: selected ? '#ffffff' : 'var(--color-text-main)',
+                                                fontWeight: '600',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            {chip}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        <div className={styles.fullWidth}>
+                            <TagInput 
+                                label="Notable Portfolio"
+                                tags={jobData.portfolioCompanies} 
+                                onChange={(tags) => setJobData(prev => ({ ...prev, portfolioCompanies: tags }))} 
+                                placeholder="Add portfolio company + Enter (e.g. Zerodha)"
+                            />
+                        </div>
+
+                        {/* Section 3: Contact Preferences */}
+                        <div className={styles.fullWidth} style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: '0.75rem', marginTop: '1.5rem', marginBottom: '0.5rem' }}>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0, color: 'var(--color-primary)' }}>3. Reachability</h2>
+                        </div>
+
+                        <div className={styles.fullWidth} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                            <label className={styles.label}>How founders reach you *</label>
+                            <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', marginTop: '4px' }}>
+                                {[
+                                    { value: 'In-app Connect', label: 'In-app Connect' },
+                                    { value: 'Email intro', label: 'Email intro' },
+                                    { value: 'Warm referral only', label: 'Warm referral only' }
+                                ].map(option => (
+                                    <label key={option.value} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: '600', color: 'var(--color-text-main)' }}>
+                                        <input 
+                                            type="radio" 
+                                            name="contactPreference" 
+                                            value={option.value} 
+                                            checked={jobData.contactPreference === option.value} 
+                                            onChange={handleChange}
+                                            style={{ width: '18px', height: '18px', accentColor: 'var(--color-primary)' }}
+                                        />
+                                        {option.label}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    </>
                 ) : (
-                    // STANDARD / INVESTOR FORM FLOW
+                    // STANDARD FORM FLOW
                     <>
                         {/* Row 1 */}
                         <div className={styles.formField}>
@@ -974,7 +1257,7 @@ const PostJob = ({ isAdmin = false }) => {
 
                 <div className={styles.actions}>
                     <button type="submit" className={styles.submitBtn} disabled={loading}>
-                        {loading ? 'Publishing...' : (companyType === 'startup' ? 'Publish Startup' : 'Publish Job')}
+                        {loading ? 'Publishing...' : (companyType === 'startup' ? 'Publish Startup' : companyType === 'investor' ? 'Publish Fund Listing' : 'Publish Job')}
                     </button>
                 </div>
             </form>
