@@ -65,7 +65,7 @@ const DashboardLayout = () => {
         { path: '/dashboard/employer', label: 'Dashboard', icon: 'fa-chart-line', exact: true },
         { path: '/dashboard/employer/jobs', label: companyType === 'startup' ? 'My Listings' : companyType === 'investor' ? 'My Funds' : 'My Jobs', icon: 'fa-briefcase' },
         companyType === 'startup'
-            ? { path: '/investors', label: 'Listed Fundings', icon: 'fa-hand-holding-usd' }
+            ? { path: '/investors', label: 'Investor List', icon: 'fa-search' }
             : { path: '/dashboard/employer/find-talent', label: companyType === 'investor' ? 'Find Founders' : 'Find Talent', icon: 'fa-search' },
         ...(companyType === 'startup' || companyType === 'investor'
             ? [{ path: '/dashboard/employer/connections', label: 'Connections', icon: 'fa-handshake' }]

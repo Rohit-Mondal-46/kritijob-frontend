@@ -194,14 +194,14 @@ const EmployerHome = () => {
                             onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.02)'}
                         >
                             <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: companyType === 'startup' ? 'rgba(59, 130, 246, 0.1)' : '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '20px', flexShrink: 0 }}>
-                                <i className={companyType === 'startup' ? "fas fa-hand-holding-usd" : "fas fa-search"} style={{ color: companyType === 'startup' ? '#3b82f6' : '#d97706', fontSize: '20px' }}></i>
+                                <i className={companyType === 'startup' ? "fas fa-search" : "fas fa-search"} style={{ color: companyType === 'startup' ? '#3b82f6' : '#d97706', fontSize: '20px' }}></i>
                             </div>
                             <div style={{ flexGrow: 1 }}>
                                 <div style={{ fontSize: '18px', fontWeight: '600', color: '#0f172a', marginBottom: '4px' }}>
-                                    {companyType === 'startup' ? 'Listed Fundings' : companyType === 'investor' ? 'Find Founders' : 'Find Candidates'}
+                                    {companyType === 'startup' ? 'Investor List' : companyType === 'investor' ? 'Find Founders' : 'Find Candidates'}
                                 </div>
                                 <div style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
-                                    {companyType === 'startup' ? 'Search our listed funding and investor database' : companyType === 'investor' ? 'Search founder profiles' : 'Search our talent database'}
+                                    {companyType === 'startup' ? 'Search our investor database' : companyType === 'investor' ? 'Search founder profiles' : 'Search our talent database'}
                                 </div>
                             </div>
                             <i className="fas fa-chevron-right" style={{ color: '#cbd5e1', fontSize: '18px' }}></i>

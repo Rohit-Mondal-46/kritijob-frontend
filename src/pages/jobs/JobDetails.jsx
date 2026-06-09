@@ -396,48 +396,94 @@ const JobDetails = () => {
                     </div>
 
                     {/* Highlights Grid */}
-                    <div className={styles.highlightsGrid}>
-                        <div className={styles.highlightCard}>
-                            <div className={styles.highlightIcon}><i className="fas fa-map-marker-alt"></i></div>
-                            <p className={styles.highlightLabel}>{labels.detailLocationLabel}</p>
-                            <p className={styles.highlightValue}>{location}</p>
+                    {/* Highlights Grid */}
+                    {isStartupPitch ? (
+                        <div className={styles.highlightsGrid}>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-map-marker-alt"></i></div>
+                                <p className={styles.highlightLabel}>HQ City</p>
+                                <p className={styles.highlightValue}>{job.location || '—'}</p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-rocket"></i></div>
+                                <p className={styles.highlightLabel}>Stage</p>
+                                <p className={styles.highlightValue}>{job.stage || '—'}</p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-hand-holding-usd"></i></div>
+                                <p className={styles.highlightLabel}>Funding Stage</p>
+                                <p className={styles.highlightValue}>{job.fundingStage || '—'}</p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-wallet"></i></div>
+                                <p className={styles.highlightLabel}>Amount Seeking</p>
+                                <p className={styles.highlightValue}>{job.salaryRange || '—'}</p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-industry"></i></div>
+                                <p className={styles.highlightLabel}>Sector</p>
+                                <p className={styles.highlightValue}>{job.sector || '—'}</p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-chart-line"></i></div>
+                                <p className={styles.highlightLabel}>Business Model</p>
+                                <p className={styles.highlightValue}>{job.businessModel || '—'}</p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-calendar-alt"></i></div>
+                                <p className={styles.highlightLabel}>Founded In</p>
+                                <p className={styles.highlightValue}>{job.foundingYear || '—'}</p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-users"></i></div>
+                                <p className={styles.highlightLabel}>Team Size</p>
+                                <p className={styles.highlightValue}>{job.teamSize || '—'}</p>
+                            </div>
                         </div>
-                        <div className={styles.highlightCard}>
-                            <div className={styles.highlightIcon}><i className="fas fa-briefcase"></i></div>
-                            <p className={styles.highlightLabel}>Experience</p>
-                            <p className={styles.highlightValue}>{experience}</p>
+                    ) : (
+                        <div className={styles.highlightsGrid}>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-map-marker-alt"></i></div>
+                                <p className={styles.highlightLabel}>{labels.detailLocationLabel}</p>
+                                <p className={styles.highlightValue}>{location}</p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-briefcase"></i></div>
+                                <p className={styles.highlightLabel}>Experience</p>
+                                <p className={styles.highlightValue}>{experience}</p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-layer-group"></i></div>
+                                <p className={styles.highlightLabel}>Category</p>
+                                <p className={styles.highlightValue}>{category}</p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-tags"></i></div>
+                                <p className={styles.highlightLabel}>Subcategory</p>
+                                <p className={styles.highlightValue}>{subcategory}</p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-wallet"></i></div>
+                                <p className={styles.highlightLabel}>{labels.detailSalaryLabel}</p>
+                                <p className={styles.highlightValue}>{salary}</p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-bolt"></i></div>
+                                <p className={styles.highlightLabel}>Job Type</p>
+                                <p className={styles.highlightValue}>{type}</p>
+                            </div>
+                            <div className={styles.highlightCard}>
+                                <div className={styles.highlightIcon}><i className="fas fa-hourglass-end"></i></div>
+                                <p className={styles.highlightLabel}>Deadline</p>
+                                <p className={styles.highlightValue}>
+                                    {job.applicationDeadline ? new Date(job.applicationDeadline).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'No Deadline'}
+                                </p>
+                            </div>
                         </div>
-                        <div className={styles.highlightCard}>
-                            <div className={styles.highlightIcon}><i className="fas fa-layer-group"></i></div>
-                            <p className={styles.highlightLabel}>Category</p>
-                            <p className={styles.highlightValue}>{category}</p>
-                        </div>
-                        <div className={styles.highlightCard}>
-                            <div className={styles.highlightIcon}><i className="fas fa-tags"></i></div>
-                            <p className={styles.highlightLabel}>Subcategory</p>
-                            <p className={styles.highlightValue}>{subcategory}</p>
-                        </div>
-                        <div className={styles.highlightCard}>
-                            <div className={styles.highlightIcon}><i className="fas fa-wallet"></i></div>
-                            <p className={styles.highlightLabel}>{labels.detailSalaryLabel}</p>
-                            <p className={styles.highlightValue}>{salary}</p>
-                        </div>
-                        <div className={styles.highlightCard}>
-                            <div className={styles.highlightIcon}><i className="fas fa-bolt"></i></div>
-                            <p className={styles.highlightLabel}>Job Type</p>
-                            <p className={styles.highlightValue}>{type}</p>
-                        </div>
-                        <div className={styles.highlightCard}>
-                            <div className={styles.highlightIcon}><i className="fas fa-hourglass-end"></i></div>
-                            <p className={styles.highlightLabel}>Deadline</p>
-                            <p className={styles.highlightValue}>
-                                {job.applicationDeadline ? new Date(job.applicationDeadline).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'No Deadline'}
-                            </p>
-                        </div>
-                    </div>
+                    )}
 
                     {/* Required Skills */}
-                    {skills.length > 0 && (
+                    {!isStartupPitch && skills.length > 0 && (
                         <section className={styles.section}>
                             <h2 className={styles.sectionTitle}>Required Skills</h2>
                             <div className={styles.skillsContainer}>

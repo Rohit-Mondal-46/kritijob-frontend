@@ -140,14 +140,6 @@ const StartupListing = () => {
                 <span className={styles.heroStatValue}>{pagination.total}</span>
                 <span className={styles.heroStatLabel}>Active Pitches</span>
               </div>
-              <div className={styles.heroStat}>
-                <span className={styles.heroStatValue}>—</span>
-                <span className={styles.heroStatLabel}>Sectors</span>
-              </div>
-              <div className={styles.heroStat}>
-                <span className={styles.heroStatValue}>—</span>
-                <span className={styles.heroStatLabel}>Funded</span>
-              </div>
             </div>
           </div>
         </div>

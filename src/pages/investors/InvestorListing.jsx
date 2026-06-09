@@ -141,14 +141,8 @@ const InvestorListing = () => {
                 <span className={styles.heroStatValue}>{pagination.total}</span>
                 <span className={styles.heroStatLabel}>Investors</span>
               </div>
-              <div className={styles.heroStat}>
-                <span className={styles.heroStatValue}>—</span>
-                <span className={styles.heroStatLabel}>Sectors</span>
-              </div>
-              <div className={styles.heroStat}>
-                <span className={styles.heroStatValue}>—</span>
-                <span className={styles.heroStatLabel}>Deals Done</span>
-              </div>
+               
+              
             </div>
           </div>
         </div>
