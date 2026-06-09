@@ -713,6 +713,8 @@ const FindTalent = () => {
     useEffect(() => {
         if (companyType === 'startup') {
             navigate('/investors', { replace: true });
+        } else if (companyType === 'investor') {
+            navigate('/startups', { replace: true });
         }
     }, [companyType, navigate]);
 

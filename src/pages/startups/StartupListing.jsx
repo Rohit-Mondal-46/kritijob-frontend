@@ -4,6 +4,13 @@ import styles from './StartupListing.module.css';
 import Footer from '../../components/layout/Footer';
 import api from '../../utils/api';
 import { updateSEO } from '../../utils/seo';
+import {
+  SECTORS,
+  STAGES_TRACTION,
+  STARTUP_FUNDING_STAGES,
+  HUBS,
+  FOUNDER_LOOKING_FOR,
+} from '../../data/masterData';
 
 const formatCurrency = (val) => {
   if (!val) return '—';
@@ -20,22 +27,60 @@ const formatNumber = (val) => {
   return val.toString();
 };
 
+const SORT_OPTIONS = [
+  { value: '-createdAt', label: 'Newest First' },
+  { value: 'createdAt', label: 'Oldest First' },
+  { value: '-mrrInr', label: 'Highest MRR' },
+  { value: '-activeUsers', label: 'Most Users' },
+  { value: '-momGrowthPct', label: 'Fastest Growth' },
+];
+
 const StartupListing = () => {
   const [pitches, setPitches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [initialLoad, setInitialLoad] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [searchInput, setSearchInput] = useState(searchParams.get('keyword') || '');
   const navigate = useNavigate();
 
   const queryString = searchParams.toString();
 
+  // Derive active filters from URL params
+  const activeFilters = useMemo(() => ({
+    keyword: searchParams.get('keyword') || '',
+    sectors: searchParams.get('sector')?.split(',').filter(Boolean) || [],
+    stages: searchParams.get('stage')?.split(',').filter(Boolean) || [],
+    fundingStages: searchParams.get('fundingStage')?.split(',').filter(Boolean) || [],
+    hubs: searchParams.get('location')?.split(',').filter(Boolean) || [],
+    lookingFor: searchParams.get('lookingFor')?.split(',').filter(Boolean) || [],
+    sort: searchParams.get('sort') || '-createdAt',
+  }), [searchParams]);
+
+  const activeCount = useMemo(() => {
+    const af = activeFilters;
+    return (
+      af.sectors.length +
+      af.stages.length +
+      af.fundingStages.length +
+      af.hubs.length +
+      af.lookingFor.length +
+      (af.keyword ? 1 : 0)
+    );
+  }, [activeFilters]);
+
   useEffect(() => {
     updateSEO({
       title: 'Startups & Ideas — KirtiJob',
-      description: 'Discover innovative startups and pitch your idea to investors on KirtiJob. Browse startup listings, find co-founders, and connect with the ecosystem.',
+      description: 'Discover innovative startups and pitch your idea to investors on KirtiJob.',
     });
   }, []);
+
+  // Sync search input when URL changes externally
+  useEffect(() => {
+    setSearchInput(searchParams.get('keyword') || '');
+  }, [searchParams]);
 
   useEffect(() => {
     let cancelled = false;
@@ -55,7 +100,7 @@ const StartupListing = () => {
           });
         }
       } catch (err) {
-        // Fallback: try /jobs with frontend filter
+        // Fallback: /jobs with client-side filter
         try {
           const apiParams = new URLSearchParams(queryString);
           apiParams.set('limit', '100');
@@ -86,6 +131,51 @@ const StartupListing = () => {
     fetchPitches();
     return () => { cancelled = true; };
   }, [queryString]);
+
+  const toggleChipFilter = useCallback((paramKey, value) => {
+    const params = new URLSearchParams(searchParams);
+    const current = params.get(paramKey)?.split(',').filter(Boolean) || [];
+    const idx = current.indexOf(value);
+    if (idx >= 0) current.splice(idx, 1);
+    else current.push(value);
+    if (current.length) params.set(paramKey, current.join(','));
+    else params.delete(paramKey);
+    params.set('page', '1');
+    setSearchParams(params);
+  }, [searchParams, setSearchParams]);
+
+  const handleSearch = useCallback((e) => {
+    e.preventDefault();
+    const params = new URLSearchParams(searchParams);
+    if (searchInput.trim()) params.set('keyword', searchInput.trim());
+    else params.delete('keyword');
+    params.set('page', '1');
+    setSearchParams(params);
+  }, [searchInput, searchParams, setSearchParams]);
+
+  const handleSort = useCallback((sortValue) => {
+    const params = new URLSearchParams(searchParams);
+    if (sortValue && sortValue !== '-createdAt') params.set('sort', sortValue);
+    else params.delete('sort');
+    params.set('page', '1');
+    setSearchParams(params);
+  }, [searchParams, setSearchParams]);
+
+  const clearAllFilters = useCallback(() => {
+    setSearchParams({});
+    setSearchInput('');
+  }, [setSearchParams]);
+
+  const removeFilter = useCallback((paramKey, value) => {
+    if (paramKey === 'keyword') {
+      const params = new URLSearchParams(searchParams);
+      params.delete('keyword');
+      setSearchParams(params);
+      setSearchInput('');
+    } else {
+      toggleChipFilter(paramKey, value);
+    }
+  }, [searchParams, setSearchParams, toggleChipFilter]);
 
   const handlePageChange = useCallback((newPage) => {
     const params = new URLSearchParams(searchParams);
@@ -132,7 +222,7 @@ const StartupListing = () => {
           <div className={styles.heroContent}>
             <h1 className={styles.heroTitle}>Startups & Ideas</h1>
             <p className={styles.heroSubtitle}>
-              Discover the next big thing. Browse startup pitches, explore innovative ideas, 
+              Discover the next big thing. Browse startup pitches, explore innovative ideas,
               and connect with founders building the future.
             </p>
             <div className={styles.heroStats}>
@@ -146,6 +236,155 @@ const StartupListing = () => {
 
         {/* Content */}
         <div className={styles.contentArea}>
+          {/* Filter Bar */}
+          <div className={styles.filterBar}>
+            <form onSubmit={handleSearch} className={styles.searchRow}>
+              <div className={styles.searchInputWrapper}>
+                <i className="fas fa-search"></i>
+                <input
+                  type="text"
+                  className={styles.searchInput}
+                  placeholder="Search startups, founders, sectors..."
+                  value={searchInput}
+                  onChange={e => setSearchInput(e.target.value)}
+                />
+              </div>
+              <button type="submit" className={styles.searchBtn}>Search</button>
+              <button
+                type="button"
+                className={`${styles.filterToggleBtn} ${filtersOpen ? styles.filterToggleBtnActive : ''}`}
+                onClick={() => setFiltersOpen(v => !v)}
+              >
+                <i className="fas fa-sliders-h"></i>
+                Filters
+                {activeCount > 0 && <span className={styles.filterBadge}>{activeCount}</span>}
+              </button>
+              <select
+                className={styles.sortSelect}
+                value={activeFilters.sort}
+                onChange={e => handleSort(e.target.value)}
+              >
+                {SORT_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </form>
+
+            {filtersOpen && (
+              <div className={styles.filterPanel}>
+                <div className={styles.filterGroup}>
+                  <span className={styles.filterGroupLabel}>Sector</span>
+                  <div className={styles.chipRow}>
+                    {SECTORS.map(s => (
+                      <button
+                        key={s} type="button"
+                        className={`${styles.chip} ${activeFilters.sectors.includes(s) ? styles.chipActive : ''}`}
+                        onClick={() => toggleChipFilter('sector', s)}
+                      >{s}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.filterGroup}>
+                  <span className={styles.filterGroupLabel}>Stage</span>
+                  <div className={styles.chipRow}>
+                    {STAGES_TRACTION.map(s => (
+                      <button
+                        key={s} type="button"
+                        className={`${styles.chip} ${activeFilters.stages.includes(s) ? styles.chipActive : ''}`}
+                        onClick={() => toggleChipFilter('stage', s)}
+                      >{s}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.filterGroup}>
+                  <span className={styles.filterGroupLabel}>Funding Stage</span>
+                  <div className={styles.chipRow}>
+                    {STARTUP_FUNDING_STAGES.map(f => (
+                      <button
+                        key={f} type="button"
+                        className={`${styles.chip} ${activeFilters.fundingStages.includes(f) ? styles.chipActive : ''}`}
+                        onClick={() => toggleChipFilter('fundingStage', f)}
+                      >{f}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.filterGroup}>
+                  <span className={styles.filterGroupLabel}>Hub / Location</span>
+                  <div className={styles.chipRow}>
+                    {HUBS.map(h => (
+                      <button
+                        key={h} type="button"
+                        className={`${styles.chip} ${activeFilters.hubs.includes(h) ? styles.chipActive : ''}`}
+                        onClick={() => toggleChipFilter('location', h)}
+                      >{h}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.filterGroup}>
+                  <span className={styles.filterGroupLabel}>Founder Looking For</span>
+                  <div className={styles.chipRow}>
+                    {FOUNDER_LOOKING_FOR.map(l => (
+                      <button
+                        key={l} type="button"
+                        className={`${styles.chip} ${activeFilters.lookingFor.includes(l) ? styles.chipActive : ''}`}
+                        onClick={() => toggleChipFilter('lookingFor', l)}
+                      >{l}</button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Active filter chips */}
+            {activeCount > 0 && (
+              <div className={styles.activeFilters}>
+                {activeFilters.keyword && (
+                  <span className={styles.activeChip}>
+                    &ldquo;{activeFilters.keyword}&rdquo;
+                    <button type="button" onClick={() => removeFilter('keyword')}>×</button>
+                  </span>
+                )}
+                {activeFilters.sectors.map(s => (
+                  <span key={s} className={styles.activeChip}>
+                    {s}
+                    <button type="button" onClick={() => removeFilter('sector', s)}>×</button>
+                  </span>
+                ))}
+                {activeFilters.stages.map(s => (
+                  <span key={s} className={styles.activeChip}>
+                    Stage: {s}
+                    <button type="button" onClick={() => removeFilter('stage', s)}>×</button>
+                  </span>
+                ))}
+                {activeFilters.fundingStages.map(f => (
+                  <span key={f} className={styles.activeChip}>
+                    {f}
+                    <button type="button" onClick={() => removeFilter('fundingStage', f)}>×</button>
+                  </span>
+                ))}
+                {activeFilters.hubs.map(h => (
+                  <span key={h} className={styles.activeChip}>
+                    <i className="fas fa-map-marker-alt"></i> {h}
+                    <button type="button" onClick={() => removeFilter('location', h)}>×</button>
+                  </span>
+                ))}
+                {activeFilters.lookingFor.map(l => (
+                  <span key={l} className={styles.activeChip}>
+                    {l}
+                    <button type="button" onClick={() => removeFilter('lookingFor', l)}>×</button>
+                  </span>
+                ))}
+                <button type="button" className={styles.clearAllBtn} onClick={clearAllFilters}>
+                  Clear All
+                </button>
+              </div>
+            )}
+          </div>
+
           <div className={styles.resultsHeader}>
             <div className={styles.resultsTitleArea}>
               <h2>Browse Pitches</h2>
@@ -178,6 +417,7 @@ const StartupListing = () => {
                     onClick={() => navigate(`/jobs/${pitch._id || pitch.id}`)}
                     role="button"
                     tabIndex={0}
+                    onKeyDown={e => e.key === 'Enter' && navigate(`/jobs/${pitch._id || pitch.id}`)}
                   >
                     <div className={styles.cardHeader}>
                       <div className={styles.companyLogo}>
@@ -259,14 +499,21 @@ const StartupListing = () => {
                 <div className={styles.emptyIcon}>
                   <i className="fas fa-rocket"></i>
                 </div>
-                <h3 className={styles.emptyTitle}>No startup pitches yet</h3>
+                <h3 className={styles.emptyTitle}>
+                  {activeCount > 0 ? 'No results match your filters' : 'No startup pitches yet'}
+                </h3>
                 <p className={styles.emptyDesc}>
-                  Be the first to pitch your startup idea! Create a company profile 
-                  with type "Startup" and post your pitch.
+                  {activeCount > 0
+                    ? 'Try adjusting or clearing your filters.'
+                    : 'Be the first to pitch your startup idea! Create a company profile with type "Startup" and post your pitch.'}
                 </p>
-                <button className={styles.emptyButton} onClick={() => navigate('/role-selection')}>
-                  Get Started
-                </button>
+                {activeCount > 0 ? (
+                  <button className={styles.emptyButton} onClick={clearAllFilters}>Clear Filters</button>
+                ) : (
+                  <button className={styles.emptyButton} onClick={() => navigate('/role-selection')}>
+                    Get Started
+                  </button>
+                )}
               </div>
             )}
           </div>

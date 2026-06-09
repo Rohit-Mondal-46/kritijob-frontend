@@ -198,6 +198,11 @@ const JobDetails = () => {
             return;
         }
 
+        if (!isInvestor) {
+            addToast('Only investors can shortlist startups', 'warning');
+            return;
+        }
+
         setShortlistLoading(true);
         try {
             if (isShortlisted) {
@@ -285,6 +290,10 @@ const JobDetails = () => {
     const labels = getCompanyTypeLabels(companyType);
     const isInvestor = user && user.role === 'employer' && (user.companyType === 'investor' || user.company_type === 'investor');
     const isStartupPitch = job?.isStartupPitch || companyType === 'startup';
+    const hasValidCompany = job.companyId && 
+                            typeof job.companyId === 'object' && 
+                            job.companyId._id && 
+                            job.companyId._id !== 'Gated - Connect to view';
 
     return (
         <div className={`focused-container ${styles.container}`}>
@@ -324,11 +333,20 @@ const JobDetails = () => {
                         </div>
 
                         <div className={styles.headerActions}>
-                            {isInvestor && isStartupPitch ? (
+                            {isStartupPitch ? (
                                 <>
                                     <button 
                                         className={styles.applyButton} 
                                         onClick={() => {
+                                            if (!user) {
+                                                addToast('Please login as an investor to connect', 'info');
+                                                navigate('/login');
+                                                return;
+                                            }
+                                            if (!isInvestor) {
+                                                addToast('Only investors can connect with startup founders', 'warning');
+                                                return;
+                                            }
                                             if (connectionRequest) return;
                                             setShowConnectModal(true);
                                         }}
@@ -580,7 +598,7 @@ const JobDetails = () => {
                     </section>
 
                     {/* Company Section */}
-                    {job.companyId && (
+                    {hasValidCompany && (
                         <div className={styles.companySection}>
                             <div className={styles.companyHeader}>
                                 <h2 className={styles.sectionTitle} style={{ margin: 0 }}>About Company</h2>
@@ -597,7 +615,7 @@ const JobDetails = () => {
                                 </div>
                                 <div>
                                     <h3 className={styles.companyName}>{companyName}</h3>
-                                    <p className={styles.employeeCount}>{job.companyId.location}</p>
+                                    <p className={styles.employeeCount}>{job.companyId.location || 'Location Gated'}</p>
                                 </div>
                             </div>
                             {/* Company description snippet? Backend doesn't send full company desc in job populate usually, but kept simple for now */}

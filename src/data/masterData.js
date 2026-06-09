@@ -28,7 +28,7 @@ export const STARTUP_TICKET_SIZES = [
 ];
 
 export const STAGES_TRACTION = [
-  "Idea", "MVP", "Beta", "Revenue", "Scaling"
+  "Idea", "MVP", "Beta", "Revenue", "Profitable", "Scaling"
 ];
 
 export const BUSINESS_MODELS = [

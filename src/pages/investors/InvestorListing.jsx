@@ -4,6 +4,12 @@ import styles from './InvestorListing.module.css';
 import Footer from '../../components/layout/Footer';
 import api from '../../utils/api';
 import { updateSEO } from '../../utils/seo';
+import {
+  INVESTOR_TYPES,
+  SECTORS,
+  INVESTOR_STAGES_FUNDED,
+  INVESTOR_GEOGRAPHY_OPTIONS,
+} from '../../data/masterData';
 
 const formatTicket = (min, max) => {
   const fmt = (v) => {
@@ -21,15 +27,44 @@ const formatTicket = (min, max) => {
   return null;
 };
 
+const SORT_OPTIONS = [
+  { value: '-createdAt', label: 'Newest First' },
+  { value: 'createdAt', label: 'Oldest First' },
+  { value: '-portfolioSize', label: 'Most Portfolio' },
+];
+
 const InvestorListing = () => {
   const [investors, setInvestors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [initialLoad, setInitialLoad] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [searchInput, setSearchInput] = useState(searchParams.get('keyword') || '');
   const navigate = useNavigate();
 
   const queryString = searchParams.toString();
+
+  // Derive active filters from URL params
+  const activeFilters = useMemo(() => ({
+    keyword: searchParams.get('keyword') || '',
+    investorTypes: searchParams.get('investorType')?.split(',').filter(Boolean) || [],
+    sectors: searchParams.get('sectorsOfInterest')?.split(',').filter(Boolean) || [],
+    stages: searchParams.get('stagesFunded')?.split(',').filter(Boolean) || [],
+    geographies: searchParams.get('geographyFocus')?.split(',').filter(Boolean) || [],
+    sort: searchParams.get('sort') || '-createdAt',
+  }), [searchParams]);
+
+  const activeCount = useMemo(() => {
+    const af = activeFilters;
+    return (
+      af.investorTypes.length +
+      af.sectors.length +
+      af.stages.length +
+      af.geographies.length +
+      (af.keyword ? 1 : 0)
+    );
+  }, [activeFilters]);
 
   useEffect(() => {
     updateSEO({
@@ -37,6 +72,10 @@ const InvestorListing = () => {
       description: 'Find investors, VCs, and angel networks on KirtiJob. Connect with funding partners to grow your startup.',
     });
   }, []);
+
+  useEffect(() => {
+    setSearchInput(searchParams.get('keyword') || '');
+  }, [searchParams]);
 
   useEffect(() => {
     let cancelled = false;
@@ -87,6 +126,51 @@ const InvestorListing = () => {
     fetchInvestors();
     return () => { cancelled = true; };
   }, [queryString]);
+
+  const toggleChipFilter = useCallback((paramKey, value) => {
+    const params = new URLSearchParams(searchParams);
+    const current = params.get(paramKey)?.split(',').filter(Boolean) || [];
+    const idx = current.indexOf(value);
+    if (idx >= 0) current.splice(idx, 1);
+    else current.push(value);
+    if (current.length) params.set(paramKey, current.join(','));
+    else params.delete(paramKey);
+    params.set('page', '1');
+    setSearchParams(params);
+  }, [searchParams, setSearchParams]);
+
+  const handleSearch = useCallback((e) => {
+    e.preventDefault();
+    const params = new URLSearchParams(searchParams);
+    if (searchInput.trim()) params.set('keyword', searchInput.trim());
+    else params.delete('keyword');
+    params.set('page', '1');
+    setSearchParams(params);
+  }, [searchInput, searchParams, setSearchParams]);
+
+  const handleSort = useCallback((sortValue) => {
+    const params = new URLSearchParams(searchParams);
+    if (sortValue && sortValue !== '-createdAt') params.set('sort', sortValue);
+    else params.delete('sort');
+    params.set('page', '1');
+    setSearchParams(params);
+  }, [searchParams, setSearchParams]);
+
+  const clearAllFilters = useCallback(() => {
+    setSearchParams({});
+    setSearchInput('');
+  }, [setSearchParams]);
+
+  const removeFilter = useCallback((paramKey, value) => {
+    if (paramKey === 'keyword') {
+      const params = new URLSearchParams(searchParams);
+      params.delete('keyword');
+      setSearchParams(params);
+      setSearchInput('');
+    } else {
+      toggleChipFilter(paramKey, value);
+    }
+  }, [searchParams, setSearchParams, toggleChipFilter]);
 
   const handlePageChange = useCallback((newPage) => {
     const params = new URLSearchParams(searchParams);
@@ -141,14 +225,142 @@ const InvestorListing = () => {
                 <span className={styles.heroStatValue}>{pagination.total}</span>
                 <span className={styles.heroStatLabel}>Investors</span>
               </div>
-               
-              
             </div>
           </div>
         </div>
 
         {/* Content */}
         <div className={styles.contentArea}>
+          {/* Filter Bar */}
+          <div className={styles.filterBar}>
+            <form onSubmit={handleSearch} className={styles.searchRow}>
+              <div className={styles.searchInputWrapper}>
+                <i className="fas fa-search"></i>
+                <input
+                  type="text"
+                  className={styles.searchInput}
+                  placeholder="Search investors, funds, thesis..."
+                  value={searchInput}
+                  onChange={e => setSearchInput(e.target.value)}
+                />
+              </div>
+              <button type="submit" className={styles.searchBtn}>Search</button>
+              <button
+                type="button"
+                className={`${styles.filterToggleBtn} ${filtersOpen ? styles.filterToggleBtnActive : ''}`}
+                onClick={() => setFiltersOpen(v => !v)}
+              >
+                <i className="fas fa-sliders-h"></i>
+                Filters
+                {activeCount > 0 && <span className={styles.filterBadge}>{activeCount}</span>}
+              </button>
+              <select
+                className={styles.sortSelect}
+                value={activeFilters.sort}
+                onChange={e => handleSort(e.target.value)}
+              >
+                {SORT_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </form>
+
+            {filtersOpen && (
+              <div className={styles.filterPanel}>
+                <div className={styles.filterGroup}>
+                  <span className={styles.filterGroupLabel}>Investor Type</span>
+                  <div className={styles.chipRow}>
+                    {INVESTOR_TYPES.map(t => (
+                      <button
+                        key={t} type="button"
+                        className={`${styles.chip} ${activeFilters.investorTypes.includes(t) ? styles.chipActive : ''}`}
+                        onClick={() => toggleChipFilter('investorType', t)}
+                      >{t}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.filterGroup}>
+                  <span className={styles.filterGroupLabel}>Sectors of Interest</span>
+                  <div className={styles.chipRow}>
+                    {SECTORS.map(s => (
+                      <button
+                        key={s} type="button"
+                        className={`${styles.chip} ${activeFilters.sectors.includes(s) ? styles.chipActive : ''}`}
+                        onClick={() => toggleChipFilter('sectorsOfInterest', s)}
+                      >{s}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.filterGroup}>
+                  <span className={styles.filterGroupLabel}>Stage Preference</span>
+                  <div className={styles.chipRow}>
+                    {INVESTOR_STAGES_FUNDED.map(s => (
+                      <button
+                        key={s} type="button"
+                        className={`${styles.chip} ${activeFilters.stages.includes(s) ? styles.chipActive : ''}`}
+                        onClick={() => toggleChipFilter('stagesFunded', s)}
+                      >{s}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.filterGroup}>
+                  <span className={styles.filterGroupLabel}>Geography Focus</span>
+                  <div className={styles.chipRow}>
+                    {INVESTOR_GEOGRAPHY_OPTIONS.map(g => (
+                      <button
+                        key={g} type="button"
+                        className={`${styles.chip} ${activeFilters.geographies.includes(g) ? styles.chipActive : ''}`}
+                        onClick={() => toggleChipFilter('geographyFocus', g)}
+                      >{g}</button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Active filter chips */}
+            {activeCount > 0 && (
+              <div className={styles.activeFilters}>
+                {activeFilters.keyword && (
+                  <span className={styles.activeChip}>
+                    &ldquo;{activeFilters.keyword}&rdquo;
+                    <button type="button" onClick={() => removeFilter('keyword')}>×</button>
+                  </span>
+                )}
+                {activeFilters.investorTypes.map(t => (
+                  <span key={t} className={styles.activeChip}>
+                    {t}
+                    <button type="button" onClick={() => removeFilter('investorType', t)}>×</button>
+                  </span>
+                ))}
+                {activeFilters.sectors.map(s => (
+                  <span key={s} className={styles.activeChip}>
+                    {s}
+                    <button type="button" onClick={() => removeFilter('sectorsOfInterest', s)}>×</button>
+                  </span>
+                ))}
+                {activeFilters.stages.map(s => (
+                  <span key={s} className={styles.activeChip}>
+                    Stage: {s}
+                    <button type="button" onClick={() => removeFilter('stagesFunded', s)}>×</button>
+                  </span>
+                ))}
+                {activeFilters.geographies.map(g => (
+                  <span key={g} className={styles.activeChip}>
+                    <i className="fas fa-globe"></i> {g}
+                    <button type="button" onClick={() => removeFilter('geographyFocus', g)}>×</button>
+                  </span>
+                ))}
+                <button type="button" className={styles.clearAllBtn} onClick={clearAllFilters}>
+                  Clear All
+                </button>
+              </div>
+            )}
+          </div>
+
           <div className={styles.resultsHeader}>
             <div className={styles.resultsTitleArea}>
               <h2>Browse Investors</h2>
@@ -181,6 +393,7 @@ const InvestorListing = () => {
                     onClick={() => navigate(`/company/${inv._id || inv.id}`)}
                     role="button"
                     tabIndex={0}
+                    onKeyDown={e => e.key === 'Enter' && navigate(`/company/${inv._id || inv.id}`)}
                   >
                     <div className={styles.cardHeader}>
                       <div className={styles.companyLogo}>
@@ -254,14 +467,21 @@ const InvestorListing = () => {
                 <div className={styles.emptyIcon}>
                   <i className="fas fa-hand-holding-usd"></i>
                 </div>
-                <h3 className={styles.emptyTitle}>No investors listed yet</h3>
+                <h3 className={styles.emptyTitle}>
+                  {activeCount > 0 ? 'No investors match your filters' : 'No investors listed yet'}
+                </h3>
                 <p className={styles.emptyDesc}>
-                  Be the first investor to list your profile! Register as an employer 
-                  with type "Investor" to get started.
+                  {activeCount > 0
+                    ? 'Try adjusting or clearing your filters.'
+                    : 'Be the first investor to list your profile! Register as an employer with type "Investor" to get started.'}
                 </p>
-                <button className={styles.emptyButton} onClick={() => navigate('/role-selection')}>
-                  List Your Fund
-                </button>
+                {activeCount > 0 ? (
+                  <button className={styles.emptyButton} onClick={clearAllFilters}>Clear Filters</button>
+                ) : (
+                  <button className={styles.emptyButton} onClick={() => navigate('/role-selection')}>
+                    List Your Fund
+                  </button>
+                )}
               </div>
             )}
           </div>

@@ -43,8 +43,12 @@ import PrivacyPolicy from './pages/legal/PrivacyPolicy';
 import TermsOfService from './pages/legal/TermsOfService';
 import AdminAuthGuard from './components/auth/AdminAuthGuard';
 import EmployerAuthGuard from './components/auth/EmployerAuthGuard';
+import StartupAuthGuard from './components/auth/StartupAuthGuard';
+import StartupProfile from './pages/founder/StartupProfile';
+import StartupPitch from './pages/founder/StartupPitch';
 import FounderConnections from './pages/founder/FounderConnections';
 import InvestorConnections from './pages/investor/InvestorConnections';
+import InvestorShortlist from './pages/investor/InvestorShortlist';
 const AdminOverview = React.lazy(() => import('./pages/admin/AdminOverview'));
 const AdminUsers = React.lazy(() => import('./pages/admin/AdminUsers'));
 const AdminJobs = React.lazy(() => import('./pages/admin/AdminJobs'));
@@ -75,7 +79,7 @@ const NavbarAwareLoader = () => (
 
 const getRoleHomePath = (user) => {
   if (!user) return '/login';
-  if (user.role === 'employer') return '/dashboard/employer/company';
+  if (user.role === 'employer') return '/dashboard/employer';
   if (user.role === 'candidate') return '/dashboard/candidate/profile';
   if (user.role === 'admin' || user.role === 'ADMIN') return '/dashboard/admin/overview';
   return '/dashboard';
@@ -187,6 +191,7 @@ function App() {
                           <Route path="subscription" element={<EmployerSubscription />} />
                           <Route path="candidate/:id" element={<CandidateDetails />} />
                           <Route path="connections" element={<ConnectionsWrapper />} />
+                          <Route path="shortlist" element={<InvestorShortlist />} />
                       </Route>
                       
                       {/* Admin Routes */}
@@ -206,6 +211,13 @@ function App() {
                         <Route path="applications" element={<MyApplications />} />
                         <Route path="resume" element={<ResumeManager />} />
                         <Route path="subscription" element={<Subscription />} />
+                      </Route>
+
+                      {/* Startup Routes */}
+                      <Route path="startup" element={<StartupAuthGuard />}>
+                        <Route path="profile" element={<StartupProfile />} />
+                        <Route path="pitch" element={<StartupPitch />} />
+                        <Route path="connections" element={<FounderConnections />} />
                       </Route>
                       
                       <Route index element={<div className="container" style={{paddingTop: '30px', color: 'white', textAlign: 'center'}}><h2>Welcome to your Dashboard</h2><p style={{color: '#aaa'}}>Select an option from the sidebar to get started.</p></div>} />

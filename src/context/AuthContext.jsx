@@ -22,12 +22,14 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // You might want to validate user session on mount
+  // Validate and sync user session on mount/token change
   useEffect(() => {
-     if(token && !user) {
-         // Optionally fetch profile
+     if (token) {
          api.get('/auth/me')
-            .then(res => setUser(res.data.data))
+            .then(res => {
+                setUser(res.data.data);
+                safeStorage.setItem('user', JSON.stringify(res.data.data));
+            })
             .catch(() => logout());
      }
   }, [token]);

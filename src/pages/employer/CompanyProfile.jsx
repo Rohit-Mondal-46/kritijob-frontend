@@ -1,350 +1,3 @@
-// import React, { useState, useEffect } from 'react';
-// import { useToast } from '../../context/ToastContext';
-// import api from '../../utils/api';
-// import styles from './Employer.module.css';
-// import { useEditor, EditorContent } from '@tiptap/react';
-// import StarterKit from '@tiptap/starter-kit';
-// import Link from '@tiptap/extension-link';
-// import Underline from '@tiptap/extension-underline';
-// import TextAlign from '@tiptap/extension-text-align';
-
-// const MenuBar = ({ editor }) => {
-//     if (!editor) return null;
-
-//     return (
-//         <div className={styles.editorToolbar}>
-//             <button
-//                 onClick={() => editor.chain().focus().toggleBold().run()}
-//                 disabled={!editor.can().chain().focus().toggleBold().run()}
-//                 className={`${styles.toolbarBtn} ${editor.isActive('bold') ? styles.isActive : ''}`}
-//                 title="Bold"
-//             >
-//                 <i className="fas fa-bold"></i>
-//             </button>
-//             <button
-//                 onClick={() => editor.chain().focus().toggleItalic().run()}
-//                 disabled={!editor.can().chain().focus().toggleItalic().run()}
-//                 className={`${styles.toolbarBtn} ${editor.isActive('italic') ? styles.isActive : ''}`}
-//                 title="Italic"
-//             >
-//                 <i className="fas fa-italic"></i>
-//             </button>
-//              <button
-//                 onClick={() => editor.chain().focus().toggleUnderline().run()}
-//                 className={`${styles.toolbarBtn} ${editor.isActive('underline') ? styles.isActive : ''}`}
-//                  title="Underline"
-//             >
-//                 <i className="fas fa-underline"></i>
-//             </button>
-//             <span style={{width: '1px', background: 'var(--color-border)', margin: '0 4px'}}></span>
-//             <button
-//                 onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-//                 className={`${styles.toolbarBtn} ${editor.isActive('heading', { level: 1 }) ? styles.isActive : ''}`}
-//                  title="H1"
-//             >
-//                 H1
-//             </button>
-//             <button
-//                 onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-//                 className={`${styles.toolbarBtn} ${editor.isActive('heading', { level: 2 }) ? styles.isActive : ''}`}
-//                  title="H2"
-//             >
-//                 H2
-//             </button>
-//             <span style={{width: '1px', background: 'var(--color-border)', margin: '0 4px'}}></span>
-//             <button
-//                 onClick={() => editor.chain().focus().toggleBulletList().run()}
-//                 className={`${styles.toolbarBtn} ${editor.isActive('bulletList') ? styles.isActive : ''}`}
-//                  title="Bullet List"
-//             >
-//                 <i className="fas fa-list-ul"></i>
-//             </button>
-//         </div>
-//     );
-// };
-
-// const CompanyProfile = () => {
-//     const { addToast } = useToast();
-//     const [loading, setLoading] = useState(true);
-//     const [companyId, setCompanyId] = useState(null);
-
-//     // Form Data
-//     const [company, setCompany] = useState({
-//         name: '',
-//         location: '',
-//         logo: '', // URL
-//         banner: '', // Mock
-//         description: '',
-//         website: ''
-//     });
-
-//     // Global Edit Mode
-//     const [isEditing, setIsEditing] = useState(false);
-
-//     // Files
-//     const [logoFile, setLogoFile] = useState(null);
-
-//     const companyInitials = (company.name || 'Company')
-//         .split(' ')
-//         .filter(Boolean)
-//         .map((word) => word[0])
-//         .join('')
-//         .toUpperCase()
-//         .slice(0, 2);
-
-//     // Tiptap Editor
-//     const editor = useEditor({
-//         extensions: [
-//             StarterKit,
-//             Link.configure({ openOnClick: false }),
-//             Underline,
-//             TextAlign.configure({ types: ['heading', 'paragraph'] }),
-//         ],
-//         content: '<p>Write about your company...</p>',
-//         editable: false, // controlled by effect
-//         onUpdate: ({ editor }) => {
-//             setCompany(prev => ({ ...prev, description: editor.getHTML() }));
-//         },
-//     });
-
-//     // Update editor editable state
-//     useEffect(() => {
-//         if (editor) {
-//             editor.setEditable(isEditing);
-//         }
-//     }, [isEditing, editor]);
-
-//     // Fetch Company Data
-//     useEffect(() => {
-//         const fetchCompany = async () => {
-//             try {
-//                 const { data } = await api.get('/company/me');
-//                 if (data.data) {
-//                     const c = data.data;
-//                     setCompanyId(c._id);
-//                     setCompany({
-//                         name: c.name || '',
-//                         location: c.location || '',
-//                         logo: c.logoUrl || '',
-//                         banner: '', 
-//                         description: c.description || '',
-//                         website: c.website || ''
-//                     });
-//                     if (editor) editor.commands.setContent(c.description || '');
-//                     setIsEditing(false);
-//                 } else {
-//                     // No company profile -> Creation Mode
-//                     setIsEditing(true);
-//                 }
-//                 setLoading(false);
-//             } catch (err) {
-//                 console.error(err);
-//                 setLoading(false);
-//             }
-//         };
-//         fetchCompany();
-//     }, [editor]); 
-
-//     const handleChange = (e) => {
-//         setCompany({ ...company, [e.target.name]: e.target.value });
-//     };
-
-//     const handleLogoUpload = (e) => {
-//         const file = e.target.files[0];
-//         if (file) {
-//             setLogoFile(file);
-//         }
-//     };
-
-//     const handleSave = async () => {
-//         // Validation for Creation
-//         if (!companyId) {
-//             if (!company.name || !company.location || !company.description || company.description === '<p></p>') {
-//                 addToast('Please fill in Name, Location, and Description to create your profile.', 'error');
-//                 return;
-//             }
-//         }
-
-//         try {
-//             const formData = new FormData();
-//             formData.append('name', company.name);
-//             formData.append('location', company.location);
-//             formData.append('description', company.description);
-//             if (company.website) formData.append('website', company.website);
-            
-//             if (logoFile) {
-//                 formData.append('logo', logoFile);
-//             }
-
-//             let res;
-//             if (companyId) {
-//                 // Update
-//                 res = await api.put(`/company/${companyId}`, formData, {
-//                     headers: { 'Content-Type': 'multipart/form-data' }
-//                 });
-//                 addToast('Company profile updated!', 'success');
-//             } else {
-//                 // Create
-//                 res = await api.post('/company', formData, {
-//                     headers: { 'Content-Type': 'multipart/form-data' }
-//                 });
-//                 setCompanyId(res.data.data._id);
-//                 addToast('Company profile created!', 'success');
-//             }
-            
-//             // Update local state and exit edit mode
-//             const updated = res.data.data;
-//             setCompany(prev => ({
-//                 ...prev,
-//                 logo: updated.logoUrl,
-//                 name: updated.name,
-//                 location: updated.location,
-//                 description: updated.description,
-//                 website: updated.website || ''
-//             }));
-//             setLogoFile(null); // Reset file input
-//             setIsEditing(false);
-            
-//         } catch (err) {
-//             console.error(err);
-//             const msg = err.response?.data?.message || 'Failed to save company profile';
-//             addToast(msg, 'error');
-//         }
-//     };
-
-//     if (loading) return <div style={{padding: '2rem', textAlign: 'center'}}>Loading...</div>;
-
-//     return (
-//         <div className={styles.profileContainer}>
-//             {/* Edit Button - Top Right */}
-//             {!isEditing && (
-//                 <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem'}}>
-//                     <button 
-//                         onClick={() => setIsEditing(true)}
-//                         className={styles.filterBtn}
-//                         style={{background: 'var(--color-primary)', color: 'white', border:'none', cursor: 'pointer'}}
-//                     >
-//                         <i className="fas fa-pencil-alt" style={{marginRight:'8px'}}></i>
-//                         Edit Profile
-//                     </button>
-//                 </div>
-//             )}
-
-//             {/* Header Card */}
-//             <div className={styles.companyHeaderCard}>
-//                 <div 
-//                     className={styles.companyBanner} 
-//                     style={company.banner ? { backgroundImage: `url(${company.banner})` } : {}}
-//                 >
-//                 </div>
-                
-//                 <div className={styles.companyProfileHeader}>
-//                     <div className={styles.companyLogoWrapper}>
-//                         <div className={styles.companyLogoFallback}>{companyInitials}</div>
-//                         {isEditing && (
-//                             <label className={styles.logoEditBtn}>
-//                                 <i className="fas fa-camera"></i>
-//                                 <input type="file" hidden accept="image/*" onChange={handleLogoUpload} />
-//                             </label>
-//                         )}
-//                     </div>
-
-//                     <div className={styles.headerContentRow}>
-//                         <div className={styles.headerLeft}>
-//                              {isEditing ? (
-//                                 <input 
-//                                     value={company.name} 
-//                                     name="name" 
-//                                     onChange={handleChange} 
-//                                     className={styles.companyNameInput}
-//                                     placeholder="Company Name"
-//                                     autoFocus
-//                                 />
-//                             ) : (
-//                                 <h1 style={{fontSize: '2rem', fontWeight: 'bold', margin: '0 0 5px 0', color: 'var(--color-text-main)'}}>{company.name}</h1>
-//                             )}
-
-//                              {isEditing ? (
-//                                 <div style={{display:'flex', gap:'10px', flexWrap: 'wrap'}}>
-//                                     <input 
-//                                         value={company.location} 
-//                                         name="location" 
-//                                         onChange={handleChange} 
-//                                         className={styles.companyLocationInput} 
-//                                         placeholder="City, Country"
-//                                     />
-//                                      <input 
-//                                         value={company.website} 
-//                                         name="website" 
-//                                         onChange={handleChange} 
-//                                         className={styles.companyLocationInput} 
-//                                         placeholder="Website URL"
-//                                     />
-//                                 </div>
-//                             ) : (
-//                                 <div className={styles.companyLocation}>
-//                                     <i className="fas fa-map-marker-alt"></i>
-//                                     <span>{company.location}</span>
-//                                     {company.website && (
-//                                         <>
-//                                             <span className={styles.locationSeparator}>•</span>
-//                                             <a href={company.website} target="_blank" rel="noopener noreferrer" style={{color:'var(--color-primary)', wordBreak: 'break-all'}}>{company.website}</a>
-//                                         </>
-//                                     )}
-//                                 </div>
-//                             )}
-//                         </div>
-//                     </div>
-//                 </div>
-//             </div>
-
-//             {/* Details Section (Rich Text) */}
-//             <div className={styles.sectionContainer}>
-//                 <div className={styles.sectionHeader}>
-//                     <h2 className={styles.sectionTitle}>Details</h2>
-//                 </div>
-                
-//                 {isEditing && <MenuBar editor={editor} />}
-                
-//                 <div className={styles.richTextContent}>
-//                      <EditorContent editor={editor} />
-//                 </div>
-//             </div>
-
-//             {/* Save Profile Button - Bottom */}
-//             {isEditing && (
-//                 <div style={{display: 'flex', justifyContent: 'center', marginTop: '2rem', marginBottom: '1rem'}}>
-//                     <button 
-//                         onClick={handleSave}
-//                         style={{
-//                             background: '#3b82f6',
-//                             color: 'white',
-//                             padding: '12px 32px',
-//                             fontSize: '16px',
-//                             fontWeight: '600',
-//                             border: 'none',
-//                             borderRadius: '8px',
-//                             cursor: 'pointer',
-//                             display: 'flex',
-//                             alignItems: 'center',
-//                             gap: '8px',
-//                             transition: 'background 0.2s ease'
-//                         }}
-//                         onMouseEnter={(e) => e.target.style.background = '#2563eb'}
-//                         onMouseLeave={(e) => e.target.style.background = '#3b82f6'}
-//                     >
-//                         <i className="fas fa-save"></i>
-//                         Save Profile
-//                     </button>
-//                 </div>
-//             )}
-//         </div>
-//     );
-// };
-
-// export default CompanyProfile;
-
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../../context/ToastContext';
 import api from '../../utils/api';
@@ -356,89 +9,65 @@ import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Placeholder from '@tiptap/extension-placeholder';
 import { COMPANY_TYPE_OPTIONS } from '../../utils/companyTypeLabels';
-import { 
-    SECTORS, 
-    FUNDING_STAGES, 
-    INVESTOR_TYPES, 
-    TICKET_SIZES, 
-    STAGES_TRACTION, 
-    BUSINESS_MODELS, 
-    HUBS, 
-    FOUNDER_LOOKING_FOR, 
-    INVESTOR_INSTRUMENTS 
+import {
+    SECTORS,
+    FUNDING_STAGES,
+    INVESTOR_TYPES,
+    TICKET_SIZES,
+    STAGES_TRACTION,
+    BUSINESS_MODELS,
+    HUBS,
+    FOUNDER_LOOKING_FOR,
+    INVESTOR_INSTRUMENTS
 } from '../../data/masterData';
 
 const MenuBar = ({ editor }) => {
     if (!editor) return null;
-
     return (
         <div className={styles.editorToolbar}>
-            <button
-                onClick={() => editor.chain().focus().toggleBold().run()}
-                disabled={!editor.can().chain().focus().toggleBold().run()}
-                className={`${styles.toolbarBtn} ${editor.isActive('bold') ? styles.isActive : ''}`}
-                title="Bold"
-            >
-                <i className="fas fa-bold"></i>
-            </button>
-            <button
-                onClick={() => editor.chain().focus().toggleItalic().run()}
-                disabled={!editor.can().chain().focus().toggleItalic().run()}
-                className={`${styles.toolbarBtn} ${editor.isActive('italic') ? styles.isActive : ''}`}
-                title="Italic"
-            >
-                <i className="fas fa-italic"></i>
-            </button>
-             <button
-                onClick={() => editor.chain().focus().toggleUnderline().run()}
-                className={`${styles.toolbarBtn} ${editor.isActive('underline') ? styles.isActive : ''}`}
-                 title="Underline"
-            >
-                <i className="fas fa-underline"></i>
-            </button>
-            <span style={{width: '1px', background: 'var(--color-border)', margin: '0 4px'}}></span>
-            <button
-                onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                className={`${styles.toolbarBtn} ${editor.isActive('heading', { level: 1 }) ? styles.isActive : ''}`}
-                 title="H1"
-            >
-                H1
-            </button>
-            <button
-                onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                className={`${styles.toolbarBtn} ${editor.isActive('heading', { level: 2 }) ? styles.isActive : ''}`}
-                 title="H2"
-            >
-                H2
-            </button>
-            <span style={{width: '1px', background: 'var(--color-border)', margin: '0 4px'}}></span>
-            <button
-                onClick={() => editor.chain().focus().toggleBulletList().run()}
-                className={`${styles.toolbarBtn} ${editor.isActive('bulletList') ? styles.isActive : ''}`}
-                 title="Bullet List"
-            >
-                <i className="fas fa-list-ul"></i>
-            </button>
+            <button onClick={() => editor.chain().focus().toggleBold().run()} disabled={!editor.can().chain().focus().toggleBold().run()} className={`${styles.toolbarBtn} ${editor.isActive('bold') ? styles.isActive : ''}`} title="Bold"><i className="fas fa-bold"></i></button>
+            <button onClick={() => editor.chain().focus().toggleItalic().run()} disabled={!editor.can().chain().focus().toggleItalic().run()} className={`${styles.toolbarBtn} ${editor.isActive('italic') ? styles.isActive : ''}`} title="Italic"><i className="fas fa-italic"></i></button>
+            <button onClick={() => editor.chain().focus().toggleUnderline().run()} className={`${styles.toolbarBtn} ${editor.isActive('underline') ? styles.isActive : ''}`} title="Underline"><i className="fas fa-underline"></i></button>
+            <span style={{ width: '1px', background: 'var(--color-border)', margin: '0 4px' }}></span>
+            <button onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={`${styles.toolbarBtn} ${editor.isActive('heading', { level: 1 }) ? styles.isActive : ''}`} title="H1">H1</button>
+            <button onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={`${styles.toolbarBtn} ${editor.isActive('heading', { level: 2 }) ? styles.isActive : ''}`} title="H2">H2</button>
+            <span style={{ width: '1px', background: 'var(--color-border)', margin: '0 4px' }}></span>
+            <button onClick={() => editor.chain().focus().toggleBulletList().run()} className={`${styles.toolbarBtn} ${editor.isActive('bulletList') ? styles.isActive : ''}`} title="Bullet List"><i className="fas fa-list-ul"></i></button>
         </div>
     );
+};
+
+// Toggle helper for multi-select chip arrays
+const toggleChip = (prev, field, chip) => {
+    const current = prev[field] || [];
+    return {
+        ...prev,
+        [field]: current.includes(chip)
+            ? current.filter(x => x !== chip)
+            : [...current, chip]
+    };
 };
 
 const CompanyProfile = () => {
     const { addToast } = useToast();
     const [loading, setLoading] = useState(true);
+    const [saveLoading, setSaveLoading] = useState(false);
     const [companyId, setCompanyId] = useState(null);
-    const [logoPreview, setLogoPreview] = useState(null); // Add this state for preview
+    const [logoPreview, setLogoPreview] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [logoFile, setLogoFile] = useState(null);
+    const [bannerFile, setBannerFile] = useState(null);
 
-    // Form Data
     const [company, setCompany] = useState({
         name: '',
         location: '',
-        logo: '', // URL
-        banner: '', // Mock
+        logo: '',
+        banner: '',
         description: '',
         website: '',
         isPremium: false,
         companyType: localStorage.getItem('registered_company_type') || 'company',
+        // Startup fields
         startupStage: '',
         fundingStage: '',
         sector: '',
@@ -449,6 +78,7 @@ const CompanyProfile = () => {
         growthPct: 0,
         businessModel: '',
         lookingFor: [],
+        // Investor fields
         investorType: '',
         ticketSizeMin: 0,
         ticketSizeMax: 0,
@@ -460,71 +90,54 @@ const CompanyProfile = () => {
     });
 
     const getSelectedTicketSizeRange = (min, max) => {
-        if (min === 0 && max === 1000000) return "<₹10 L";
-        if (min === 1000000 && max === 5000000) return "₹10–50 L";
-        if (min === 5000000 && max === 20000000) return "₹50 L–2 Cr";
-        if (min === 20000000 && max === 100000000) return "₹2–10 Cr";
-        if (min === 100000000 && max === 250000000) return "₹10–25 Cr";
-        if (min === 250000000 && max === 500000000) return "₹25–50 Cr";
-        if (min === 500000000 && max === 1000000000) return "₹50–100 Cr";
-        if (min === 1000000000) return "₹100 Cr+";
-        return "";
+        if (min === 0 && max === 1000000) return '<₹10 L';
+        if (min === 1000000 && max === 5000000) return '₹10–50 L';
+        if (min === 5000000 && max === 20000000) return '₹50 L–2 Cr';
+        if (min === 20000000 && max === 100000000) return '₹2–10 Cr';
+        if (min === 100000000 && max === 250000000) return '₹10–25 Cr';
+        if (min === 250000000 && max === 500000000) return '₹25–50 Cr';
+        if (min === 500000000 && max === 1000000000) return '₹50–100 Cr';
+        if (min === 1000000000) return '₹100 Cr+';
+        return '';
     };
 
     const handleTicketSizeChange = (val) => {
-        let min = 0, max = 0;
-        if (val === "<₹10 L") { min = 0; max = 1000000; }
-        else if (val === "₹10–50 L") { min = 1000000; max = 5000000; }
-        else if (val === "₹50 L–2 Cr") { min = 5000000; max = 20000000; }
-        else if (val === "₹2–10 Cr") { min = 20000000; max = 100000000; }
-        else if (val === "₹10–25 Cr") { min = 100000000; max = 250000000; }
-        else if (val === "₹25–50 Cr") { min = 250000000; max = 500000000; }
-        else if (val === "₹50–100 Cr") { min = 500000000; max = 1000000000; }
-        else if (val === "₹100 Cr+") { min = 1000000000; max = 99999999999; }
+        const map = {
+            '<₹10 L': [0, 1000000],
+            '₹10–50 L': [1000000, 5000000],
+            '₹50 L–2 Cr': [5000000, 20000000],
+            '₹2–10 Cr': [20000000, 100000000],
+            '₹10–25 Cr': [100000000, 250000000],
+            '₹25–50 Cr': [250000000, 500000000],
+            '₹50–100 Cr': [500000000, 1000000000],
+            '₹100 Cr+': [1000000000, 99999999999]
+        };
+        const [min, max] = map[val] || [0, 0];
         setCompany(prev => ({ ...prev, ticketSizeMin: min, ticketSizeMax: max }));
     };
 
-    // Global Edit Mode
-    const [isEditing, setIsEditing] = useState(false);
-
-    // Files
-    const [logoFile, setLogoFile] = useState(null);
-    const [bannerFile, setBannerFile] = useState(null);
-
     const companyInitials = (company.name || 'Company')
-        .split(' ')
-        .filter(Boolean)
-        .map((word) => word[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2);
+        .split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
-    // Tiptap Editor
     const editor = useEditor({
         extensions: [
             StarterKit,
             Link.configure({ openOnClick: false }),
             Underline,
             TextAlign.configure({ types: ['heading', 'paragraph'] }),
-            Placeholder.configure({
-                placeholder: 'Write about your company...',
-            }),
+            Placeholder.configure({ placeholder: 'Write about your company...' }),
         ],
         content: '',
-        editable: false, // controlled by effect
+        editable: false,
         onUpdate: ({ editor }) => {
             setCompany(prev => ({ ...prev, description: editor.getHTML() }));
         },
     });
 
-    // Update editor editable state
     useEffect(() => {
-        if (editor) {
-            editor.setEditable(isEditing);
-        }
+        if (editor) editor.setEditable(isEditing);
     }, [isEditing, editor]);
 
-    // Fetch Company Data
     useEffect(() => {
         const fetchCompany = async () => {
             try {
@@ -563,26 +176,28 @@ const CompanyProfile = () => {
                     if (editor) editor.commands.setContent(c.description || '');
                     setIsEditing(false);
                 } else {
-                    // No company profile -> Creation Mode
                     setIsEditing(true);
                 }
-                setLoading(false);
             } catch (err) {
                 console.error(err);
+            } finally {
                 setLoading(false);
             }
         };
         fetchCompany();
-    }, [editor]); 
+    }, [editor]);
 
     const handleChange = (e) => {
-        setCompany({ ...company, [e.target.name]: e.target.value });
+        setCompany(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
     const handleLogoUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
             setLogoFile(file);
+            const preview = URL.createObjectURL(file);
+            setLogoPreview(preview);
+            setCompany(prev => ({ ...prev, logo: preview }));
         }
     };
 
@@ -595,7 +210,6 @@ const CompanyProfile = () => {
     };
 
     const handleSave = async () => {
-        // Validation for Creation
         if (!companyId) {
             if (!company.name || !company.location || !company.description || company.description === '<p></p>') {
                 addToast('Please fill in Name, Location, and Description to create your profile.', 'error');
@@ -603,6 +217,7 @@ const CompanyProfile = () => {
             }
         }
 
+        setSaveLoading(true);
         try {
             const formData = new FormData();
             formData.append('name', company.name);
@@ -610,10 +225,7 @@ const CompanyProfile = () => {
             formData.append('description', company.description);
             if (company.website) formData.append('website', company.website);
             if (!companyId) formData.append('companyType', company.companyType);
-            
-            if (logoFile) {
-                formData.append('logo', logoFile);
-            }
+            if (logoFile) formData.append('logo', logoFile);
 
             if (company.companyType === 'startup') {
                 formData.append('startupStage', company.startupStage || '');
@@ -625,67 +237,38 @@ const CompanyProfile = () => {
                 formData.append('activeUsers', Number(company.activeUsers || 0));
                 formData.append('growthPct', Number(company.growthPct || 0));
                 formData.append('businessModel', company.businessModel || '');
-                
-                if (company.lookingFor && company.lookingFor.length > 0) {
-                    company.lookingFor.forEach(item => {
-                        formData.append('lookingFor', item);
-                    });
-                }
+                (company.lookingFor || []).forEach(item => formData.append('lookingFor', item));
             } else if (company.companyType === 'investor') {
                 formData.append('investorType', company.investorType || '');
                 formData.append('ticketSizeMin', Number(company.ticketSizeMin || 0));
                 formData.append('ticketSizeMax', Number(company.ticketSizeMax || 0));
                 formData.append('portfolioSize', Number(company.portfolioSize || 0));
                 formData.append('investorThesis', company.investorThesis || '');
-                
-                if (company.sectorsOfInterest && company.sectorsOfInterest.length > 0) {
-                    company.sectorsOfInterest.forEach(item => {
-                        formData.append('sectorsOfInterest', item);
-                    });
-                }
-                if (company.stagesFunded && company.stagesFunded.length > 0) {
-                    company.stagesFunded.forEach(item => {
-                        formData.append('stagesFunded', item);
-                    });
-                }
-                if (company.investorInstruments && company.investorInstruments.length > 0) {
-                    company.investorInstruments.forEach(item => {
-                        formData.append('investorInstruments', item);
-                    });
-                }
+                (company.sectorsOfInterest || []).forEach(item => formData.append('sectorsOfInterest', item));
+                (company.stagesFunded || []).forEach(item => formData.append('stagesFunded', item));
+                (company.investorInstruments || []).forEach(item => formData.append('investorInstruments', item));
             }
 
             let res;
             let activeCompanyId = companyId;
             if (companyId) {
-                // Update
-                res = await api.put(`/company/${companyId}`, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
-                addToast('Company profile updated!', 'success');
+                res = await api.put(`/company/${companyId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+                addToast('Profile updated successfully!', 'success');
             } else {
-                // Create
-                res = await api.post('/company', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
+                res = await api.post('/company', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
                 activeCompanyId = res.data.data._id;
                 setCompanyId(activeCompanyId);
-                addToast('Company profile created!', 'success');
+                addToast('Profile created successfully!', 'success');
             }
 
             let backgroundImageUrl = company.banner;
             if (bannerFile && activeCompanyId) {
                 const bgUploadData = new FormData();
                 bgUploadData.append('backgroundImage', bannerFile);
-
-                const bgRes = await api.post(`/company/${activeCompanyId}/background-image`, bgUploadData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
-
+                const bgRes = await api.post(`/company/${activeCompanyId}/background-image`, bgUploadData, { headers: { 'Content-Type': 'multipart/form-data' } });
                 backgroundImageUrl = bgRes?.data?.data?.backgroundImageUrl || backgroundImageUrl;
             }
-            
-            // Update local state and exit edit mode
+
             const updated = res.data.data;
             setCompany(prev => ({
                 ...prev,
@@ -716,71 +299,69 @@ const CompanyProfile = () => {
                 stagesFunded: updated.stagesFunded || [],
                 investorInstruments: updated.investorInstruments || []
             }));
-            setLogoFile(null); // Reset file input
+            setLogoFile(null);
             setBannerFile(null);
+            setLogoPreview(null);
             setIsEditing(false);
-            
         } catch (err) {
             console.error(err);
-            const msg = err.response?.data?.message || 'Failed to save company profile';
-            addToast(msg, 'error');
+            addToast(err.response?.data?.message || 'Failed to save profile', 'error');
+        } finally {
+            setSaveLoading(false);
         }
     };
 
-    // Cleanup preview URL on unmount or when logo changes
     useEffect(() => {
         return () => {
-            if (logoPreview) {
-                URL.revokeObjectURL(logoPreview);
-            }
+            if (logoPreview) URL.revokeObjectURL(logoPreview);
         };
     }, [logoPreview]);
 
-    if (loading) return <div style={{padding: '2rem', textAlign: 'center'}}>Loading...</div>;
+    if (loading) {
+        return (
+            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+                <i className="fas fa-spinner fa-spin" style={{ fontSize: '1.5rem', marginBottom: '8px', display: 'block' }}></i>
+                Loading profile...
+            </div>
+        );
+    }
 
     return (
         <div className={styles.profileContainer}>
-            {/* Edit Button - Top Right */}
+            {/* Top action row */}
             {!isEditing && (
-                <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem'}}>
-                    <button 
-                        onClick={() => setIsEditing(true)}
-                        className={styles.filterBtn}
-                        style={{background: 'var(--color-primary)', color: 'white', border:'none', cursor: 'pointer'}}
-                    >
-                        <i className="fas fa-pencil-alt" style={{marginRight:'8px'}}></i>
-                        Edit Profile
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+                    <button onClick={() => setIsEditing(true)} className={styles.filterBtn} style={{ background: 'var(--color-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}>
+                        <i className="fas fa-pencil-alt"></i> Edit Profile
                     </button>
                 </div>
             )}
 
             {/* Header Card */}
             <div className={styles.companyHeaderCard}>
-                <div 
-                    className={styles.companyBanner} 
+                {/* Banner */}
+                <div
+                    className={styles.companyBanner}
                     style={company.banner ? { backgroundImage: `url(${company.banner})` } : {}}
                 >
                     {isEditing && (
-                        <label className={styles.bannerEditBtn} title="Change background image">
+                        <label className={styles.bannerEditBtn} title="Change banner image">
                             <i className="fas fa-image"></i>
                             <input type="file" hidden accept="image/*" onChange={handleBannerUpload} />
                         </label>
                     )}
                 </div>
-                
+
+                {/* Profile Header */}
                 <div className={styles.companyProfileHeader}>
+                    {/* Logo */}
                     <div className={styles.companyLogoWrapper}>
-                        {company.logo ? (
-                            <img
-                                src={company.logo}
-                                alt={`${company.name || 'Company'} logo`}
-                                className={styles.companyLogo}
-                            />
-                        ) : (
-                            <div className={styles.companyLogoFallback}>{companyInitials}</div>
-                        )}
+                        {company.logo
+                            ? <img src={company.logo} alt={`${company.name || 'Company'} logo`} className={styles.companyLogo} />
+                            : <div className={styles.companyLogoFallback}>{companyInitials}</div>
+                        }
                         {isEditing && (
-                            <label className={styles.logoEditBtn}>
+                            <label className={styles.logoEditBtn} title="Change logo">
                                 <i className="fas fa-camera"></i>
                                 <input type="file" hidden accept="image/*" onChange={handleLogoUpload} />
                             </label>
@@ -789,111 +370,67 @@ const CompanyProfile = () => {
 
                     <div className={styles.headerContentRow}>
                         <div className={styles.headerLeft}>
-                             {/* Company Type Dropdown — only on creation */}
-                             {isEditing && !companyId && (
-                                 <div style={{ marginBottom: '12px' }}>
-                                     <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-muted)', display: 'block', marginBottom: '6px' }}>I am registering as:</label>
-                                     <select
-                                         value={company.companyType}
-                                         onChange={(e) => setCompany(prev => ({ ...prev, companyType: e.target.value }))}
-                                         style={{
-                                             padding: '10px 14px',
-                                             background: '#ffffff',
-                                             border: '1px solid var(--color-border)',
-                                             borderRadius: '8px',
-                                             color: 'var(--color-text-main)',
-                                             fontSize: '0.95rem',
-                                             fontFamily: 'inherit',
-                                             outline: 'none',
-                                             width: '100%',
-                                             maxWidth: '300px',
-                                             cursor: 'pointer'
-                                         }}
-                                     >
-                                         {COMPANY_TYPE_OPTIONS.map(opt => (
-                                             <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                         ))}
-                                     </select>
-                                 </div>
-                             )}
-                             {/* Company Type Badge — after creation */}
-                             {companyId && company.companyType && company.companyType !== 'company' && (
-                                 <span style={{
-                                     display: 'inline-flex',
-                                     alignItems: 'center',
-                                     gap: '6px',
-                                     background: company.companyType === 'startup' ? '#ecfdf5' : '#eff6ff',
-                                     color: company.companyType === 'startup' ? '#047857' : '#1d4ed8',
-                                     border: `1px solid ${company.companyType === 'startup' ? '#a7f3d0' : '#bfdbfe'}`,
-                                     padding: '4px 10px',
-                                     borderRadius: '12px',
-                                     fontSize: '0.8rem',
-                                     fontWeight: 700,
-                                     marginBottom: '8px'
-                                 }}>
-                                     <i className={company.companyType === 'startup' ? 'fas fa-rocket' : 'fas fa-hand-holding-usd'}></i>
-                                     {company.companyType === 'startup' ? 'Startup / Idea' : 'Investor / VC'}
-                                 </span>
-                             )}
-                             {isEditing ? (
-                                <div style={{display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap'}}>
-                                    <input 
-                                        value={company.name} 
-                                        name="name" 
-                                        onChange={handleChange} 
+                            {/* Company type selector — only shown when creating */}
+                            {isEditing && !companyId && (
+                                <div style={{ marginBottom: '14px' }}>
+                                    <label className={styles.creationTypeLabel}>I am registering as:</label>
+                                    <select
+                                        className={styles.creationTypeSelect}
+                                        value={company.companyType}
+                                        onChange={e => setCompany(prev => ({ ...prev, companyType: e.target.value }))}
+                                    >
+                                        {COMPANY_TYPE_OPTIONS.map(opt => (
+                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            {/* Type badge — shown after profile is created */}
+                            {companyId && company.companyType && company.companyType !== 'company' && (
+                                <span className={`${styles.typeBadge} ${company.companyType === 'startup' ? styles.typeBadgeStartup : styles.typeBadgeInvestor}`}>
+                                    <i className={company.companyType === 'startup' ? 'fas fa-rocket' : 'fas fa-hand-holding-usd'}></i>
+                                    {company.companyType === 'startup' ? 'Startup / Idea' : 'Investor / VC'}
+                                </span>
+                            )}
+
+                            {/* Company name + premium badge */}
+                            {isEditing ? (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                                    <input
+                                        value={company.name}
+                                        name="name"
+                                        onChange={handleChange}
                                         className={styles.companyNameInput}
                                         placeholder="Company Name"
                                         autoFocus
                                     />
                                     {company.isPremium && (
-                                        <span style={{
-                                            background: '#fff7db',
-                                            color: '#9a6700',
-                                            border: '1px solid #f3d57a',
-                                            padding: '4px 10px',
-                                            borderRadius: '12px',
-                                            fontSize: '0.8rem',
-                                            fontWeight: 700,
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                            gap: '6px'
-                                        }}>
-                                            <i className="fas fa-crown"></i>
-                                            Premium
+                                        <span className={styles.premiumBadge}>
+                                            <i className="fas fa-crown"></i> Premium
                                         </span>
                                     )}
                                 </div>
                             ) : (
-                                <div style={{display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '5px'}}>
-                                    <h1 style={{fontSize: '2rem', fontWeight: 'bold', margin: 0, color: 'var(--color-text-main)'}}>{company.name}</h1>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '6px' }}>
+                                    <h1 style={{ fontSize: '1.8rem', fontWeight: 800, margin: 0, color: 'var(--color-text-main)' }}>{company.name}</h1>
                                     {company.isPremium && (
-                                        <span style={{
-                                            background: '#fff7db',
-                                            color: '#9a6700',
-                                            border: '1px solid #f3d57a',
-                                            padding: '4px 10px',
-                                            borderRadius: '12px',
-                                            fontSize: '0.8rem',
-                                            fontWeight: 700,
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                            gap: '6px'
-                                        }}>
-                                            <i className="fas fa-crown"></i>
-                                            Premium
+                                        <span className={styles.premiumBadge}>
+                                            <i className="fas fa-crown"></i> Premium
                                         </span>
                                     )}
                                 </div>
                             )}
 
-                             {isEditing ? (
-                                <div style={{display:'flex', gap:'10px', flexWrap: 'wrap', alignItems: 'center'}}>
+                            {/* Location + website */}
+                            {isEditing ? (
+                                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
                                     {company.companyType === 'company' ? (
-                                        <input 
-                                            value={company.location} 
-                                            name="location" 
-                                            onChange={handleChange} 
-                                            className={styles.companyLocationInput} 
+                                        <input
+                                            value={company.location}
+                                            name="location"
+                                            onChange={handleChange}
+                                            className={styles.companyLocationInput}
                                             placeholder="City, Country"
                                         />
                                     ) : (
@@ -901,43 +438,28 @@ const CompanyProfile = () => {
                                             name="location"
                                             value={company.location}
                                             onChange={handleChange}
-                                            className={styles.companyLocationInput}
-                                            style={{
-                                                padding: '10px 14px',
-                                                background: '#ffffff',
-                                                border: '1px solid var(--color-border)',
-                                                borderRadius: '8px',
-                                                color: 'var(--color-text-main)',
-                                                fontSize: '0.95rem',
-                                                fontFamily: 'inherit',
-                                                outline: 'none',
-                                                cursor: 'pointer',
-                                                height: '42px',
-                                                minWidth: '180px'
-                                            }}
+                                            className={styles.formField}
+                                            style={{ minWidth: '180px', maxWidth: '240px', height: '42px' }}
                                         >
-                                            <option value="" disabled>Select Hub/City</option>
-                                            {HUBS.map(h => (
-                                                <option key={h} value={h}>{h}</option>
-                                            ))}
+                                            <option value="" disabled>Select Hub / City</option>
+                                            {HUBS.map(h => <option key={h} value={h}>{h}</option>)}
                                         </select>
                                     )}
-                                     <input 
-                                        value={company.website} 
-                                        name="website" 
-                                        onChange={handleChange} 
-                                        className={styles.companyLocationInput} 
+                                    <input
+                                        value={company.website}
+                                        name="website"
+                                        onChange={handleChange}
+                                        className={styles.companyLocationInput}
                                         placeholder="Website URL"
                                     />
                                 </div>
                             ) : (
                                 <div className={styles.companyLocation}>
-                                    <i className="fas fa-map-marker-alt"></i>
-                                    <span>{company.location}</span>
+                                    {company.location && <><i className="fas fa-map-marker-alt"></i><span>{company.location}</span></>}
                                     {company.website && (
                                         <>
-                                            <span className={styles.locationSeparator}>•</span>
-                                            <a href={company.website} target="_blank" rel="noopener noreferrer" style={{color:'var(--color-primary)', wordBreak: 'break-all'}}>{company.website}</a>
+                                            {company.location && <span className={styles.locationSeparator}>•</span>}
+                                            <a href={company.website} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', wordBreak: 'break-all' }}>{company.website}</a>
                                         </>
                                     )}
                                 </div>
@@ -947,330 +469,194 @@ const CompanyProfile = () => {
                 </div>
             </div>
 
-            {/* Details Section (Rich Text) */}
+            {/* About / Description */}
             <div className={styles.sectionContainer}>
                 <div className={styles.sectionHeader}>
-                    <h2 className={styles.sectionTitle}>Details</h2>
+                    <h2 className={styles.sectionTitle}>
+                        {company.companyType === 'startup' ? 'About the Startup' : company.companyType === 'investor' ? 'About the Fund' : 'About the Company'}
+                    </h2>
                 </div>
-                
                 {isEditing && <MenuBar editor={editor} />}
-                
                 <div className={styles.richTextContent}>
-                     <EditorContent editor={editor} className={styles.tiptap} />
+                    <EditorContent editor={editor} className={styles.tiptap} />
                 </div>
             </div>
 
-            {/* Startup Custom Profile Form Fields */}
+            {/* ── STARTUP: Edit Fields ── */}
             {isEditing && company.companyType === 'startup' && (
-                <div className={styles.sectionContainer} style={{ marginTop: '1.5rem', padding: '1.5rem', background: 'var(--color-surface)', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1.25rem', color: 'var(--color-text-main)' }}>Startup Specifications</h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
-                        <div>
-                            <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '6px' }}>Sector</label>
-                            <select
-                                name="sector"
-                                value={company.sector}
-                                onChange={handleChange}
-                                style={{ padding: '10px', background: '#fff', border: '1px solid var(--color-border)', borderRadius: '8px', width: '100%', outline: 'none', color: 'var(--color-text-main)' }}
-                            >
+                <div className={styles.specSection}>
+                    <h3 className={styles.specSectionTitle}>
+                        <i className="fas fa-rocket" style={{ marginRight: '8px', color: '#047857' }}></i>
+                        Startup Specifications
+                    </h3>
+                    <div className={styles.specGrid}>
+                        <div className={styles.specItem}>
+                            <label className={styles.formLabel}>Sector</label>
+                            <select name="sector" value={company.sector} onChange={handleChange} className={styles.formField}>
                                 <option value="">Select Sector</option>
                                 {SECTORS.map(s => <option key={s} value={s}>{s}</option>)}
                             </select>
                         </div>
-                        <div>
-                            <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '6px' }}>Startup Stage</label>
-                            <select
-                                name="startupStage"
-                                value={company.startupStage}
-                                onChange={handleChange}
-                                style={{ padding: '10px', background: '#fff', border: '1px solid var(--color-border)', borderRadius: '8px', width: '100%', outline: 'none', color: 'var(--color-text-main)' }}
-                            >
+                        <div className={styles.specItem}>
+                            <label className={styles.formLabel}>Startup Stage</label>
+                            <select name="startupStage" value={company.startupStage} onChange={handleChange} className={styles.formField}>
                                 <option value="">Select Stage</option>
                                 {STAGES_TRACTION.map(s => <option key={s} value={s}>{s}</option>)}
                             </select>
                         </div>
-                        <div>
-                            <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '6px' }}>Funding Stage</label>
-                            <select
-                                name="fundingStage"
-                                value={company.fundingStage}
-                                onChange={handleChange}
-                                style={{ padding: '10px', background: '#fff', border: '1px solid var(--color-border)', borderRadius: '8px', width: '100%', outline: 'none', color: 'var(--color-text-main)' }}
-                            >
+                        <div className={styles.specItem}>
+                            <label className={styles.formLabel}>Funding Stage</label>
+                            <select name="fundingStage" value={company.fundingStage} onChange={handleChange} className={styles.formField}>
                                 <option value="">Select Funding Stage</option>
                                 {FUNDING_STAGES.map(s => <option key={s} value={s}>{s}</option>)}
                             </select>
                         </div>
-                        <div>
-                            <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '6px' }}>Business Model</label>
-                            <select
-                                name="businessModel"
-                                value={company.businessModel}
-                                onChange={handleChange}
-                                style={{ padding: '10px', background: '#fff', border: '1px solid var(--color-border)', borderRadius: '8px', width: '100%', outline: 'none', color: 'var(--color-text-main)' }}
-                            >
+                        <div className={styles.specItem}>
+                            <label className={styles.formLabel}>Business Model</label>
+                            <select name="businessModel" value={company.businessModel} onChange={handleChange} className={styles.formField}>
                                 <option value="">Select Business Model</option>
                                 {BUSINESS_MODELS.map(s => <option key={s} value={s}>{s}</option>)}
                             </select>
                         </div>
-                        <div>
-                            <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '6px' }}>Founder LinkedIn</label>
-                            <input
-                                type="text"
-                                name="founderLinkedin"
-                                value={company.founderLinkedin}
-                                onChange={handleChange}
-                                placeholder="https://linkedin.com/in/..."
-                                style={{ padding: '10px', background: '#fff', border: '1px solid var(--color-border)', borderRadius: '8px', width: '100%', outline: 'none', color: 'var(--color-text-main)' }}
-                            />
+                        <div className={styles.specItem}>
+                            <label className={styles.formLabel}>Founder LinkedIn</label>
+                            <input type="text" name="founderLinkedin" value={company.founderLinkedin} onChange={handleChange} placeholder="https://linkedin.com/in/..." className={styles.formField} />
                         </div>
-                        <div>
-                            <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '6px' }}>Pitch Deck Link</label>
-                            <input
-                                type="text"
-                                name="deckUrl"
-                                value={company.deckUrl}
-                                onChange={handleChange}
-                                placeholder="e.g. DocSend / Drive link"
-                                style={{ padding: '10px', background: '#fff', border: '1px solid var(--color-border)', borderRadius: '8px', width: '100%', outline: 'none', color: 'var(--color-text-main)' }}
-                            />
+                        <div className={styles.specItem}>
+                            <label className={styles.formLabel}>Pitch Deck Link</label>
+                            <input type="text" name="deckUrl" value={company.deckUrl} onChange={handleChange} placeholder="DocSend / Drive link" className={styles.formField} />
                         </div>
                     </div>
-                    <div style={{ marginTop: '1.25rem' }}>
-                        <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '8px' }}>What You're Looking For</label>
-                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                            {FOUNDER_LOOKING_FOR.map(chip => {
-                                const selected = company.lookingFor.includes(chip);
-                                return (
-                                    <button
-                                        key={chip}
-                                        type="button"
-                                        onClick={() => {
-                                            setCompany(prev => {
-                                                const current = prev.lookingFor.includes(chip)
-                                                    ? prev.lookingFor.filter(x => x !== chip)
-                                                    : [...prev.lookingFor, chip];
-                                                return { ...prev, lookingFor: current };
-                                            });
-                                        }}
-                                        style={{
-                                            padding: '6px 14px',
-                                            borderRadius: '20px',
-                                            border: '1px solid var(--color-border)',
-                                            cursor: 'pointer',
-                                            background: selected ? 'var(--color-primary)' : 'var(--color-surface)',
-                                            color: selected ? '#ffffff' : 'var(--color-text-main)',
-                                            fontWeight: '600',
-                                            transition: 'all 0.2s'
-                                        }}
-                                    >
-                                        {chip}
-                                    </button>
-                                );
-                            })}
+
+                    <div>
+                        <label className={styles.formLabel}>What You're Looking For</label>
+                        <div className={styles.chipRow}>
+                            {FOUNDER_LOOKING_FOR.map(chip => (
+                                <button
+                                    key={chip} type="button"
+                                    onClick={() => setCompany(prev => toggleChip(prev, 'lookingFor', chip))}
+                                    className={`${styles.chipBtn} ${company.lookingFor.includes(chip) ? styles.chipBtnActive : ''}`}
+                                >
+                                    {chip}
+                                </button>
+                            ))}
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Investor Custom Profile Form Fields */}
+            {/* ── INVESTOR: Edit Fields ── */}
             {isEditing && company.companyType === 'investor' && (
-                <div className={styles.sectionContainer} style={{ marginTop: '1.5rem', padding: '1.5rem', background: 'var(--color-surface)', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1.25rem', color: 'var(--color-text-main)' }}>Fund Specifications</h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
-                        <div>
-                            <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '6px' }}>Investor Type</label>
-                            <select
-                                name="investorType"
-                                value={company.investorType}
-                                onChange={handleChange}
-                                style={{ padding: '10px', background: '#fff', border: '1px solid var(--color-border)', borderRadius: '8px', width: '100%', outline: 'none', color: 'var(--color-text-main)' }}
-                            >
-                                <option value="">Select Investor Type</option>
+                <div className={styles.specSection}>
+                    <h3 className={styles.specSectionTitle}>
+                        <i className="fas fa-hand-holding-usd" style={{ marginRight: '8px', color: '#1d4ed8' }}></i>
+                        Fund Specifications
+                    </h3>
+                    <div className={styles.specGrid}>
+                        <div className={styles.specItem}>
+                            <label className={styles.formLabel}>Investor Type</label>
+                            <select name="investorType" value={company.investorType} onChange={handleChange} className={styles.formField}>
+                                <option value="">Select Type</option>
                                 {INVESTOR_TYPES.map(s => <option key={s} value={s}>{s}</option>)}
                             </select>
                         </div>
-                        <div>
-                            <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '6px' }}>Ticket Size Range</label>
+                        <div className={styles.specItem}>
+                            <label className={styles.formLabel}>Ticket Size Range</label>
                             <select
                                 value={getSelectedTicketSizeRange(company.ticketSizeMin, company.ticketSizeMax)}
-                                onChange={(e) => handleTicketSizeChange(e.target.value)}
-                                style={{ padding: '10px', background: '#fff', border: '1px solid var(--color-border)', borderRadius: '8px', width: '100%', outline: 'none', color: 'var(--color-text-main)' }}
+                                onChange={e => handleTicketSizeChange(e.target.value)}
+                                className={styles.formField}
                             >
                                 <option value="">Select Ticket Size</option>
                                 {TICKET_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
                             </select>
                         </div>
-                        <div>
-                            <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '6px' }}>Portfolio Size</label>
-                            <input
-                                type="number"
-                                name="portfolioSize"
-                                value={company.portfolioSize}
-                                onChange={handleChange}
-                                placeholder="Number of investments"
-                                style={{ padding: '10px', background: '#fff', border: '1px solid var(--color-border)', borderRadius: '8px', width: '100%', outline: 'none', color: 'var(--color-text-main)' }}
-                            />
+                        <div className={styles.specItem}>
+                            <label className={styles.formLabel}>Portfolio Size</label>
+                            <input type="number" name="portfolioSize" value={company.portfolioSize} onChange={handleChange} placeholder="Number of investments" className={styles.formField} min="0" />
                         </div>
-                        <div>
-                            <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '6px' }}>Investor Thesis / Headline</label>
-                            <input
-                                type="text"
-                                name="investorThesis"
-                                value={company.investorThesis}
-                                onChange={handleChange}
-                                placeholder="What sectors/stages do you focus on?"
-                                style={{ padding: '10px', background: '#fff', border: '1px solid var(--color-border)', borderRadius: '8px', width: '100%', outline: 'none', color: 'var(--color-text-main)' }}
-                            />
-                        </div>
-                    </div>
-                    
-                    {/* Sectors of Interest */}
-                    <div style={{ marginTop: '1.25rem' }}>
-                        <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '8px' }}>Sectors of Interest</label>
-                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                            {SECTORS.map(chip => {
-                                const selected = company.sectorsOfInterest.includes(chip);
-                                return (
-                                    <button
-                                        key={chip}
-                                        type="button"
-                                        onClick={() => {
-                                            setCompany(prev => {
-                                                const current = prev.sectorsOfInterest.includes(chip)
-                                                    ? prev.sectorsOfInterest.filter(x => x !== chip)
-                                                    : [...prev.sectorsOfInterest, chip];
-                                                return { ...prev, sectorsOfInterest: current };
-                                            });
-                                        }}
-                                        style={{
-                                            padding: '6px 14px',
-                                            borderRadius: '20px',
-                                            border: '1px solid var(--color-border)',
-                                            cursor: 'pointer',
-                                            background: selected ? 'var(--color-primary)' : 'var(--color-surface)',
-                                            color: selected ? '#ffffff' : 'var(--color-text-main)',
-                                            fontWeight: '600',
-                                            transition: 'all 0.2s'
-                                        }}
-                                    >
-                                        {chip}
-                                    </button>
-                                );
-                            })}
+                        <div className={styles.specItem}>
+                            <label className={styles.formLabel}>Investment Thesis</label>
+                            <input type="text" name="investorThesis" value={company.investorThesis} onChange={handleChange} placeholder="What stages/sectors do you focus on?" className={styles.formField} />
                         </div>
                     </div>
 
-                    {/* Stages Funded */}
-                    <div style={{ marginTop: '1.25rem' }}>
-                        <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '8px' }}>Stages Funded</label>
-                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                            {FUNDING_STAGES.map(chip => {
-                                const selected = company.stagesFunded.includes(chip);
-                                return (
-                                    <button
-                                        key={chip}
-                                        type="button"
-                                        onClick={() => {
-                                            setCompany(prev => {
-                                                const current = prev.stagesFunded.includes(chip)
-                                                    ? prev.stagesFunded.filter(x => x !== chip)
-                                                    : [...prev.stagesFunded, chip];
-                                                return { ...prev, stagesFunded: current };
-                                            });
-                                        }}
-                                        style={{
-                                            padding: '6px 14px',
-                                            borderRadius: '20px',
-                                            border: '1px solid var(--color-border)',
-                                            cursor: 'pointer',
-                                            background: selected ? 'var(--color-primary)' : 'var(--color-surface)',
-                                            color: selected ? '#ffffff' : 'var(--color-text-main)',
-                                            fontWeight: '600',
-                                            transition: 'all 0.2s'
-                                        }}
-                                    >
-                                        {chip}
-                                    </button>
-                                );
-                            })}
+                    <div style={{ marginBottom: '1rem' }}>
+                        <label className={styles.formLabel}>Sectors of Interest</label>
+                        <div className={styles.chipRow}>
+                            {SECTORS.map(chip => (
+                                <button key={chip} type="button" onClick={() => setCompany(prev => toggleChip(prev, 'sectorsOfInterest', chip))} className={`${styles.chipBtn} ${company.sectorsOfInterest.includes(chip) ? styles.chipBtnActive : ''}`}>{chip}</button>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Investor Instruments */}
-                    <div style={{ marginTop: '1.25rem' }}>
-                        <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '8px' }}>Investor Instruments</label>
-                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                            {INVESTOR_INSTRUMENTS.map(chip => {
-                                const selected = company.investorInstruments.includes(chip);
-                                return (
-                                    <button
-                                        key={chip}
-                                        type="button"
-                                        onClick={() => {
-                                            setCompany(prev => {
-                                                const current = prev.investorInstruments.includes(chip)
-                                                    ? prev.investorInstruments.filter(x => x !== chip)
-                                                    : [...prev.investorInstruments, chip];
-                                                return { ...prev, investorInstruments: current };
-                                            });
-                                        }}
-                                        style={{
-                                            padding: '6px 14px',
-                                            borderRadius: '20px',
-                                            border: '1px solid var(--color-border)',
-                                            cursor: 'pointer',
-                                            background: selected ? 'var(--color-primary)' : 'var(--color-surface)',
-                                            color: selected ? '#ffffff' : 'var(--color-text-main)',
-                                            fontWeight: '600',
-                                            transition: 'all 0.2s'
-                                        }}
-                                    >
-                                        {chip}
-                                    </button>
-                                );
-                            })}
+                    <div style={{ marginBottom: '1rem' }}>
+                        <label className={styles.formLabel}>Stages Funded</label>
+                        <div className={styles.chipRow}>
+                            {FUNDING_STAGES.map(chip => (
+                                <button key={chip} type="button" onClick={() => setCompany(prev => toggleChip(prev, 'stagesFunded', chip))} className={`${styles.chipBtn} ${company.stagesFunded.includes(chip) ? styles.chipBtnActive : ''}`}>{chip}</button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className={styles.formLabel}>Investor Instruments</label>
+                        <div className={styles.chipRow}>
+                            {INVESTOR_INSTRUMENTS.map(chip => (
+                                <button key={chip} type="button" onClick={() => setCompany(prev => toggleChip(prev, 'investorInstruments', chip))} className={`${styles.chipBtn} ${company.investorInstruments.includes(chip) ? styles.chipBtnActive : ''}`}>{chip}</button>
+                            ))}
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Startup Read-Only Specifications */}
+            {/* ── STARTUP: Read-only view ── */}
             {!isEditing && company.companyType === 'startup' && (
-                <div className={styles.sectionContainer} style={{ marginTop: '1.5rem', padding: '1.5rem', background: 'var(--color-surface)', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1.25rem', color: 'var(--color-text-main)' }}>Startup Details</h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
-                        <div>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'block' }}>Sector</span>
-                            <span style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--color-text-main)' }}>{company.sector || '—'}</span>
+                <div className={styles.specSection}>
+                    <h3 className={styles.specSectionTitle}>
+                        <i className="fas fa-rocket" style={{ marginRight: '8px', color: '#047857' }}></i>
+                        Startup Details
+                    </h3>
+                    <div className={styles.specGrid}>
+                        <div className={styles.specItem}>
+                            <span className={styles.specDataLabel}>Sector</span>
+                            <span className={styles.specDataValue}>{company.sector || '—'}</span>
                         </div>
-                        <div>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'block' }}>Startup Stage</span>
-                            <span style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--color-text-main)' }}>{company.startupStage || '—'}</span>
+                        <div className={styles.specItem}>
+                            <span className={styles.specDataLabel}>Startup Stage</span>
+                            <span className={styles.specDataValue}>{company.startupStage || '—'}</span>
                         </div>
-                        <div>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'block' }}>Funding Stage</span>
-                            <span style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--color-text-main)' }}>{company.fundingStage || '—'}</span>
+                        <div className={styles.specItem}>
+                            <span className={styles.specDataLabel}>Funding Stage</span>
+                            <span className={styles.specDataValue}>{company.fundingStage || '—'}</span>
                         </div>
-                        <div>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'block' }}>Business Model</span>
-                            <span style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--color-text-main)' }}>{company.businessModel || '—'}</span>
+                        <div className={styles.specItem}>
+                            <span className={styles.specDataLabel}>Business Model</span>
+                            <span className={styles.specDataValue}>{company.businessModel || '—'}</span>
                         </div>
-                        {company.founderLinkedin && <div>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'block' }}>Founder LinkedIn</span>
-                            <a href={company.founderLinkedin} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', fontWeight: '600' }}>LinkedIn <i className="fas fa-external-link-alt" style={{ fontSize: '0.8em' }}></i></a>
-                        </div>}
-                        {company.deckUrl && <div>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'block' }}>Pitch Deck</span>
-                            <a href={company.deckUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', fontWeight: '600' }}>View Pitch Deck <i className="fas fa-external-link-alt" style={{ fontSize: '0.8em' }}></i></a>
-                        </div>}
+                        {company.founderLinkedin && (
+                            <div className={styles.specItem}>
+                                <span className={styles.specDataLabel}>Founder LinkedIn</span>
+                                <a href={company.founderLinkedin} target="_blank" rel="noopener noreferrer" className={styles.specDataLink}>
+                                    LinkedIn <i className="fas fa-external-link-alt" style={{ fontSize: '0.75em' }}></i>
+                                </a>
+                            </div>
+                        )}
+                        {company.deckUrl && (
+                            <div className={styles.specItem}>
+                                <span className={styles.specDataLabel}>Pitch Deck</span>
+                                <a href={company.deckUrl} target="_blank" rel="noopener noreferrer" className={styles.specDataLink}>
+                                    View Deck <i className="fas fa-external-link-alt" style={{ fontSize: '0.75em' }}></i>
+                                </a>
+                            </div>
+                        )}
                     </div>
-                    {company.lookingFor && company.lookingFor.length > 0 && (
+                    {company.lookingFor?.length > 0 && (
                         <div>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'block', marginBottom: '8px' }}>Looking For</span>
-                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                            <span className={styles.specDataLabel} style={{ display: 'block', marginBottom: '8px' }}>Looking For</span>
+                            <div className={styles.tagRow}>
                                 {company.lookingFor.map(item => (
-                                    <span key={item} style={{ background: '#f3f4f6', color: '#374151', padding: '4px 12px', borderRadius: '16px', fontSize: '0.85rem', fontWeight: '600' }}>{item}</span>
+                                    <span key={item} className={`${styles.tagPill} ${styles.tagNeutral}`}>{item}</span>
                                 ))}
                             </div>
                         </div>
@@ -1278,59 +664,62 @@ const CompanyProfile = () => {
                 </div>
             )}
 
-            {/* Investor Read-Only Specifications */}
+            {/* ── INVESTOR: Read-only view ── */}
             {!isEditing && company.companyType === 'investor' && (
-                <div className={styles.sectionContainer} style={{ marginTop: '1.5rem', padding: '1.5rem', background: 'var(--color-surface)', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1.25rem', color: 'var(--color-text-main)' }}>Fund Details</h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
-                        <div>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'block' }}>Investor Type</span>
-                            <span style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--color-text-main)' }}>{company.investorType || '—'}</span>
+                <div className={styles.specSection}>
+                    <h3 className={styles.specSectionTitle}>
+                        <i className="fas fa-hand-holding-usd" style={{ marginRight: '8px', color: '#1d4ed8' }}></i>
+                        Fund Details
+                    </h3>
+                    <div className={styles.specGrid}>
+                        <div className={styles.specItem}>
+                            <span className={styles.specDataLabel}>Investor Type</span>
+                            <span className={styles.specDataValue}>{company.investorType || '—'}</span>
                         </div>
-                        <div>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'block' }}>Ticket Size Range</span>
-                            <span style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--color-text-main)' }}>
-                                {company.ticketSizeMin || company.ticketSizeMax ? `${getSelectedTicketSizeRange(company.ticketSizeMin, company.ticketSizeMax)}` : '—'}
+                        <div className={styles.specItem}>
+                            <span className={styles.specDataLabel}>Ticket Size Range</span>
+                            <span className={styles.specDataValue}>
+                                {(company.ticketSizeMin || company.ticketSizeMax) ? getSelectedTicketSizeRange(company.ticketSizeMin, company.ticketSizeMax) : '—'}
                             </span>
                         </div>
-                        <div>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'block' }}>Portfolio Size</span>
-                            <span style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--color-text-main)' }}>{company.portfolioSize ? `${company.portfolioSize} companies` : '—'}</span>
+                        <div className={styles.specItem}>
+                            <span className={styles.specDataLabel}>Portfolio Size</span>
+                            <span className={styles.specDataValue}>{company.portfolioSize ? `${company.portfolioSize} companies` : '—'}</span>
                         </div>
-                        {company.investorThesis && <div style={{ gridColumn: 'span 2' }}>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'block' }}>Investment Thesis Headline</span>
-                            <span style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--color-text-main)' }}>{company.investorThesis}</span>
-                        </div>}
+                        {company.investorThesis && (
+                            <div className={`${styles.specItem} ${styles.specWide}`}>
+                                <span className={styles.specDataLabel}>Investment Thesis</span>
+                                <span className={styles.specDataValue}>{company.investorThesis}</span>
+                            </div>
+                        )}
                     </div>
-                    
-                    {company.sectorsOfInterest && company.sectorsOfInterest.length > 0 && (
-                        <div style={{ marginBottom: '1rem' }}>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'block', marginBottom: '8px' }}>Sectors of Interest</span>
-                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                {company.sectorsOfInterest.map(item => (
-                                    <span key={item} style={{ background: '#eff6ff', color: '#1d4ed8', padding: '4px 12px', borderRadius: '16px', fontSize: '0.85rem', fontWeight: '600', border: '1px solid #bfdbfe' }}>{item}</span>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                    
-                    {company.stagesFunded && company.stagesFunded.length > 0 && (
-                        <div style={{ marginBottom: '1rem' }}>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'block', marginBottom: '8px' }}>Stages Funded</span>
-                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                {company.stagesFunded.map(item => (
-                                    <span key={item} style={{ background: '#ecfdf5', color: '#047857', padding: '4px 12px', borderRadius: '16px', fontSize: '0.85rem', fontWeight: '600', border: '1px solid #a7f3d0' }}>{item}</span>
-                                ))}
-                            </div>
-                        </div>
-                    )}
 
-                    {company.investorInstruments && company.investorInstruments.length > 0 && (
+                    {company.sectorsOfInterest?.length > 0 && (
+                        <div style={{ marginBottom: '1rem' }}>
+                            <span className={styles.specDataLabel} style={{ display: 'block', marginBottom: '8px' }}>Sectors of Interest</span>
+                            <div className={styles.tagRow}>
+                                {company.sectorsOfInterest.map(item => (
+                                    <span key={item} className={`${styles.tagPill} ${styles.tagBlue}`}>{item}</span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    {company.stagesFunded?.length > 0 && (
+                        <div style={{ marginBottom: '1rem' }}>
+                            <span className={styles.specDataLabel} style={{ display: 'block', marginBottom: '8px' }}>Stages Funded</span>
+                            <div className={styles.tagRow}>
+                                {company.stagesFunded.map(item => (
+                                    <span key={item} className={`${styles.tagPill} ${styles.tagGreen}`}>{item}</span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    {company.investorInstruments?.length > 0 && (
                         <div>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'block', marginBottom: '8px' }}>Investor Instruments</span>
-                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                            <span className={styles.specDataLabel} style={{ display: 'block', marginBottom: '8px' }}>Investor Instruments</span>
+                            <div className={styles.tagRow}>
                                 {company.investorInstruments.map(item => (
-                                    <span key={item} style={{ background: '#fff7ed', color: '#c2410c', padding: '4px 12px', borderRadius: '16px', fontSize: '0.85rem', fontWeight: '600', border: '1px solid #ffedd5' }}>{item}</span>
+                                    <span key={item} className={`${styles.tagPill} ${styles.tagOrange}`}>{item}</span>
                                 ))}
                             </div>
                         </div>
@@ -1338,30 +727,28 @@ const CompanyProfile = () => {
                 </div>
             )}
 
-            {/* Save Profile Button - Bottom */}
+            {/* Save Button */}
             {isEditing && (
-                <div style={{display: 'flex', justifyContent: 'center', marginTop: '2rem', marginBottom: '1rem'}}>
-                    <button 
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem', marginBottom: '1rem', gap: '12px', flexWrap: 'wrap' }}>
+                    {companyId && (
+                        <button
+                            type="button"
+                            onClick={() => setIsEditing(false)}
+                            className={styles.filterBtn}
+                        >
+                            Cancel
+                        </button>
+                    )}
+                    <button
+                        type="button"
                         onClick={handleSave}
-                        style={{
-                            background: '#3b82f6',
-                            color: 'white',
-                            padding: '12px 32px',
-                            fontSize: '16px',
-                            fontWeight: '600',
-                            border: 'none',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            transition: 'background 0.2s ease'
-                        }}
-                        onMouseEnter={(e) => e.target.style.background = '#2563eb'}
-                        onMouseLeave={(e) => e.target.style.background = '#3b82f6'}
+                        disabled={saveLoading}
+                        className={styles.saveBtn}
                     >
-                        <i className="fas fa-save"></i>
-                        Save Profile
+                        {saveLoading
+                            ? <><i className="fas fa-spinner fa-spin"></i> Saving...</>
+                            : <><i className="fas fa-save"></i> Save Profile</>
+                        }
                     </button>
                 </div>
             )}

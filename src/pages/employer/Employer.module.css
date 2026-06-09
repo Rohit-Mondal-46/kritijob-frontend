@@ -829,6 +829,282 @@
     cursor: not-allowed;
 }
 
+/* ── Company Profile: Type-Based Styles ── */
+
+.creationTypeLabel {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    display: block;
+    margin-bottom: 6px;
+}
+
+.creationTypeSelect {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px 14px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--color-text-main);
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.creationTypeSelect:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(1, 65, 163, 0.08);
+}
+
+/* Type Badges */
+.typeBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.typeBadgeStartup {
+    background: rgba(4, 120, 87, 0.1);
+    color: #047857;
+    border: 1px solid rgba(4, 120, 87, 0.25);
+}
+
+.typeBadgeInvestor {
+    background: rgba(29, 78, 216, 0.1);
+    color: #1d4ed8;
+    border: 1px solid rgba(29, 78, 216, 0.2);
+}
+
+.premiumBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(202, 138, 4, 0.12);
+    color: #92400e;
+    border: 1px solid rgba(202, 138, 4, 0.3);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+/* Form Fields */
+.formLabel {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    display: block;
+    margin-bottom: 6px;
+}
+
+.formField {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--color-text-main);
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+    appearance: auto;
+}
+
+.formField:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(1, 65, 163, 0.08);
+}
+
+.formField::placeholder {
+    color: var(--color-text-muted);
+}
+
+/* Spec Sections (startup/investor type-specific blocks) */
+.specSection {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: var(--color-surface);
+    border-radius: 14px;
+    border: 1px solid var(--color-border);
+}
+
+.specSectionTitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+    margin: 0 0 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.specGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.specItem {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.specDataLabel {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.specDataValue {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text-main);
+}
+
+.specDataLink {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.specDataLink:hover {
+    text-decoration: underline;
+}
+
+.specWide {
+    grid-column: 1 / -1;
+}
+
+/* Chip Selection Buttons */
+.chipRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.chipBtn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--color-border);
+    background: var(--color-background);
+    color: var(--color-text-main);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+}
+
+.chipBtn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: rgba(1, 65, 163, 0.05);
+}
+
+.chipBtnActive {
+    background: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    color: #ffffff !important;
+}
+
+/* Save Button */
+.saveBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light, #3b82f6));
+    color: #ffffff;
+    padding: 12px 36px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.saveBtn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(1, 65, 163, 0.3);
+}
+
+.saveBtn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Read-only tag pills */
+.tagRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.tagPill {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.tagNeutral {
+    background: var(--color-surface-muted, #f3f4f6);
+    color: var(--color-text-main);
+}
+
+.tagBlue {
+    background: rgba(29, 78, 216, 0.08);
+    color: #1d4ed8;
+    border: 1px solid rgba(29, 78, 216, 0.2);
+}
+
+.tagGreen {
+    background: rgba(4, 120, 87, 0.08);
+    color: #047857;
+    border: 1px solid rgba(4, 120, 87, 0.2);
+}
+
+.tagOrange {
+    background: rgba(194, 65, 12, 0.08);
+    color: #c2410c;
+    border: 1px solid rgba(194, 65, 12, 0.15);
+}
+
+/* Spec section responsive */
+@media (max-width: 640px) {
+    .specGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .specSection {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .specGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* ── Responsive Breakpoints ── */
 @media (max-width: 1200px) {
     .grid {
