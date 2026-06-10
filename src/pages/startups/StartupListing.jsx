@@ -8,9 +8,12 @@ import {
   SECTORS,
   STAGES_TRACTION,
   STARTUP_FUNDING_STAGES,
+  STARTUP_TICKET_SIZES,
   HUBS,
   FOUNDER_LOOKING_FOR,
 } from '../../data/masterData';
+
+const TEAM_SIZES = ['1', '2-5', '6-10', '11-25', '26-50', '50+'];
 
 const formatCurrency = (val) => {
   if (!val) return '—';
@@ -55,6 +58,11 @@ const StartupListing = () => {
     fundingStages: searchParams.get('fundingStage')?.split(',').filter(Boolean) || [],
     hubs: searchParams.get('location')?.split(',').filter(Boolean) || [],
     lookingFor: searchParams.get('lookingFor')?.split(',').filter(Boolean) || [],
+    fundingAsk: searchParams.get('fundingAsk')?.split(',').filter(Boolean) || [],
+    teamSizes: searchParams.get('teamSize')?.split(',').filter(Boolean) || [],
+    foundedFrom: searchParams.get('foundedFrom') || '',
+    foundedTo: searchParams.get('foundedTo') || '',
+    hasRevenue: searchParams.get('hasRevenue') || '',
     sort: searchParams.get('sort') || '-createdAt',
   }), [searchParams]);
 
@@ -66,6 +74,10 @@ const StartupListing = () => {
       af.fundingStages.length +
       af.hubs.length +
       af.lookingFor.length +
+      af.fundingAsk.length +
+      af.teamSizes.length +
+      (af.foundedFrom || af.foundedTo ? 1 : 0) +
+      (af.hasRevenue ? 1 : 0) +
       (af.keyword ? 1 : 0)
     );
   }, [activeFilters]);
@@ -152,6 +164,14 @@ const StartupListing = () => {
     params.set('page', '1');
     setSearchParams(params);
   }, [searchInput, searchParams, setSearchParams]);
+
+  const setParam = useCallback((key, value) => {
+    const params = new URLSearchParams(searchParams);
+    if (value) params.set(key, value);
+    else params.delete(key);
+    params.set('page', '1');
+    setSearchParams(params);
+  }, [searchParams, setSearchParams]);
 
   const handleSort = useCallback((sortValue) => {
     const params = new URLSearchParams(searchParams);
@@ -334,6 +354,73 @@ const StartupListing = () => {
                         onClick={() => toggleChipFilter('lookingFor', l)}
                       >{l}</button>
                     ))}
+                  </div>
+                </div>
+
+                <div className={styles.filterGroup}>
+                  <span className={styles.filterGroupLabel}>Funding Ask</span>
+                  <div className={styles.chipRow}>
+                    {STARTUP_TICKET_SIZES.map(t => (
+                      <button
+                        key={t} type="button"
+                        className={`${styles.chip} ${activeFilters.fundingAsk.includes(t) ? styles.chipActive : ''}`}
+                        onClick={() => toggleChipFilter('fundingAsk', t)}
+                      >{t}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.filterGroup}>
+                  <span className={styles.filterGroupLabel}>Team Size</span>
+                  <div className={styles.chipRow}>
+                    {TEAM_SIZES.map(t => (
+                      <button
+                        key={t} type="button"
+                        className={`${styles.chip} ${activeFilters.teamSizes.includes(t) ? styles.chipActive : ''}`}
+                        onClick={() => toggleChipFilter('teamSize', t)}
+                      >{t}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.filterGroup}>
+                  <span className={styles.filterGroupLabel}>Founded Year</span>
+                  <div className={styles.chipRow} style={{ alignItems: 'center', gap: '8px' }}>
+                    <input
+                      type="number"
+                      placeholder="From"
+                      min="2015"
+                      max={new Date().getFullYear()}
+                      value={activeFilters.foundedFrom}
+                      onChange={e => setParam('foundedFrom', e.target.value)}
+                      style={{ width: '90px', padding: '8px 10px', borderRadius: '8px', border: '1px solid var(--color-border)' }}
+                    />
+                    <span style={{ color: 'var(--color-text-secondary)' }}>—</span>
+                    <input
+                      type="number"
+                      placeholder="To"
+                      min="2015"
+                      max={new Date().getFullYear()}
+                      value={activeFilters.foundedTo}
+                      onChange={e => setParam('foundedTo', e.target.value)}
+                      style={{ width: '90px', padding: '8px 10px', borderRadius: '8px', border: '1px solid var(--color-border)' }}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.filterGroup}>
+                  <span className={styles.filterGroupLabel}>Revenue</span>
+                  <div className={styles.chipRow}>
+                    <button
+                      type="button"
+                      className={`${styles.chip} ${activeFilters.hasRevenue === 'true' ? styles.chipActive : ''}`}
+                      onClick={() => setParam('hasRevenue', activeFilters.hasRevenue === 'true' ? '' : 'true')}
+                    >Has Revenue</button>
+                    <button
+                      type="button"
+                      className={`${styles.chip} ${activeFilters.hasRevenue === 'false' ? styles.chipActive : ''}`}
+                      onClick={() => setParam('hasRevenue', activeFilters.hasRevenue === 'false' ? '' : 'false')}
+                    >Pre-revenue</button>
                   </div>
                 </div>
               </div>

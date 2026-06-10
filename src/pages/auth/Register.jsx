@@ -34,7 +34,9 @@ const Register = () => {
         confirmPassword: ''
     });
     const [isLoading, setIsLoading] = useState(false);
-    const [companyType, setCompanyType] = useState('company');
+    // Honor a company type pre-selected on the role-selection screen.
+    const initialCompanyType = searchParams.get('companyType') || location.state?.companyType || 'company';
+    const [companyType, setCompanyType] = useState(initialCompanyType);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -52,14 +54,34 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        if (formData.password !== formData.confirmPassword) {
-            addToast("Passwords don't match!", 'error');
+
+        // Field-level validation with clear, specific messages.
+        const name = formData.name.trim();
+        const email = formData.email.trim();
+
+        if (!name) {
+            addToast('Please enter your full name.', 'error');
+            return;
+        }
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            addToast('Please enter a valid email address.', 'error');
             return;
         }
 
         if (formData.phone.length !== 10) {
-            addToast("Phone number must be exactly 10 digits", 'error');
+            addToast('Phone number must be exactly 10 digits.', 'error');
+            return;
+        }
+
+        if (formData.password.length < 6) {
+            addToast('Password must be at least 6 characters long.', 'error');
+            return;
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+            addToast("Passwords don't match. Please re-enter them.", 'error');
             return;
         }
 
@@ -69,13 +91,13 @@ const Register = () => {
                 localStorage.setItem('registered_company_type', companyType);
             }
             // Call register without auto login
-            const response = await register(formData.name, formData.email, formData.password, role, formData.phone, false, companyType);
+            const response = await register(name, email, formData.password, role, formData.phone, false, companyType);
             
             if (response.requiresVerification) {
                 addToast(response.message || 'Registration successful! Please verify your email.', 'success');
                 // Navigate to email verification page
-                navigate('/verify-email', { 
-                    state: { email: formData.email } 
+                navigate('/verify-email', {
+                    state: { email }
                 });
             } else {
                 addToast(response.message || 'Registration successful! Please log in.', 'success');
@@ -86,17 +108,25 @@ const Register = () => {
             const resData = err.response?.data;
             if (resData?.requiresVerification) {
                 addToast(resData.message || 'User already registered. Redirecting to verification...', 'warning');
-                navigate('/verify-email', { state: { email: formData.email } });
+                navigate('/verify-email', { state: { email } });
                 return;
             }
             if (resData?.message === 'User already exists') {
-                const confirmLogin = window.confirm("An account with this email already exists. Would you like to log in instead?");
-                if (confirmLogin) {
-                    navigate('/login', { state: { email: formData.email } });
-                }
+                addToast('An account with this email already exists. Redirecting you to log in…', 'warning');
+                setTimeout(() => navigate('/login', { state: { email } }), 1200);
                 return;
             }
-            const errorMessage = resData?.message || err.message || 'Registration failed';
+            // Network / timeout errors come through without resData.
+            let errorMessage = resData?.message;
+            if (!errorMessage) {
+                if (err.code === 'ECONNABORTED' || /timeout/i.test(err.message || '')) {
+                    errorMessage = 'The request timed out. Please check your connection and try again.';
+                } else if (!err.response) {
+                    errorMessage = 'Network error. Please check your internet connection and try again.';
+                } else {
+                    errorMessage = 'Registration failed. Please try again.';
+                }
+            }
             addToast(errorMessage, 'error');
         } finally {
             setIsLoading(false);

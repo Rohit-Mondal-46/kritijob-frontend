@@ -46,7 +46,7 @@ api.interceptors.response.use(
         if (!window.location.pathname.startsWith('/auth') && !isPaymentRoute && !skipAuthReset) {
              safeStorage.removeItem('token');
              safeStorage.removeItem('user');
-             // window.location.href = '/login'; 
+             // window.location.href = '/login';
         }
     }
     return Promise.reject(error);

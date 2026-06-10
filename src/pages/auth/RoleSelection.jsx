@@ -5,8 +5,8 @@ import styles from './Auth.module.css';
 const RoleSelection = () => {
     const navigate = useNavigate();
 
-    const handleRoleSelect = (role) => {
-        navigate('/register', { state: { role } });
+    const handleRoleSelect = (role, companyType) => {
+        navigate('/register', { state: { role, companyType } });
     };
 
     return (
@@ -39,12 +39,12 @@ const RoleSelection = () => {
                     </div>
 
                     {/* Employer Card */}
-                    <div 
-                        onClick={() => handleRoleSelect('employer')}
+                    <div
+                        onClick={() => handleRoleSelect('employer', 'company')}
                         className={styles.roleCard}
                         role="button"
                         tabIndex={0}
-                        onKeyDown={(e) => { if (e.key === 'Enter') handleRoleSelect('employer'); }}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleRoleSelect('employer', 'company'); }}
                     >
                         <div className={styles.iconCircleBlue}>
                             <i className="far fa-building fa-2x"></i>
@@ -52,6 +52,40 @@ const RoleSelection = () => {
                         <h3>I'm hiring</h3>
                         <p className={styles.roleDesc}>
                             Post jobs, find top talent, and manage your hiring process efficiently. Build your employer brand.
+                        </p>
+                    </div>
+
+                    {/* Startup / Idea Card */}
+                    <div
+                        onClick={() => handleRoleSelect('employer', 'startup')}
+                        className={styles.roleCard}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleRoleSelect('employer', 'startup'); }}
+                    >
+                        <div className={styles.iconCircleBlue}>
+                            <i className="far fa-lightbulb fa-2x"></i>
+                        </div>
+                        <h3>I'm a Startup / Idea</h3>
+                        <p className={styles.roleDesc}>
+                            Pitch your startup, showcase traction, and get discovered by investors looking to fund the next big thing.
+                        </p>
+                    </div>
+
+                    {/* Investor / VC Card */}
+                    <div
+                        onClick={() => handleRoleSelect('employer', 'investor')}
+                        className={styles.roleCard}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleRoleSelect('employer', 'investor'); }}
+                    >
+                        <div className={styles.iconCircleBlue}>
+                            <i className="far fa-handshake fa-2x"></i>
+                        </div>
+                        <h3>I'm an Investor / VC</h3>
+                        <p className={styles.roleDesc}>
+                            Discover and shortlist promising startups, filter by sector and stage, and connect with founders directly.
                         </p>
                     </div>
 

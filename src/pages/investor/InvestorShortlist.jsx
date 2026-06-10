@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import api from '../../utils/api';
 import styles from './InvestorShortlist.module.css';
 
@@ -15,10 +16,12 @@ const formatCurrency = (val) => {
 
 const InvestorShortlist = () => {
   const { user } = useContext(AuthContext);
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const [shortlists, setShortlists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [exporting, setExporting] = useState(false);
   // Per-card edit state: { [startupId]: { note, tags, saving, tagInput } }
   const [editState, setEditState] = useState({});
 
@@ -119,6 +122,34 @@ const InvestorShortlist = () => {
     }));
   }, []);
 
+  const handleExportCsv = useCallback(async () => {
+    setExporting(true);
+    try {
+      const response = await api.get('/shortlists/export', {
+        responseType: 'blob',
+      });
+      const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'shortlist.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      addToast('Shortlist exported successfully.', 'success');
+    } catch (err) {
+      // Premium-gated: the blob error body needs to be parsed back to text.
+      let message = 'Could not export shortlist. Please try again.';
+      if (err.response?.status === 403) {
+        message = 'CSV export is a Premium feature. Upgrade to export your shortlist.';
+      }
+      addToast(message, 'error');
+    } finally {
+      setExporting(false);
+    }
+  }, [addToast]);
+
   const getInitials = (name) =>
     (name || 'S').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
@@ -151,9 +182,24 @@ const InvestorShortlist = () => {
               : 'No startups shortlisted yet'}
           </p>
         </div>
-        <button className={styles.browseBtn} onClick={() => navigate('/startups')}>
-          <i className="fas fa-rocket"></i> Browse Startups
-        </button>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          {shortlists.length > 0 && (
+            <button
+              className={styles.browseBtn}
+              onClick={handleExportCsv}
+              disabled={exporting}
+              style={{ background: '#fff', color: 'var(--color-primary)', border: '1px solid var(--color-primary)' }}
+              title="Export shortlist to CSV (Premium)"
+            >
+              {exporting
+                ? <><i className="fas fa-spinner fa-spin"></i> Exporting…</>
+                : <><i className="fas fa-file-csv"></i> Export CSV</>}
+            </button>
+          )}
+          <button className={styles.browseBtn} onClick={() => navigate('/startups')}>
+            <i className="fas fa-rocket"></i> Browse Startups
+          </button>
+        </div>
       </div>
 
       {shortlists.length === 0 ? (

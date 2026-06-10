@@ -71,6 +71,7 @@ const DashboardLayout = () => {
         { path: '/dashboard/startup/pitch', label: 'Startup Pitch', icon: 'fa-rocket' },
         { path: '/dashboard/startup/connections', label: 'Connections', icon: 'fa-handshake' },
         { path: '/dashboard/startup/find-investors', label: 'Find Investors', icon: 'fa-search' },
+        { path: '/dashboard/employer/subscription', label: 'Premium Plans', icon: 'fa-star' },
     ];
 
     const employerLinks = [

@@ -9,6 +9,7 @@ import {
     STAGES_TRACTION,
     STARTUP_FUNDING_STAGES,
     STARTUP_LOOKING_FOR,
+    BUSINESS_MODELS,
     HUBS
 } from '../../data/masterData';
 
@@ -37,6 +38,7 @@ const StartupPitch = () => {
         activeUsers: 0,
         momGrowthPct: 0,
         deckUrl: '',
+        website: '',
         founderLinkedin: '',
         founderName: '',
         contactEmail: '',
@@ -81,6 +83,7 @@ const StartupPitch = () => {
                         activeUsers: existingPitch.activeUsers || 0,
                         momGrowthPct: existingPitch.momGrowthPct || 0,
                         deckUrl: existingPitch.deckUrl || co.deckUrl || '',
+                        website: existingPitch.website || co.website || '',
                         founderLinkedin: existingPitch.founderLinkedin || co.founderLinkedin || '',
                         founderName: existingPitch.founderName || '',
                         contactEmail: existingPitch.contactEmail || '',
@@ -102,6 +105,7 @@ const StartupPitch = () => {
                         fundingStage: co.fundingStage || 'Bootstrapped',
                         lookingFor: co.lookingFor || [],
                         founderLinkedin: co.founderLinkedin || '',
+                        website: co.website || '',
                         deckUrl: co.deckUrl || ''
                     }));
                     setIsEditing(true);
@@ -122,6 +126,19 @@ const StartupPitch = () => {
             ...prev,
             [name]: value
         }));
+    };
+
+    const toggleLookingFor = (option) => {
+        setFormData(prev => {
+            const current = prev.lookingFor || [];
+            const exists = current.includes(option);
+            // Limit to 5 selections per spec.
+            if (!exists && current.length >= 5) return prev;
+            return {
+                ...prev,
+                lookingFor: exists ? current.filter(o => o !== option) : [...current, option]
+            };
+        });
     };
 
     const handleToggleVisibility = async () => {
@@ -165,6 +182,22 @@ const StartupPitch = () => {
         if (!formData.founderName || formData.founderName.length < 2 || formData.founderName.length > 60) {
             addToast('Founder Name must be between 2 and 60 characters.', 'error');
             return;
+        }
+        if (!formData.sector) {
+            addToast('Please select a sector.', 'error');
+            return;
+        }
+        if (!formData.lookingFor || formData.lookingFor.length === 0) {
+            addToast('Please select at least one option for "What you are looking for".', 'error');
+            return;
+        }
+        // Website is optional, but if provided must look like a URL.
+        if (formData.website.trim()) {
+            const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+            if (!urlPattern.test(formData.website.trim())) {
+                addToast('Please provide a valid website URL.', 'error');
+                return;
+            }
         }
         
         // URL validation for LinkedIn
@@ -225,6 +258,7 @@ const StartupPitch = () => {
                 activeUsers: Number(formData.activeUsers),
                 momGrowthPct: Number(formData.momGrowthPct),
                 deckUrl: formData.deckUrl,
+                website: formData.website,
                 founderLinkedin: formData.founderLinkedin,
                 founderName: formData.founderName,
                 contactEmail: formData.contactEmail,
@@ -352,9 +386,116 @@ const StartupPitch = () => {
                         </div>
                     </div>
 
+                    {/* Section 1b: Company & Categorisation */}
+                    <div className={styles.formSection}>
+                        <h3 className={styles.sectionTitle}>2. Company & Categorisation</h3>
+                        <div className={styles.formGrid}>
+                            <div className={styles.formField}>
+                                <label className={styles.fieldLabel}>Sector *</label>
+                                <select
+                                    name="sector"
+                                    value={formData.sector}
+                                    onChange={handleChange}
+                                    className={styles.formSelect}
+                                    required
+                                >
+                                    <option value="">Select Sector</option>
+                                    {SECTORS.map(s => <option key={s} value={s}>{s}</option>)}
+                                </select>
+                            </div>
+                            <div className={styles.formField}>
+                                <label className={styles.fieldLabel}>Stage *</label>
+                                <select
+                                    name="stage"
+                                    value={formData.stage}
+                                    onChange={handleChange}
+                                    className={styles.formSelect}
+                                    required
+                                >
+                                    {STAGES_TRACTION.map(s => <option key={s} value={s}>{s}</option>)}
+                                </select>
+                            </div>
+                            <div className={styles.formField}>
+                                <label className={styles.fieldLabel}>Funding Stage *</label>
+                                <select
+                                    name="fundingStage"
+                                    value={formData.fundingStage}
+                                    onChange={handleChange}
+                                    className={styles.formSelect}
+                                    required
+                                >
+                                    {STARTUP_FUNDING_STAGES.map(s => <option key={s} value={s}>{s}</option>)}
+                                </select>
+                            </div>
+                            <div className={styles.formField}>
+                                <label className={styles.fieldLabel}>Business Model</label>
+                                <select
+                                    name="businessModel"
+                                    value={formData.businessModel}
+                                    onChange={handleChange}
+                                    className={styles.formSelect}
+                                >
+                                    {BUSINESS_MODELS.map(m => <option key={m} value={m}>{m}</option>)}
+                                </select>
+                            </div>
+                            <div className={styles.formField}>
+                                <label className={styles.fieldLabel}>Founded In *</label>
+                                <input
+                                    type="number"
+                                    name="foundingYear"
+                                    value={formData.foundingYear}
+                                    onChange={handleChange}
+                                    className={styles.formInput}
+                                    min="2015"
+                                    max={new Date().getFullYear()}
+                                    required
+                                />
+                            </div>
+                            <div className={styles.formField}>
+                                <label className={styles.fieldLabel}>Website</label>
+                                <input
+                                    type="text"
+                                    name="website"
+                                    value={formData.website}
+                                    onChange={handleChange}
+                                    placeholder="https://yourstartup.com"
+                                    className={styles.formInput}
+                                />
+                            </div>
+                            <div className={`${styles.formField} ${styles.fullWidth}`}>
+                                <label className={styles.fieldLabel}>What You're Looking For * (select up to 5)</label>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
+                                    {STARTUP_LOOKING_FOR.map(option => {
+                                        const selected = (formData.lookingFor || []).includes(option);
+                                        return (
+                                            <button
+                                                type="button"
+                                                key={option}
+                                                onClick={() => toggleLookingFor(option)}
+                                                style={{
+                                                    padding: '8px 14px',
+                                                    borderRadius: '20px',
+                                                    border: `1px solid ${selected ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                                                    background: selected ? 'var(--color-primary)' : '#fff',
+                                                    color: selected ? '#fff' : 'var(--color-text-main)',
+                                                    cursor: 'pointer',
+                                                    fontSize: '0.875rem',
+                                                    fontWeight: selected ? 600 : 400,
+                                                }}
+                                            >
+                                                {selected && <i className="fas fa-check" style={{ marginRight: '6px' }}></i>}
+                                                {option}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Section 2: Problem & Solution */}
                     <div className={styles.formSection}>
-                        <h3 className={styles.sectionTitle}>2. Problem & Solution Statement</h3>
+                        <h3 className={styles.sectionTitle}>3. Problem & Solution Statement</h3>
                         <div className={styles.formGrid}>
                             <div className={`${styles.formField} ${styles.fullWidth}`}>
                                 <label className={styles.fieldLabel}>Problem You Solve * (80 - 500 characters)</label>
@@ -386,7 +527,7 @@ const StartupPitch = () => {
 
                     {/* Section 3: Traction & Financials */}
                     <div className={styles.formSection}>
-                        <h3 className={styles.sectionTitle}>3. Metrics & Funding Ask</h3>
+                        <h3 className={styles.sectionTitle}>4. Metrics & Funding Ask</h3>
                         <div className={styles.formGrid}>
                             <div className={styles.formField}>
                                 <label className={styles.fieldLabel}>Monthly Revenue (₹) *</label>
@@ -466,7 +607,7 @@ const StartupPitch = () => {
 
                     {/* Section 4: Contact & Founder */}
                     <div className={styles.formSection}>
-                        <h3 className={styles.sectionTitle}>4. Founder & Contact Information</h3>
+                        <h3 className={styles.sectionTitle}>5. Founder & Contact Information</h3>
                         <div className={styles.formGrid}>
                             <div className={styles.formField}>
                                 <label className={styles.fieldLabel}>Founder Name *</label>

@@ -45,6 +45,18 @@ const FounderConnections = () => {
     }
   };
 
+  const handleMute = async (investorId, investorName) => {
+    if (!investorId) return;
+    if (!window.confirm(`Mute ${investorName || 'this investor'}? They won't see your pitch or be able to contact you, and any shortlist of your startup is removed.`)) return;
+    try {
+      await api.post('/mutes', { investorId });
+      addToast(`${investorName || 'Investor'} has been muted.`, 'success');
+    } catch (err) {
+      const errMsg = err.response?.data?.message || 'Failed to mute investor';
+      addToast(errMsg, 'error');
+    }
+  };
+
   const getFilteredConnections = () => {
     switch (activeTab) {
       case 'pending':
@@ -129,6 +141,14 @@ const FounderConnections = () => {
                   <div className={styles.investorMeta}>
                     <h3 className={styles.investorName}>{investor.name || 'Anonymous Investor'}</h3>
                     <p className={styles.companyName}>{company.name || 'Private Investor'}</p>
+                    <button
+                      type="button"
+                      onClick={() => handleMute(investor._id, investor.name)}
+                      title="Mute this investor"
+                      style={{ background: 'none', border: 'none', color: 'var(--color-text-secondary)', cursor: 'pointer', padding: '2px 0', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                    >
+                      <i className="fas fa-volume-mute"></i> Mute
+                    </button>
                     <div className={styles.badgeRow}>
                       {company.investorType && (
                         <span className={`${styles.badge} ${styles.typeBadge}`}>{company.investorType}</span>
