@@ -17,9 +17,13 @@ const DashboardLayout = () => {
         '/dashboard/employer/shortlist',
     ];
     const isEmployerMoreSection = employerMorePaths.includes(location.pathname);
-    // Startup users at /dashboard/employer see a standalone page — no sidebar
+    // Startup and investor users at /dashboard/employer see a standalone page — no sidebar
     const isStartupHome = companyType === 'startup' && location.pathname === '/dashboard/employer';
-    const showSidebar = !isEmployer || (companyType === 'startup' && !isStartupHome) || isEmployerMoreSection;
+
+    const showSidebar = !isEmployer ||
+        (companyType === 'startup' && !isStartupHome) ||
+        (companyType === 'investor' && location.pathname.startsWith('/dashboard/employer/')) ||
+        (companyType !== 'startup' && companyType !== 'investor' && isEmployerMoreSection);
 
     // Redirect from /dashboard to role-specific default page
     useEffect(() => {
@@ -66,16 +70,17 @@ const DashboardLayout = () => {
         { path: '/dashboard/employer', label: 'Dashboard', icon: 'fa-chart-line', exact: true },
         { path: '/dashboard/startup/pitch', label: 'Startup Pitch', icon: 'fa-rocket' },
         { path: '/dashboard/startup/connections', label: 'Connections', icon: 'fa-handshake' },
+        { path: '/dashboard/startup/find-investors', label: 'Find Investors', icon: 'fa-search' },
     ];
 
     const employerLinks = [
         { path: '/dashboard/employer/company', label: companyType === 'investor' ? 'Fund Profile' : 'Company Profile', icon: 'fa-building' },
         { path: '/dashboard/employer', label: 'Dashboard', icon: 'fa-chart-line', exact: true },
         { path: '/dashboard/employer/jobs', label: companyType === 'investor' ? 'My Funds' : 'My Jobs', icon: 'fa-briefcase' },
-        { 
-            path: companyType === 'investor' ? '/startups' : '/dashboard/employer/find-talent', 
-            label: companyType === 'investor' ? 'Find Founders' : 'Find Talent', 
-            icon: 'fa-search' 
+        {
+            path: '/dashboard/employer/find-talent',
+            label: companyType === 'investor' ? 'Find Founders' : 'Find Talent',
+            icon: 'fa-search'
         },
         ...(companyType === 'investor'
             ? [

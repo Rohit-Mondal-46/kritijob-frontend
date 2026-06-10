@@ -21,14 +21,23 @@ const FeaturedJobs = () => {
                 // Try cache first for instant render
                 const cached = sessionStorage.getItem('featuredJobs');
                 if (cached) {
-                    setJobs(JSON.parse(cached));
+                    const parsed = JSON.parse(cached);
+                    const filtered = parsed.filter(job => {
+                        const type = job.companyType || job.companyId?.companyType || job.company_type || job.companyId?.company_type;
+                        return type !== 'investor';
+                    });
+                    setJobs(filtered);
                     setLoading(false);
                 }
                 // Fetch fresh data (revalidate)
-                const { data } = await api.get('/jobs?limit=4');
+                const { data } = await api.get('/jobs?limit=8');
                 if (data.success) {
-                    setJobs(data.data);
-                    sessionStorage.setItem('featuredJobs', JSON.stringify(data.data));
+                    const filtered = (data.data || []).filter(job => {
+                        const type = job.companyType || job.companyId?.companyType || job.company_type || job.companyId?.company_type;
+                        return type !== 'investor';
+                    }).slice(0, 4);
+                    setJobs(filtered);
+                    sessionStorage.setItem('featuredJobs', JSON.stringify(filtered));
                 }
             } catch (err) {
                 console.error("Failed to fetch featured jobs:", err);

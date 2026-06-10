@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../context/ToastContext';
 import api from '../../utils/api';
 import styles from './StartupPitch.module.css';
-import { 
-    STARTUP_TICKET_SIZES, 
-    SECTORS, 
-    STAGES_TRACTION, 
-    STARTUP_FUNDING_STAGES, 
+import {
+    STARTUP_TICKET_SIZES,
+    SECTORS,
+    STAGES_TRACTION,
+    STARTUP_FUNDING_STAGES,
     STARTUP_LOOKING_FOR,
     HUBS
 } from '../../data/masterData';
@@ -326,7 +326,7 @@ const StartupPitch = () => {
                             </div>
                             <div className={styles.formField}>
                                 <label className={styles.fieldLabel}>HQ City *</label>
-                                <select 
+                                <select
                                     name="location"
                                     value={formData.location}
                                     onChange={handleChange}
@@ -339,7 +339,7 @@ const StartupPitch = () => {
                             </div>
                             <div className={`${styles.formField} ${styles.fullWidth}`}>
                                 <label className={styles.fieldLabel}>One-liner (Tagline) * (20 - 120 characters)</label>
-                                <input 
+                                <input
                                     type="text"
                                     name="tagline"
                                     value={formData.tagline}
@@ -451,7 +451,7 @@ const StartupPitch = () => {
                             </div>
                             <div className={styles.formField}>
                                 <label className={styles.fieldLabel}>Team Size *</label>
-                                <select 
+                                <select
                                     name="teamSize"
                                     value={formData.teamSize}
                                     onChange={handleChange}

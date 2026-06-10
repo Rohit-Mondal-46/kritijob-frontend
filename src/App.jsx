@@ -218,6 +218,7 @@ function App() {
                         <Route path="profile" element={<StartupProfile />} />
                         <Route path="pitch" element={<StartupPitch />} />
                         <Route path="connections" element={<FounderConnections />} />
+                        <Route path="find-investors" element={<InvestorListing />} />
                       </Route>
                       
                       <Route index element={<div className="container" style={{paddingTop: '30px', color: 'white', textAlign: 'center'}}><h2>Welcome to your Dashboard</h2><p style={{color: '#aaa'}}>Select an option from the sidebar to get started.</p></div>} />

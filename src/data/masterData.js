@@ -15,7 +15,7 @@ export const STARTUP_FUNDING_STAGES = [
 ];
 
 export const INVESTOR_TYPES = [
-  "Angel", "Angel Network", "Syndicate", "Micro-VC", "VC", "CVC", "Family Office", "Accelerator", "Incubator", 
+  "Angel", "Angel Network", "Syndicate", "Micro-VC", "VC", "CVC", "Family Office", "Accelerator", "Incubator",
   "Govt Fund (SIDBI / Startup India)", "Crowdfunding", "HNI"
 ];
 

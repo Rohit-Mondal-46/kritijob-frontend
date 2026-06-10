@@ -44,7 +44,7 @@ const JobDetails = () => {
                 title: `${job.title} at ${companyName}`,
                 description: cleanDesc,
                 ogType: 'article',
-                ogImage: job.companyId?.logo || '/images/logo.png'
+                ogImage: job.companyId?.logoUrl || '/images/logo.png'
             });
         }
     }, [job]);
@@ -314,8 +314,12 @@ const JobDetails = () => {
                                 <h1>{job.title}</h1>
                                 <div className={styles.companyMeta}>
                                     <span>{companyName}</span>
-                                    <span>•</span>
-                                    <span>{new Date(job.createdAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}</span>
+                                    {!isStartupPitch && job.createdAt && (
+                                        <>
+                                            <span>•</span>
+                                            <span>{new Date(job.createdAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}</span>
+                                        </>
+                                    )}
                                     <span>•</span>
                                     {/* Status Badge */}
                                     <span style={{

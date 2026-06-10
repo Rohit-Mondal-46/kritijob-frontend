@@ -479,9 +479,6 @@ const StartupListing = () => {
                         {pitch.location && (
                           <span><i className="fas fa-map-marker-alt"></i> {pitch.location}</span>
                         )}
-                        {pitch.type && (
-                          <span><i className="fas fa-briefcase"></i> {pitch.type}</span>
-                        )}
                       </div>
                       {pitch.lookingFor && pitch.lookingFor.length > 0 && (
                         <div className={styles.lookingFor}>
