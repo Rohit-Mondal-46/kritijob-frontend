@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import Input from '../../components/ui/Input';
@@ -9,7 +9,8 @@ import { updateSEO } from '../../utils/seo';
 
 const Login = () => {
     const NAVBAR_HEIGHT = 64;
-    const [formData, setFormData] = useState({ email: '', password: '' });
+    const location = useLocation();
+    const [formData, setFormData] = useState({ email: location.state?.email || '', password: '' });
     const [isLoading, setIsLoading] = useState(false);
     const { login, error, setError } = useContext(AuthContext);
     const { addToast } = useToast(); // Use Toast

@@ -708,6 +708,16 @@ const FindTalent = () => {
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
 
+    const companyType = user?.companyType || user?.company_type || 'company';
+
+    useEffect(() => {
+        if (companyType === 'startup') {
+            navigate('/investors', { replace: true });
+        } else if (companyType === 'investor') {
+            navigate('/startups', { replace: true });
+        }
+    }, [companyType, navigate]);
+
     // Profile Modal State
     const [selectedCandidate, setSelectedCandidate] = useState(null);
 

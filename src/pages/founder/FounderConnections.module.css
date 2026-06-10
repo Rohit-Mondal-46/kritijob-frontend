@@ -1,0 +1,433 @@
+.container {
+  padding: 2.5rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: var(--color-text-main);
+  background: var(--color-background);
+  min-height: 100vh;
+}
+
+.header {
+  margin-bottom: 2.5rem;
+}
+
+.pageTitle {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+  letter-spacing: -0.025em;
+  margin-bottom: 0.5rem;
+}
+
+.pageSubtitle {
+  font-size: 1.05rem;
+  color: var(--color-text-muted);
+  max-width: 700px;
+}
+
+/* Tabs */
+.tabsContainer {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 2.5rem;
+  padding-bottom: 1px;
+  overflow-x: auto;
+}
+
+.tabBtn {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--color-text-muted);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.tabBtn:hover {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary-light);
+}
+
+.activeTab {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.tabCount {
+  background: var(--color-secondary-light);
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+}
+
+/* Loading & Empty States */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 0;
+  color: var(--color-text-muted);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.emptyState {
+  text-align: center;
+  padding: 5rem 2rem;
+  background: var(--color-surface);
+  border-radius: 16px;
+  border: 1px dashed var(--color-border);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.emptyIconWrap {
+  font-size: 3rem;
+  color: var(--color-text-tertiary);
+  margin-bottom: 1.5rem;
+}
+
+.emptyState h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.emptyState p {
+  color: var(--color-text-muted);
+}
+
+/* Cards Grid */
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.75rem;
+}
+
+.connectionCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.connectionCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary-light);
+}
+
+.cardHeader {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.avatarWrapper {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+.logo {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+}
+
+.avatarFallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.investorMeta {
+  display: flex;
+  flex-direction: column;
+}
+
+.investorName {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin: 0 0 0.15rem 0;
+}
+
+.companyName {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin: 0 0 0.5rem 0;
+}
+
+.badgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.typeBadge {
+  background: var(--color-secondary-light);
+  color: var(--color-primary);
+  border: 1px solid rgba(10, 102, 194, 0.15);
+}
+
+.ticketBadge {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.cardBody {
+  flex-grow: 1;
+}
+
+.pitchReference {
+  background: var(--color-secondary-dark);
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.85rem;
+  margin-bottom: 1.25rem;
+  border-left: 3px solid var(--color-primary);
+}
+
+.pitchLabel {
+  color: var(--color-text-muted);
+  margin-right: 0.35rem;
+}
+
+.pitchTitle {
+  color: var(--color-text-main);
+  font-weight: 600;
+}
+
+.sectionHeading {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.4rem;
+}
+
+.introMessageSection {
+  margin-bottom: 1.25rem;
+}
+
+.messageBox {
+  background: rgba(243, 244, 246, 0.6);
+  border: 1px solid var(--color-border);
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  font-style: italic;
+  font-size: 0.92rem;
+  color: var(--color-text-main);
+  line-height: 1.5;
+}
+
+:global(body.dark-mode-active) .messageBox {
+  background: rgba(30, 41, 59, 0.5);
+}
+
+.thesisSection {
+  margin-bottom: 1.25rem;
+}
+
+.thesisText {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.metaRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.metaLabel {
+  font-weight: 700;
+  color: var(--color-text-tertiary);
+  margin-top: 0.15rem;
+}
+
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.tag {
+  background: var(--color-secondary-dark);
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+}
+
+/* Unlocked Contacts panel */
+.unlockedContacts {
+  background: linear-gradient(135deg, rgba(10, 102, 194, 0.06), rgba(55, 143, 233, 0.03));
+  border: 1px solid rgba(10, 102, 194, 0.18);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1.25rem;
+  box-shadow: 0 4px 12px rgba(10, 102, 194, 0.04);
+}
+
+.unlockedTitle {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0 0 0.75rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.contactDetailsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--color-text-main);
+}
+
+.contactItem i {
+  color: var(--color-primary);
+  width: 14px;
+  text-align: center;
+}
+
+.contactLink {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.contactLink:hover {
+  text-decoration: underline;
+}
+
+/* Actions */
+.cardActions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.actionBtn {
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.declineBtn {
+  background: transparent;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+}
+
+.declineBtn:hover {
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.acceptBtn {
+  background: var(--color-primary);
+  border: none;
+  color: white;
+}
+
+.acceptBtn:hover {
+  background: var(--color-primary-dark);
+}
+
+/* Status Footers */
+.cardStatusFooter {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statusLabel {
+  font-size: 0.82rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+}
+
+.accepted {
+  color: #10b981;
+}
+
+.declined {
+  color: #ef4444;
+}
+
+.expired {
+  color: var(--color-text-tertiary);
+}

@@ -34,6 +34,9 @@ const Register = () => {
         confirmPassword: ''
     });
     const [isLoading, setIsLoading] = useState(false);
+    // Honor a company type pre-selected on the role-selection screen.
+    const initialCompanyType = searchParams.get('companyType') || location.state?.companyType || 'company';
+    const [companyType, setCompanyType] = useState(initialCompanyType);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -51,27 +54,50 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        if (formData.password !== formData.confirmPassword) {
-            addToast("Passwords don't match!", 'error');
+
+        // Field-level validation with clear, specific messages.
+        const name = formData.name.trim();
+        const email = formData.email.trim();
+
+        if (!name) {
+            addToast('Please enter your full name.', 'error');
+            return;
+        }
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            addToast('Please enter a valid email address.', 'error');
             return;
         }
 
         if (formData.phone.length !== 10) {
-            addToast("Phone number must be exactly 10 digits", 'error');
+            addToast('Phone number must be exactly 10 digits.', 'error');
+            return;
+        }
+
+        if (formData.password.length < 6) {
+            addToast('Password must be at least 6 characters long.', 'error');
+            return;
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+            addToast("Passwords don't match. Please re-enter them.", 'error');
             return;
         }
 
         setIsLoading(true);
         try {
+            if (role === 'employer') {
+                localStorage.setItem('registered_company_type', companyType);
+            }
             // Call register without auto login
-            const response = await register(formData.name, formData.email, formData.password, role, formData.phone, false);
+            const response = await register(name, email, formData.password, role, formData.phone, false, companyType);
             
             if (response.requiresVerification) {
                 addToast(response.message || 'Registration successful! Please verify your email.', 'success');
                 // Navigate to email verification page
-                navigate('/verify-email', { 
-                    state: { email: formData.email } 
+                navigate('/verify-email', {
+                    state: { email }
                 });
             } else {
                 addToast(response.message || 'Registration successful! Please log in.', 'success');
@@ -79,7 +105,28 @@ const Register = () => {
             }
         } catch (err) {
             console.error('Registration failed', err);
-            const errorMessage = err.response?.data?.message || err.message || 'Registration failed';
+            const resData = err.response?.data;
+            if (resData?.requiresVerification) {
+                addToast(resData.message || 'User already registered. Redirecting to verification...', 'warning');
+                navigate('/verify-email', { state: { email } });
+                return;
+            }
+            if (resData?.message === 'User already exists') {
+                addToast('An account with this email already exists. Redirecting you to log in…', 'warning');
+                setTimeout(() => navigate('/login', { state: { email } }), 1200);
+                return;
+            }
+            // Network / timeout errors come through without resData.
+            let errorMessage = resData?.message;
+            if (!errorMessage) {
+                if (err.code === 'ECONNABORTED' || /timeout/i.test(err.message || '')) {
+                    errorMessage = 'The request timed out. Please check your connection and try again.';
+                } else if (!err.response) {
+                    errorMessage = 'Network error. Please check your internet connection and try again.';
+                } else {
+                    errorMessage = 'Registration failed. Please try again.';
+                }
+            }
             addToast(errorMessage, 'error');
         } finally {
             setIsLoading(false);
@@ -107,6 +154,31 @@ const Register = () => {
                 {error && <div className={styles.error}>{error}</div>}
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {role === 'employer' && (
+                        <div style={{ marginBottom: '8px' }}>
+                            <label style={{ fontSize: '14px', fontWeight: '500', color: 'var(--color-text-main)', display: 'block', marginBottom: '6px' }}>I am registering as:</label>
+                            <select
+                                value={companyType}
+                                onChange={(e) => setCompanyType(e.target.value)}
+                                style={{
+                                    padding: '10px 14px',
+                                    background: '#ffffff',
+                                    border: '1px solid var(--color-border)',
+                                    borderRadius: '8px',
+                                    color: 'var(--color-text-main)',
+                                    fontSize: '0.95rem',
+                                    fontFamily: 'inherit',
+                                    outline: 'none',
+                                    width: '100%',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                <option value="company">Hiring Company</option>
+                                <option value="startup">Startup / Idea</option>
+                                <option value="investor">Investor / VC</option>
+                            </select>
+                        </div>
+                    )}
                     <Input 
                         label="Full Name"
                         type="text"

@@ -82,6 +82,15 @@
     font-weight: normal;
 }
 
+.gstText {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+
 .planFeatures {
     list-style: none;
     padding: 0;

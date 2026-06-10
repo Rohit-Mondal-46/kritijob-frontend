@@ -9,14 +9,23 @@ const DashboardLayout = () => {
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
     const isEmployer = user?.role === 'employer';
+    const companyType = user?.companyType || user?.company_type || 'company';
     const employerMorePaths = [
-        '/dashboard/employer/find-talent',
+        '/dashboard/employer',
         '/dashboard/employer/subscription',
+        '/dashboard/employer/connections',
+        '/dashboard/employer/shortlist',
     ];
     const isEmployerMoreSection = employerMorePaths.includes(location.pathname);
-    const showSidebar = !isEmployer || isEmployerMoreSection;
+    // Startup and investor users at /dashboard/employer see a standalone page — no sidebar
+    const isStartupHome = companyType === 'startup' && location.pathname === '/dashboard/employer';
 
-    // Auto-redirect from /dashboard to default page based on role
+    const showSidebar = !isEmployer ||
+        (companyType === 'startup' && !isStartupHome) ||
+        (companyType === 'investor' && location.pathname.startsWith('/dashboard/employer/')) ||
+        (companyType !== 'startup' && companyType !== 'investor' && isEmployerMoreSection);
+
+    // Redirect from /dashboard to role-specific default page
     useEffect(() => {
         if (user && location.pathname === '/dashboard') {
             if (user.role === 'candidate') {
@@ -57,11 +66,29 @@ const DashboardLayout = () => {
 
     if (!user) return null;
 
-    const employerLinks = [
-        { path: '/dashboard/employer/company', label: 'Company Profile', icon: 'fa-building' },
+    const startupLinks = [
         { path: '/dashboard/employer', label: 'Dashboard', icon: 'fa-chart-line', exact: true },
-        { path: '/dashboard/employer/jobs', label: 'My Jobs', icon: 'fa-briefcase' },
-        { path: '/dashboard/employer/find-talent', label: 'Find Talent', icon: 'fa-search' },
+        { path: '/dashboard/startup/pitch', label: 'Startup Pitch', icon: 'fa-rocket' },
+        { path: '/dashboard/startup/connections', label: 'Connections', icon: 'fa-handshake' },
+        { path: '/dashboard/startup/find-investors', label: 'Find Investors', icon: 'fa-search' },
+        { path: '/dashboard/employer/subscription', label: 'Premium Plans', icon: 'fa-star' },
+    ];
+
+    const employerLinks = [
+        { path: '/dashboard/employer/company', label: companyType === 'investor' ? 'Fund Profile' : 'Company Profile', icon: 'fa-building' },
+        { path: '/dashboard/employer', label: 'Dashboard', icon: 'fa-chart-line', exact: true },
+        { path: '/dashboard/employer/jobs', label: companyType === 'investor' ? 'My Funds' : 'My Jobs', icon: 'fa-briefcase' },
+        {
+            path: '/dashboard/employer/find-talent',
+            label: companyType === 'investor' ? 'Find Founders' : 'Find Talent',
+            icon: 'fa-search'
+        },
+        ...(companyType === 'investor'
+            ? [
+                { path: '/dashboard/employer/connections', label: 'Connections', icon: 'fa-handshake' },
+                { path: '/dashboard/employer/shortlist', label: 'My Shortlist', icon: 'fa-bookmark' },
+              ]
+            : []),
         { path: '/dashboard/employer/subscription', label: 'Premium Plans', icon: 'fa-star' },
     ];
 
@@ -83,9 +110,13 @@ const DashboardLayout = () => {
     ];
 
     let links = [];
-    if (user.role === 'employer') links = employerLinks;
-    else if (user.role === 'admin' || user.role === 'ADMIN') links = adminLinks;
-    else links = candidateLinks;
+    if (user.role === 'employer') {
+        links = companyType === 'startup' ? startupLinks : employerLinks;
+    } else if (user.role === 'admin' || user.role === 'ADMIN') {
+        links = adminLinks;
+    } else {
+        links = candidateLinks;
+    }
 
     return (
         <div className={styles.dashboardContainer}>
@@ -119,9 +150,9 @@ const DashboardLayout = () => {
 
                 <nav className={styles.nav}>
                     {links.map((link) => (
-                        <Link 
-                            key={link.path} 
-                            to={link.path} 
+                        <Link
+                            key={link.path}
+                            to={link.path}
                             className={`${styles.navLink} ${(link.exact ? location.pathname === link.path : location.pathname.startsWith(link.path)) ? styles.active : ''}`}
                             onClick={closeMobileMenu}
                         >

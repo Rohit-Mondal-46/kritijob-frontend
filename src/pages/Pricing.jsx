@@ -103,8 +103,15 @@ const Pricing = () => {
                     <div key={index} className={`${styles.pricingCard} ${plan.premium ? styles.premium : ''}`}>
                         {plan.popular && <div className={styles.popularBadge}>Best Value</div>}
                         <h2 className={styles.planName}>{plan.name}</h2>
-                        <div className={styles.planPrice}>
-                            ₹{plan.price} <span>/ month</span>
+                        <div className={styles.planPriceContainer}>
+                            <div className={styles.planPrice} style={plan.price === "499" ? { marginBottom: '0.5rem' } : {}}>
+                                ₹{plan.price} <span>/ month</span>
+                            </div>
+                            {plan.price === "499" && (
+                                <div className={styles.gstText}>
+                                    incl. 18% GST (Base ₹422.88 + CGST ₹38.06 + SGST ₹38.06)
+                                </div>
+                            )}
                         </div>
                         <ul className={styles.planFeatures}>
                             {plan.features.map((feature, fIndex) => (

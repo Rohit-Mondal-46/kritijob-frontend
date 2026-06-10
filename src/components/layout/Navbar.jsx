@@ -366,6 +366,8 @@ const Navbar = () => {
     if (!user) {
       return [
         { label: 'Home', path: '/' },
+        { label: 'Startups', path: '/startups' },
+        { label: 'Investors', path: '/investors' },
         { label: 'Premium Plans', path: '/pricing' },
         { label: 'About', path: '/about' }
       ];
@@ -374,6 +376,8 @@ const Navbar = () => {
     if (user.role === 'candidate') {
       return [
         { label: 'Find Jobs', path: '/jobs' },
+        { label: 'Startups', path: '/startups' },
+        { label: 'Investors', path: '/investors' },
         { label: 'Companies', path: '/companies' },
         { label: 'About', path: '/about' },
         { label: 'Dashboard', path: '/dashboard/candidate/profile' }
@@ -381,11 +385,17 @@ const Navbar = () => {
     }
 
     if (user.role === 'employer') {
+      const companyType = user?.companyType || user?.company_type || 'company';
       return [
         { label: 'Dashboard', path: '/dashboard/employer' },
         { label: 'Company Profile', path: '/dashboard/employer/company' },
         { label: 'My Jobs', path: '/dashboard/employer/jobs' },
-        { label: 'Find Talent', path: '/dashboard/employer/find-talent' },
+        companyType === 'startup'
+          ? { label: 'Investor List', path: '/investors' }
+          : { 
+              label: companyType === 'investor' ? 'Find Founders' : 'Find Talent', 
+              path: companyType === 'investor' ? '/startups' : '/dashboard/employer/find-talent' 
+            },
         { label: 'About', path: '/about' }
       ];
     }
@@ -411,9 +421,9 @@ const Navbar = () => {
       return currentPath === '/';
     }
 
-    // For dashboard paths
-    if (item.path.includes('/dashboard')) {
-      return currentPath === item.path || currentPath.startsWith(`${item.path}/`);
+    // Base dashboard landing paths should match exactly to prevent parent highlighting on subpaths
+    if (item.path === '/dashboard/employer' || item.path === '/dashboard/admin/overview') {
+      return currentPath === item.path;
     }
 
     return currentPath === item.path || currentPath.startsWith(`${item.path}/`);

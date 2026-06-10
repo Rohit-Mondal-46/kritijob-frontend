@@ -15,6 +15,8 @@ import PostJob from './pages/employer/PostJob';
 import EditJob from './pages/employer/EditJob';
 import ApplicantList from './pages/employer/ApplicantList';
 import JobListing from './pages/jobs/JobListing';
+import StartupListing from './pages/startups/StartupListing';
+import InvestorListing from './pages/investors/InvestorListing';
 import MyJobs from './pages/employer/MyJobs';
 import JobDetails from './pages/jobs/JobDetails';
 import CompanyListing from './pages/companies/CompanyListing';
@@ -41,6 +43,12 @@ import PrivacyPolicy from './pages/legal/PrivacyPolicy';
 import TermsOfService from './pages/legal/TermsOfService';
 import AdminAuthGuard from './components/auth/AdminAuthGuard';
 import EmployerAuthGuard from './components/auth/EmployerAuthGuard';
+import StartupAuthGuard from './components/auth/StartupAuthGuard';
+import StartupProfile from './pages/founder/StartupProfile';
+import StartupPitch from './pages/founder/StartupPitch';
+import FounderConnections from './pages/founder/FounderConnections';
+import InvestorConnections from './pages/investor/InvestorConnections';
+import InvestorShortlist from './pages/investor/InvestorShortlist';
 const AdminOverview = React.lazy(() => import('./pages/admin/AdminOverview'));
 const AdminUsers = React.lazy(() => import('./pages/admin/AdminUsers'));
 const AdminJobs = React.lazy(() => import('./pages/admin/AdminJobs'));
@@ -71,7 +79,7 @@ const NavbarAwareLoader = () => (
 
 const getRoleHomePath = (user) => {
   if (!user) return '/login';
-  if (user.role === 'employer') return '/dashboard/employer/company';
+  if (user.role === 'employer') return '/dashboard/employer';
   if (user.role === 'candidate') return '/dashboard/candidate/profile';
   if (user.role === 'admin' || user.role === 'ADMIN') return '/dashboard/admin/overview';
   return '/dashboard';
@@ -116,6 +124,18 @@ const ProtectedRoute = ({ children }) => {
     return children;
 };
 
+const ConnectionsWrapper = () => {
+  const { user } = useContext(AuthContext);
+  const companyType = user?.companyType || user?.company_type || 'company';
+  if (companyType === 'startup') {
+    return <FounderConnections />;
+  }
+  if (companyType === 'investor') {
+    return <InvestorConnections />;
+  }
+  return <Navigate to="/dashboard" replace />;
+};
+
 function App() {
   return (
     <AuthProvider>
@@ -131,6 +151,8 @@ function App() {
                    <Route path="/pricing" element={<Pricing />} />
                    <Route path="/salary-guide" element={<SalaryGuide />} />
                    <Route path="/jobs" element={<JobListing />} />
+                   <Route path="/startups" element={<StartupListing />} />
+                   <Route path="/investors" element={<InvestorListing />} />
                    <Route path="/jobs/:id" element={<JobDetails />} />
                    <Route path="/companies" element={<CompanyListing />} />
                    <Route path="/company/:id" element={<CompanyDetails />} />
@@ -168,6 +190,8 @@ function App() {
                           <Route path="find-talent" element={<FindTalent />} />
                           <Route path="subscription" element={<EmployerSubscription />} />
                           <Route path="candidate/:id" element={<CandidateDetails />} />
+                          <Route path="connections" element={<ConnectionsWrapper />} />
+                          <Route path="shortlist" element={<InvestorShortlist />} />
                       </Route>
                       
                       {/* Admin Routes */}
@@ -187,6 +211,14 @@ function App() {
                         <Route path="applications" element={<MyApplications />} />
                         <Route path="resume" element={<ResumeManager />} />
                         <Route path="subscription" element={<Subscription />} />
+                      </Route>
+
+                      {/* Startup Routes */}
+                      <Route path="startup" element={<StartupAuthGuard />}>
+                        <Route path="profile" element={<StartupProfile />} />
+                        <Route path="pitch" element={<StartupPitch />} />
+                        <Route path="connections" element={<FounderConnections />} />
+                        <Route path="find-investors" element={<InvestorListing />} />
                       </Route>
                       
                       <Route index element={<div className="container" style={{paddingTop: '30px', color: 'white', textAlign: 'center'}}><h2>Welcome to your Dashboard</h2><p style={{color: '#aaa'}}>Select an option from the sidebar to get started.</p></div>} />

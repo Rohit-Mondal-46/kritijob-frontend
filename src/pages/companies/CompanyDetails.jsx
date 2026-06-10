@@ -25,7 +25,7 @@ const CompanyDetails = () => {
                 if (data.success) {
                     setCompany(data.data);
                 }
-                
+
                 // Fetch active jobs for this company
                 try {
                     const jobsData = await api.get(`/jobs?companyId=${id}`);
@@ -34,7 +34,7 @@ const CompanyDetails = () => {
                     } else if (jobsData.data && jobsData.data.jobs) { // fallback
                          setJobs(jobsData.data.jobs);
                     }
-                } catch(e) { 
+                } catch(e) {
                     console.log("Job fetch by company ID might not be implemented, falling back to soft empty array");
                 }
 
@@ -86,7 +86,7 @@ const CompanyDetails = () => {
                 <div className={styles.detailsPageWrapper}>
                     {/* Top Solid Blue Banner */}
                     <div className={styles.topBanner}></div>
-                    
+
                     {/* Overlapping Info Card */}
                     <div className={styles.infoCardOverlay}>
                         <div className={styles.infoLogoWrapper}>
@@ -109,13 +109,13 @@ const CompanyDetails = () => {
 
                     {/* Tabs Navigation */}
                     <div className={styles.tabsContainer}>
-                        <div 
+                        <div
                             className={`${styles.tabItem} ${activeTab === 'about' ? styles.activeTab : ''}`}
                             onClick={() => setActiveTab('about')}
                         >
                             About Us
                         </div>
-                        <div 
+                        <div
                             className={`${styles.tabItem} ${activeTab === 'jobs' ? styles.activeTab : ''}`}
                             onClick={() => setActiveTab('jobs')}
                         >
@@ -129,7 +129,7 @@ const CompanyDetails = () => {
                             {activeTab === 'about' ? (
                                 <div className={styles.contentBlock}>
                                     <h2 className={styles.blockTitle}>Company Overview</h2>
-                                    <div 
+                                    <div
                                         className={styles.richTextOverview}
                                         dangerouslySetInnerHTML={{ __html: sanitizedDesc }}
                                     />
@@ -143,11 +143,11 @@ const CompanyDetails = () => {
                                     <div className={styles.jobsList}>
                                         {jobs.length > 0 ? (
                                             jobs.map(job => (
-                                                <JobCard 
-                                                    key={job._id} 
-                                                    job={job} 
-                                                    isSaved={savedJobIds.includes(job._id)} 
-                                                    onToggleSave={() => handleToggleSave(job._id)} 
+                                                <JobCard
+                                                    key={job._id}
+                                                    job={job}
+                                                    isSaved={savedJobIds.includes(job._id)}
+                                                    onToggleSave={() => handleToggleSave(job._id)}
                                                 />
                                             ))
                                         ) : (
@@ -159,7 +159,7 @@ const CompanyDetails = () => {
                                 </div>
                             )}
                         </div>
-                        
+
                         <div className={styles.rightColumn}>
                             {/* Quick Facts */}
                             <div className={styles.contentBlock}>
@@ -170,12 +170,12 @@ const CompanyDetails = () => {
                                 </div>
                                 <div className={styles.factItem}>
                                     <label><i className="fas fa-user-friends"></i> COMPANY SIZE</label>
-                                    <p>{company.size || '500+ Employees'}</p>
+                                    <p>{company.size }</p>
                                 </div>
-                                <div className={styles.factItem}>
+                                {/* <div className={styles.factItem}>
                                     <label><i className="fas fa-calendar-alt"></i> FOUNDED</label>
                                     <p>2015</p>
-                                </div>
+                                </div> */}
                                 {company.website && (
                                     <div className={styles.factItem}>
                                         <label><i className="fas fa-link"></i> WEBSITE</label>

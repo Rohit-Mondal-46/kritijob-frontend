@@ -6,6 +6,7 @@ import { AuthContext } from '../../context/AuthContext';
 const EmployerOverview = () => {
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
+    const [companyType, setCompanyType] = useState(user?.companyType || user?.company_type || 'company');
     
     const [statsData, setStatsData] = useState({
         activeJobs: 0,
@@ -18,9 +19,15 @@ const EmployerOverview = () => {
     useEffect(() => {
         const fetchOverviewData = async () => {
             try {
-                const res = await api.get('/employer/stats');
+                const [res, companyRes] = await Promise.all([
+                    api.get('/employer/stats'),
+                    api.get('/company/me')
+                ]);
                 if (res.data.success) {
                     setStatsData(res.data.data);
+                }
+                if (companyRes.data.success && companyRes.data.data) {
+                    setCompanyType(companyRes.data.data.companyType || companyRes.data.data.company_type || 'company');
                 }
             } catch (error) {
                 console.error("Failed to load dashboard overview", error);
@@ -36,6 +43,48 @@ const EmployerOverview = () => {
             Loading Overview...
         </div>
     );
+
+    const config = {
+        company: {
+            active: 'Active Jobs',
+            total: 'Total Applications',
+            new: 'New Applicants',
+            expiring: 'Jobs Expiring Soon',
+            post: 'Post a New Job',
+            postDesc: 'Create a new job posting',
+            view: 'View Applicants',
+            viewDesc: 'Review and manage applications'
+        },
+        startup: {
+            active: 'Active Listings',
+            total: 'Total Candidates',
+            new: 'New Candidates',
+            expiring: 'Listings Expiring Soon',
+            post: 'Post Your Startup',
+            postDesc: 'Create a new startup pitch',
+            view: 'View Candidates',
+            viewDesc: 'See all candidates interested in your startup'
+        },
+        investor: {
+            active: 'Active Funds',
+            total: 'Founder Applications',
+            new: 'New Founder Requests',
+            expiring: 'Funds Expiring Soon',
+            post: 'Post Your Fund',
+            postDesc: 'Create a new VC / investment fund',
+            view: 'View Founders',
+            viewDesc: 'See all founders connecting for funding'
+        }
+    }[companyType] || {
+        active: 'Active Jobs',
+        total: 'Total Applications',
+        new: 'New Applicants',
+        expiring: 'Jobs Expiring Soon',
+        post: 'Post a New Job',
+        postDesc: 'Create a new job posting',
+        view: 'View Applicants',
+        viewDesc: 'Review and manage applications'
+    };
 
     // Recreate the exact UI layout from the screenshot
     return (
@@ -66,7 +115,7 @@ const EmployerOverview = () => {
                         {statsData.activeJobs}
                     </div>
                     <div style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
-                        Active Jobs
+                        {config.active}
                     </div>
                 </div>
 
@@ -83,7 +132,7 @@ const EmployerOverview = () => {
                         {statsData.totalApplications}
                     </div>
                     <div style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
-                        Total Applications
+                        {config.total}
                     </div>
                 </div>
 
@@ -100,7 +149,7 @@ const EmployerOverview = () => {
                         {statsData.newApplications}
                     </div>
                     <div style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
-                        New Applicants
+                        {config.new}
                     </div>
                 </div>
 
@@ -117,7 +166,7 @@ const EmployerOverview = () => {
                         {statsData.jobsExpiringSoon}
                     </div>
                     <div style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
-                        Jobs Expiring Soon
+                        {config.expiring}
                     </div>
                 </div>
             </div>
@@ -143,10 +192,10 @@ const EmployerOverview = () => {
                         </div>
                         <div style={{ flexGrow: 1 }}>
                             <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--color-text-main)', marginBottom: '2px' }}>
-                                Post a New Job
+                                {config.post}
                             </div>
                             <div style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
-                                Create a new job posting
+                                {config.postDesc}
                             </div>
                         </div>
                         <i className="fas fa-chevron-right" style={{ color: '#cbd5e1', fontSize: '16px' }}></i>
@@ -166,10 +215,10 @@ const EmployerOverview = () => {
                         </div>
                         <div style={{ flexGrow: 1 }}>
                             <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--color-text-main)', marginBottom: '2px' }}>
-                                View Applicants
+                                {config.view}
                             </div>
                             <div style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
-                                Review and manage applications
+                                {config.viewDesc}
                             </div>
                         </div>
                         <i className="fas fa-chevron-right" style={{ color: 'var(--color-text-tertiary)', fontSize: '16px' }}></i>

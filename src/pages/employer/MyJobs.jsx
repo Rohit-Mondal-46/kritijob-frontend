@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Employer.module.css'; 
 import JobCard from '../../components/jobs/JobCard'; 
 import api from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
+import { AuthContext } from '../../context/AuthContext';
 
 const MyJobs = () => {
     const JOBS_PER_PAGE = 12;
@@ -18,6 +19,8 @@ const MyJobs = () => {
     const [isDeleting, setIsDeleting] = useState(false);
     const navigate = useNavigate();
     const { addToast } = useToast();
+    const { user } = useContext(AuthContext);
+    const companyType = user?.companyType || user?.company_type || 'company';
 
     const handleEdit = (id) => {
         navigate(`/dashboard/employer/jobs/edit/${id}`);
@@ -84,12 +87,46 @@ const MyJobs = () => {
         }
     };
 
+    const config = {
+        company: {
+            heading: 'My Jobs',
+            postBtn: 'Post a Job',
+            emptyText: "You haven't posted any jobs yet.",
+            emptyBtn: 'Create your first job',
+            deleteTitle: 'Delete job posting?',
+            deleteSubtitle: 'this job'
+        },
+        startup: {
+            heading: 'My Listings',
+            postBtn: 'Post Your Startup',
+            emptyText: "You haven't posted any startup listings yet.",
+            emptyBtn: 'Create your first listing',
+            deleteTitle: 'Delete startup listing?',
+            deleteSubtitle: 'this startup'
+        },
+        investor: {
+            heading: 'My Funds',
+            postBtn: 'Post Your Fund',
+            emptyText: "You haven't posted any VC/fund listings yet.",
+            emptyBtn: 'Create your first fund listing',
+            deleteTitle: 'Delete fund listing?',
+            deleteSubtitle: 'this fund'
+        }
+    }[companyType] || {
+        heading: 'My Jobs',
+        postBtn: 'Post a Job',
+        emptyText: "You haven't posted any jobs yet.",
+        emptyBtn: 'Create your first job',
+        deleteTitle: 'Delete job posting?',
+        deleteSubtitle: 'this job'
+    };
+
     if (loading) return <div style={{padding: '2rem', textAlign: 'center'}}>Loading...</div>;
 
     return (
         <div className={styles.pageContainer}>
             <div className={styles.headerRow}>
-                 <h1 style={{fontSize: '2rem', margin: 0, color: 'var(--color-text-main)'}}>My Jobs</h1>
+                 <h1 style={{fontSize: '2rem', margin: 0, color: 'var(--color-text-main)'}}>{config.heading}</h1>
                  <button 
                     className={styles.filterBtn} 
                     style={{
@@ -109,7 +146,7 @@ const MyJobs = () => {
                     onMouseLeave={(e) => e.currentTarget.style.background = '#3b82f6'}
                     onClick={() => navigate('/dashboard/employer/post-job')}
                 >
-                    <i className="fas fa-plus"></i> Post a Job
+                    <i className="fas fa-plus"></i> {config.postBtn}
                 </button>
             </div>
 
@@ -145,7 +182,7 @@ const MyJobs = () => {
                  
                  {jobs.length === 0 && (
                      <div style={{gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: 'var(--color-text-muted)', background: 'var(--color-surface-muted)', borderRadius: '12px', border: '1px solid var(--color-border)'}}>
-                         <p>You haven't posted any jobs yet.</p>
+                         <p>{config.emptyText}</p>
                          <button 
                             style={{
                                 marginTop: '10px',
@@ -162,7 +199,7 @@ const MyJobs = () => {
                             onMouseLeave={(e) => e.currentTarget.style.background = '#3b82f6'}
                             onClick={() => navigate('/dashboard/employer/post-job')}
                          >
-                             Create your first job
+                             {config.emptyBtn}
                          </button>
                      </div>
                  )}
@@ -235,10 +272,10 @@ const MyJobs = () => {
                         <div className={styles.confirmIconWrap}>
                             <i className="fas fa-trash-alt" aria-hidden="true"></i>
                         </div>
-                        <h3 id="delete-confirm-title" className={styles.confirmTitle}>Delete job posting?</h3>
+                        <h3 id="delete-confirm-title" className={styles.confirmTitle}>{config.deleteTitle}</h3>
                         <p className={styles.confirmText}>
                             This will permanently delete
-                            <strong> {deleteConfirm.jobTitle}</strong>.
+                            <strong> {deleteConfirm.jobTitle === 'this job' ? config.deleteSubtitle : deleteConfirm.jobTitle}</strong>.
                         </p>
                         <div className={styles.confirmActions}>
                             <button

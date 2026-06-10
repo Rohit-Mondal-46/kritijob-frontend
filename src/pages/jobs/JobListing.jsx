@@ -208,7 +208,7 @@ import { useSearchParams } from 'react-router-dom';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { updateSEO } from '../../utils/seo';
 
-const JobListing = () => {
+const JobListing = ({ defaultType }) => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [initialLoad, setInitialLoad] = useState(true);
@@ -225,7 +225,7 @@ const JobListing = () => {
     const keyword = searchParams.get('keyword');
     const location = searchParams.get('location');
 
-    let title = 'Browse Jobs';
+    let title = defaultType === 'startup' ? 'Startups & Ideas' : defaultType === 'investor' ? 'Funding & Capital' : 'Browse Jobs';
     let descParts = ['Find premium career opportunities on KirtiJob.'];
 
     if (category) {
@@ -314,6 +314,19 @@ const JobListing = () => {
     return pages;
   }, [pagination]);
 
+  const displayedJobs = useMemo(() => {
+    if (!defaultType) return jobs;
+    
+    const filtered = jobs.filter(job => {
+      const type = job.companyType || job.company_type || job.companyId?.companyType || job.companyId?.company_type;
+      return type === defaultType;
+    });
+    
+    const currentPage = pagination.page || 1;
+    const itemsPerPage = 9;
+    return filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  }, [jobs, defaultType, pagination.page]);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -321,17 +334,46 @@ const JobListing = () => {
       try {
         setLoading(true);
         const apiParams = new URLSearchParams(queryString);
-        if (!apiParams.has('limit')) apiParams.set('limit', '9');
+        
+        if (defaultType) {
+          // Fetch a larger limit for frontend filtering
+          apiParams.set('limit', '100');
+          // Delete page so we query all jobs from backend and do pagination in frontend
+          apiParams.delete('page');
+        } else {
+          if (!apiParams.has('limit')) apiParams.set('limit', '9');
+        }
         
         const { data } = await api.get(`/jobs?${apiParams.toString()}`);
 
         if (!cancelled && data.success) {
           setJobs(data.data);
-          setPagination({
-            page: data.page || 1,
-            totalPages: data.totalPages || 1,
-            total: data.total || 0
-          });
+          
+          if (defaultType) {
+            const allFetchedJobs = data.data || [];
+            const filtered = allFetchedJobs.filter(job => {
+              const type = job.companyType || job.company_type || job.companyId?.companyType || job.companyId?.company_type;
+              return type === defaultType;
+            });
+            
+            const originalParams = new URLSearchParams(queryString);
+            const currentPage = parseInt(originalParams.get('page') || '1', 10);
+            const itemsPerPage = 9;
+            const totalItems = filtered.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            
+            setPagination({
+              page: Math.min(currentPage, totalPages || 1),
+              totalPages: totalPages || 1,
+              total: totalItems
+            });
+          } else {
+            setPagination({
+              page: data.page || 1,
+              totalPages: data.totalPages || 1,
+              total: data.total || 0
+            });
+          }
         }
       } catch (err) {
         console.error('Failed to fetch jobs:', err);
@@ -346,7 +388,7 @@ const JobListing = () => {
     fetchJobs();
     
     return () => { cancelled = true; };
-  }, [queryString]);
+  }, [queryString, defaultType]);
 
   // Prevent body scroll when mobile filters are open
   useEffect(() => {
@@ -393,10 +435,12 @@ const JobListing = () => {
           <main className={styles.feedColumn}>
             <div className={styles.resultsHeader}>
               <div className={styles.resultsTitleArea}>
-                <h1 className={styles.sectionTitle}>Job Listings</h1>
+                <h1 className={styles.sectionTitle}>
+                  {defaultType === 'startup' ? 'Startups & Ideas' : defaultType === 'investor' ? 'Funding & Capital' : 'Job Listings'}
+                </h1>
                 <p className={styles.sectionSubtitle}>
-                  {!loading && jobs.length > 0 
-                    ? `Showing ${jobs.length} of ${pagination.total} opportunities` 
+                  {!loading && displayedJobs.length > 0 
+                    ? `Showing ${displayedJobs.length} of ${pagination.total} opportunities` 
                     : 'Explore opportunities tailored to your preferences.'}
                 </p>
               </div>
@@ -418,8 +462,8 @@ const JobListing = () => {
                     <div className={styles.skeletonFooter}></div>
                   </div>
                 ))
-              ) : jobs.length > 0 ? (
-                jobs.map(job => (
+              ) : displayedJobs.length > 0 ? (
+                displayedJobs.map(job => (
                   <JobCard key={getJobId(job)} job={job} />
                 ))
               ) : (
@@ -440,7 +484,7 @@ const JobListing = () => {
             </div>
             
             {/* Enhanced Pagination Controls */}
-            {pagination.totalPages > 1 && !loading && jobs.length > 0 && (
+            {pagination.totalPages > 1 && !loading && displayedJobs.length > 0 && (
               <div className={styles.pagination}>
                 <button 
                   className={styles.pageBtn}

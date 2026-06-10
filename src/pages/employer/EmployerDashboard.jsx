@@ -11,6 +11,7 @@ const EmployerDashboard = () => {
 
     const [loading, setLoading] = useState(true);
     const [companyName, setCompanyName] = useState('Employer');
+    const [companyType, setCompanyType] = useState('company');
     const [stats, setStats] = useState({
         activeJobs: 0,
         totalApplications: 0,
@@ -37,6 +38,7 @@ const EmployerDashboard = () => {
 
             if (companyRes.data?.success && companyRes.data?.data?.name) {
                 setCompanyName(companyRes.data.data.name);
+                setCompanyType(companyRes.data.data.companyType || companyRes.data.data.company_type || 'company');
             }
         } catch (error) {
             console.error('Failed to load employer dashboard', error);
@@ -50,54 +52,108 @@ const EmployerDashboard = () => {
         loadDashboard();
     }, [loadDashboard]);
 
+    const config = {
+        company: {
+            active: 'Active Jobs',
+            total: 'Total Applications',
+            new: 'New Applicants',
+            expiring: 'Jobs Expiring Soon',
+            post: 'Post a New Job',
+            postDesc: 'Create a new job posting',
+            manage: 'Manage Jobs',
+            manageDesc: 'View and update your current jobs',
+            view: 'View Applicants',
+            viewDesc: 'See all applicants for active jobs',
+            subtitle: 'Here is a quick snapshot of your hiring activity.'
+        },
+        startup: {
+            active: 'Active Pitch',
+            total: 'Shortlist Requests',
+            new: 'Pending Requests',
+            expiring: 'Listing Status',
+            post: 'Post Startup Pitch',
+            postDesc: 'Submit your startup pitch card',
+            manage: 'Manage Pitch',
+            manageDesc: 'View and edit your pitch card',
+            view: 'View Requests',
+            viewDesc: 'Manage connection requests from investors',
+            subtitle: 'Here is a quick snapshot of your startup activity.'
+        },
+        investor: {
+            active: 'Shortlisted Startups',
+            total: 'Sent Requests',
+            new: 'Accepted Connections',
+            expiring: 'Active Status',
+            post: 'Edit Profile',
+            postDesc: 'Update your investor profile',
+            manage: 'Browse Startups',
+            manageDesc: 'Explore and filter startup pitches',
+            view: 'Manage Connections',
+            viewDesc: 'View connection requests and status',
+            subtitle: 'Here is a quick snapshot of your investment activity.'
+        }
+    }[companyType] || {
+        active: 'Active Jobs',
+        total: 'Total Applications',
+        new: 'New Applicants',
+        expiring: 'Jobs Expiring Soon',
+        post: 'Post a New Job',
+        postDesc: 'Create a new job posting',
+        manage: 'Manage Jobs',
+        manageDesc: 'View and update your current jobs',
+        view: 'View Applicants',
+        viewDesc: 'See all applicants for active jobs',
+        subtitle: 'Here is a quick snapshot of your hiring activity.'
+    };
+
     const statCards = [
         {
-            title: 'Active Jobs',
+            title: config.active,
             value: stats.activeJobs,
-            icon: 'fa-briefcase',
+            icon: companyType === 'startup' ? 'fa-rocket' : (companyType === 'investor' ? 'fa-heart' : 'fa-briefcase'),
             color: '#2563eb',
         },
         {
-            title: 'Total Applications',
+            title: config.total,
             value: stats.totalApplications,
-            icon: 'fa-users',
+            icon: companyType === 'startup' ? 'fa-inbox' : (companyType === 'investor' ? 'fa-paper-plane' : 'fa-users'),
             color: '#10b981',
         },
         {
-            title: 'New Applicants',
+            title: config.new,
             value: stats.newApplications,
-            icon: 'fa-user-plus',
+            icon: companyType === 'startup' ? 'fa-envelope-open-text' : (companyType === 'investor' ? 'fa-handshake' : 'fa-user-plus'),
             color: '#f59e0b',
         },
         {
-            title: 'Jobs Expiring Soon',
-            value: stats.jobsExpiringSoon,
-            icon: 'fa-clock',
+            title: config.expiring,
+            value: companyType === 'startup' ? (stats.activeJobs > 0 ? 'Active' : 'Draft/None') : (companyType === 'investor' ? 'Active' : stats.jobsExpiringSoon),
+            icon: companyType === 'company' ? 'fa-clock' : 'fa-info-circle',
             color: '#ef4444',
         },
     ];
 
     const quickActions = [
         {
-            title: 'Post a New Job',
-            subtitle: 'Create a new job posting',
-            icon: 'fa-plus-circle',
+            title: config.post,
+            subtitle: config.postDesc,
+            icon: companyType === 'investor' ? 'fa-edit' : 'fa-plus-circle',
             color: '#10b981',
-            path: '/dashboard/employer/post-job',
+            path: companyType === 'investor' ? '/dashboard/employer/company' : '/dashboard/employer/post-job',
         },
         {
-            title: 'View Applicants',
-            subtitle: 'See all applicants for active jobs',
+            title: config.view,
+            subtitle: config.viewDesc,
             icon: 'fa-users',
             color: '#2563eb',
             path: '/dashboard/employer/applicants',
         },
         {
-            title: 'Manage Jobs',
-            subtitle: 'View and update your current jobs',
-            icon: 'fa-clipboard-list',
+            title: config.manage,
+            subtitle: config.manageDesc,
+            icon: companyType === 'investor' ? 'fa-search' : 'fa-clipboard-list',
             color: '#f59e0b',
-            path: '/dashboard/employer/jobs',
+            path: companyType === 'investor' ? '/startups' : '/dashboard/employer/jobs',
         },
     ];
 
@@ -110,7 +166,7 @@ const EmployerDashboard = () => {
             <div className={styles.headerRow}>
                 <div>
                     <h1 className={styles.pageTitle}>Welcome, {companyName}!</h1>
-                    <p className={styles.pageSubtitle}>Here is a quick snapshot of your hiring activity.</p>
+                    <p className={styles.pageSubtitle}>{config.subtitle}</p>
                 </div>
             </div>
 

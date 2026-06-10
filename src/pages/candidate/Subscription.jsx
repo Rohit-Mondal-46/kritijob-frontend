@@ -123,7 +123,12 @@ const Subscription = () => {
                 <div className={`${styles.pricingCard} ${styles.premium}`}>
                     <div className={styles.popularBadge}>Most Popular</div>
                     <h2 className={styles.planName}>Premium Plus</h2>
-                    <h3 className={styles.planPrice}>₹499 <span>/ month</span></h3>
+                    <div className={styles.planPriceContainer}>
+                        <h3 className={styles.planPrice} style={{ marginBottom: '0.5rem' }}>₹499 <span>/ month</span></h3>
+                        <div className={styles.gstText}>
+                            incl. 18% GST (Base ₹422.88 + CGST ₹38.06 + SGST ₹38.06)
+                        </div>
+                    </div>
                     <ul className={styles.planFeatures}>
                         <li><i className="fas fa-check"></i> Everything in Basic</li>
                         <li><i className="fas fa-star"></i> <strong>Unlimited</strong> Applications</li>

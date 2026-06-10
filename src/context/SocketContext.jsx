@@ -27,7 +27,7 @@ export const SocketProvider = ({ children }) => {
                })
                .catch(err => console.error('Failed to fetch notifications', err));
 
-            const newSocket = io(import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000', {
+            const newSocket = io(import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || 'https://api.kirtijob.com', {
                 auth: { token },
                 query: { token } // Fallback
             });
