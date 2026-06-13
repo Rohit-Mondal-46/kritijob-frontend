@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await api.post('/auth/login', { email, password });
+      const { data } = await api.post('/auth/login', { email, password }, { skipGlobalToast: true });
       
       safeStorage.setItem('token', data.token);
       let userData = data.user;
@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await api.post('/auth/signup', { name, email, password, role, phone, companyType, company_type: companyType });
+      const { data } = await api.post('/auth/signup', { name, email, password, role, phone, companyType, company_type: companyType }, { skipGlobalToast: true });
 
       if (autoLogin && !data.requiresVerification) {
         safeStorage.setItem('token', data.token);
@@ -83,7 +83,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await api.post('/auth/verify-email', { email, otp });
+      const { data } = await api.post('/auth/verify-email', { email, otp }, { skipGlobalToast: true });
       setLoading(false);
       return data;
     } catch (err) {
@@ -97,7 +97,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await api.post('/auth/resend-verification-otp', { email });
+      const { data } = await api.post('/auth/resend-verification-otp', { email }, { skipGlobalToast: true });
       setLoading(false);
       return data;
     } catch (err) {
