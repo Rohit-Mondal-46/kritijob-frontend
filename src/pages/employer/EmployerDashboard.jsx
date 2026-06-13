@@ -14,7 +14,8 @@ const EmployerDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [companyName, setCompanyName] = useState('Employer');
     const [companyType, setCompanyType] = useState(
-        user?.companyType || user?.company_type || 'company'
+        user?.companyType || user?.company_type ||
+        localStorage.getItem('registered_company_type') || 'company'
     );
     const [stats, setStats] = useState({
         activeJobs: 0,
@@ -29,11 +30,13 @@ const EmployerDashboard = () => {
             const companyRes = await api.get('/company/me').catch(() => null);
             const company = companyRes?.data?.success ? companyRes.data.data : null;
 
-            // Type comes from the registered account (reliable even before the
-            // company profile is filled in), falling back to the company record.
+            // Type comes from the registered account (immutable, set at signup and
+            // reliable even before the company profile exists), then the company
+            // record, then the persona chosen during registration.
             const resolvedType =
+                user?.companyType || user?.company_type ||
                 company?.companyType || company?.company_type ||
-                user?.companyType || user?.company_type || 'company';
+                localStorage.getItem('registered_company_type') || 'company';
             setCompanyType(resolvedType);
             setCompanyName(company?.name || user?.name || 'Employer');
 
