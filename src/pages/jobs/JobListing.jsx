@@ -204,11 +204,14 @@ import JobCard from '../../components/jobs/JobCard';
 import JobFilterBar from '../../components/jobs/JobFilterBar';
 import Footer from '../../components/layout/Footer';
 import api from '../../utils/api';
-import { useSearchParams } from 'react-router-dom';
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useMemo, useCallback, useContext } from 'react';
 import { updateSEO } from '../../utils/seo';
+import { AuthContext } from '../../context/AuthContext';
 
 const JobListing = ({ defaultType }) => {
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [initialLoad, setInitialLoad] = useState(true);
@@ -219,6 +222,18 @@ const JobListing = ({ defaultType }) => {
   
   const queryString = searchParams.toString();
   const getJobId = (job) => String(job?._id || job?.id || '');
+
+  // VC/funding and startup companies cannot access the Job Listings page —
+  // they are routed to their own discovery pages instead.
+  const userCompanyType = user?.companyType || user?.company_type;
+  useEffect(() => {
+    if (defaultType) return;
+    if (userCompanyType === 'investor') {
+      navigate('/startups', { replace: true });
+    } else if (userCompanyType === 'startup') {
+      navigate('/investors', { replace: true });
+    }
+  }, [defaultType, userCompanyType, navigate]);
 
   useEffect(() => {
     const category = searchParams.get('category');
@@ -342,6 +357,8 @@ const JobListing = ({ defaultType }) => {
           apiParams.delete('page');
         } else {
           if (!apiParams.has('limit')) apiParams.set('limit', '9');
+          // Job Listings only shows hiring-company and startup roles — never VC/investor funds.
+          if (!apiParams.has('type')) apiParams.set('type', 'company,startup');
         }
         
         const { data } = await api.get(`/jobs?${apiParams.toString()}`);
