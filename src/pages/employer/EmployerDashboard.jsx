@@ -1,21 +1,17 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
-import { AuthContext } from '../../context/AuthContext';
 import DeleteAccountSettings from '../../components/common/DeleteAccountSettings';
 import styles from './EmployerDashboard.module.css';
 
 const EmployerDashboard = () => {
     const navigate = useNavigate();
     const { addToast } = useToast();
-    const { user } = useContext(AuthContext);
 
     const [loading, setLoading] = useState(true);
     const [companyName, setCompanyName] = useState('Employer');
-    const [companyType, setCompanyType] = useState(
-        user?.companyType || user?.company_type || 'company'
-    );
+    const [companyType, setCompanyType] = useState('company');
     const [stats, setStats] = useState({
         activeJobs: 0,
         totalApplications: 0,
@@ -26,57 +22,23 @@ const EmployerDashboard = () => {
     const loadDashboard = useCallback(async () => {
         setLoading(true);
         try {
-            const companyRes = await api.get('/company/me').catch(() => null);
-            const company = companyRes?.data?.success ? companyRes.data.data : null;
+            const [statsRes, companyRes] = await Promise.all([
+                api.get('/employer/stats'),
+                api.get('/company/me'),
+            ]);
 
-            // Type comes from the registered account (reliable even before the
-            // company profile is filled in), falling back to the company record.
-            const resolvedType =
-                company?.companyType || company?.company_type ||
-                user?.companyType || user?.company_type || 'company';
-            setCompanyType(resolvedType);
-            setCompanyName(company?.name || user?.name || 'Employer');
+            if (statsRes.data?.success) {
+                setStats({
+                    activeJobs: statsRes.data.data.activeJobs || 0,
+                    totalApplications: statsRes.data.data.totalApplications || 0,
+                    newApplications: statsRes.data.data.newApplications || 0,
+                    jobsExpiringSoon: statsRes.data.data.jobsExpiringSoon || 0,
+                });
+            }
 
-            if (resolvedType === 'investor') {
-                // Investor dashboard: shortlist + connection activity.
-                const [shortlistsRes, connectionsRes] = await Promise.allSettled([
-                    api.get('/shortlists'),
-                    api.get('/connections'),
-                ]);
-                const shortlists = shortlistsRes.status === 'fulfilled' ? (shortlistsRes.value.data?.data || []) : [];
-                const connections = connectionsRes.status === 'fulfilled' ? (connectionsRes.value.data?.data || []) : [];
-                setStats({
-                    activeJobs: shortlists.length,
-                    totalApplications: connections.length,
-                    newApplications: connections.filter(c => c.status === 'accepted').length,
-                    jobsExpiringSoon: 0,
-                });
-            } else if (resolvedType === 'startup') {
-                // Startup dashboard: pitch status + incoming connection requests.
-                const [jobsRes, connectionsRes] = await Promise.allSettled([
-                    api.get('/jobs/my-jobs'),
-                    api.get('/connections'),
-                ]);
-                const myJobs = jobsRes.status === 'fulfilled' ? (jobsRes.value.data?.data || []) : [];
-                const pitch = myJobs.find(j => j.isStartupPitch);
-                const connections = connectionsRes.status === 'fulfilled' ? (connectionsRes.value.data?.data || []) : [];
-                setStats({
-                    activeJobs: pitch && pitch.isActive ? 1 : 0,
-                    totalApplications: connections.length,
-                    newApplications: connections.filter(c => c.status === 'pending').length,
-                    jobsExpiringSoon: 0,
-                });
-            } else {
-                // Hiring company dashboard: job/application stats.
-                const statsRes = await api.get('/employer/stats').catch(() => null);
-                if (statsRes?.data?.success) {
-                    setStats({
-                        activeJobs: statsRes.data.data.activeJobs || 0,
-                        totalApplications: statsRes.data.data.totalApplications || 0,
-                        newApplications: statsRes.data.data.newApplications || 0,
-                        jobsExpiringSoon: statsRes.data.data.jobsExpiringSoon || 0,
-                    });
-                }
+            if (companyRes.data?.success && companyRes.data?.data?.name) {
+                setCompanyName(companyRes.data.data.name);
+                setCompanyType(companyRes.data.data.companyType || companyRes.data.data.company_type || 'company');
             }
         } catch (error) {
             console.error('Failed to load employer dashboard', error);
@@ -84,7 +46,7 @@ const EmployerDashboard = () => {
         } finally {
             setLoading(false);
         }
-    }, [addToast, user]);
+    }, [addToast]);
 
     useEffect(() => {
         loadDashboard();
