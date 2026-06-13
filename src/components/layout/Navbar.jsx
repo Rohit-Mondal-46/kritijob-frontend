@@ -389,7 +389,9 @@ const Navbar = () => {
       return [
         { label: 'Dashboard', path: '/dashboard/employer' },
         { label: 'Company Profile', path: '/dashboard/employer/company' },
-        { label: 'My Jobs', path: '/dashboard/employer/jobs' },
+        companyType === 'startup'
+          ? { label: 'My Pitch', path: '/dashboard/startup/pitch' }
+          : { label: companyType === 'investor' ? 'My Funds' : 'My Jobs', path: '/dashboard/employer/jobs' },
         companyType === 'startup'
           ? { label: 'Investor List', path: '/investors' }
           : { 
