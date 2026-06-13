@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '../../context/ToastContext';
-import { AuthContext } from '../../context/AuthContext';
 import api from '../../utils/api';
 import styles from './Employer.module.css';
 import { useEditor, EditorContent } from '@tiptap/react';
@@ -51,11 +50,6 @@ const toggleChip = (prev, field, chip) => {
 
 const CompanyProfile = () => {
     const { addToast } = useToast();
-    const { user } = useContext(AuthContext);
-    // The persona chosen at registration — the reliable source of the account
-    // type, even before a company profile exists.
-    const registeredType = user?.companyType || user?.company_type ||
-        localStorage.getItem('registered_company_type') || 'company';
     const [loading, setLoading] = useState(true);
     const [saveLoading, setSaveLoading] = useState(false);
     const [companyId, setCompanyId] = useState(null);
@@ -72,7 +66,7 @@ const CompanyProfile = () => {
         description: '',
         website: '',
         isPremium: false,
-        companyType: registeredType,
+        companyType: localStorage.getItem('registered_company_type') || 'company',
         // Startup fields
         startupStage: '',
         fundingStage: '',
@@ -159,7 +153,7 @@ const CompanyProfile = () => {
                         description: c.description || '',
                         website: c.website || '',
                         isPremium: Boolean(c.isPremiumEmployer),
-                        companyType: c.companyType || c.company_type || registeredType,
+                        companyType: c.companyType || 'company',
                         startupStage: c.startupStage || '',
                         fundingStage: c.fundingStage || '',
                         sector: c.sector || '',
