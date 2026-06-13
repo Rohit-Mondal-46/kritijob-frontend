@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useCallback, useRef, useEffect } from 'react';
+import { registerToast } from '../utils/toastBridge';
 
 const ToastContext = createContext();
 
@@ -68,6 +69,12 @@ export const ToastProvider = ({ children }) => {
         const id = `${now}-${Math.random().toString(36).slice(2, 7)}`;
         setToasts(prev => [...prev, { id, message: text, type }]);
     }, []);
+
+    // Expose addToast to the axios interceptor (for global 400/422 toasts).
+    useEffect(() => {
+        registerToast(addToast);
+        return () => registerToast(null);
+    }, [addToast]);
 
     return (
         <ToastContext.Provider value={{ addToast, removeToast }}>

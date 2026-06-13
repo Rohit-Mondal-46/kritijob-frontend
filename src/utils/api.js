@@ -1,5 +1,6 @@
 import axios from 'axios';
 import safeStorage from './safeStorage';
+import { notify } from './toastBridge';
 
 const apiBaseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -49,6 +50,18 @@ api.interceptors.response.use(
              // window.location.href = '/login';
         }
     }
+
+    // Surface client-validation errors as friendly toasts. Callers that craft
+    // their own messaging (auth flows) opt out via skipGlobalToast.
+    const status = error.response?.status;
+    if (!error.config?.skipGlobalToast) {
+      if (status === 400) {
+        notify('Some information is missing or invalid.', 'error');
+      } else if (status === 422) {
+        notify('Please correct the highlighted fields.', 'error');
+      }
+    }
+
     return Promise.reject(error);
   }
 );
