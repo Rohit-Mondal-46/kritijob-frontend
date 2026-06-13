@@ -19,7 +19,7 @@ const EmailVerification = () => {
     const [isResending, setIsResending] = useState(false);
     const [resendTimer, setResendTimer] = useState(0);
 
-    // Resend timer countdown
+    // Resend timer
     useEffect(() => {
         let timer;
         if (resendTimer > 0) {
