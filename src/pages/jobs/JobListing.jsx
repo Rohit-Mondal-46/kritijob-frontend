@@ -357,8 +357,9 @@ const JobListing = ({ defaultType }) => {
           apiParams.delete('page');
         } else {
           if (!apiParams.has('limit')) apiParams.set('limit', '9');
-          // Job Listings only shows hiring-company and startup roles — never VC/investor funds.
-          if (!apiParams.has('type')) apiParams.set('type', 'company,startup');
+          // Job Listings only shows hiring-company jobs — startups and VC/investor
+          // funds have their own dedicated pages (/startups, /investors).
+          if (!apiParams.has('type')) apiParams.set('type', 'company');
         }
         
         const { data } = await api.get(`/jobs?${apiParams.toString()}`);

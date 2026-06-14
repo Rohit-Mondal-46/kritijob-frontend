@@ -24,7 +24,7 @@ const FeaturedJobs = () => {
                     const parsed = JSON.parse(cached);
                     const filtered = parsed.filter(job => {
                         const type = job.companyType || job.companyId?.companyType || job.company_type || job.companyId?.company_type;
-                        return type !== 'investor';
+                        return type !== 'investor' && type !== 'startup' && !job.isStartupPitch;
                     });
                     setJobs(filtered);
                     setLoading(false);
@@ -34,7 +34,7 @@ const FeaturedJobs = () => {
                 if (data.success) {
                     const filtered = (data.data || []).filter(job => {
                         const type = job.companyType || job.companyId?.companyType || job.company_type || job.companyId?.company_type;
-                        return type !== 'investor';
+                        return type !== 'investor' && type !== 'startup' && !job.isStartupPitch;
                     }).slice(0, 4);
                     setJobs(filtered);
                     sessionStorage.setItem('featuredJobs', JSON.stringify(filtered));
