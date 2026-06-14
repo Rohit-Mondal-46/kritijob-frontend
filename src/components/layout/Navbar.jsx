@@ -376,8 +376,6 @@ const Navbar = () => {
     if (user.role === 'candidate') {
       return [
         { label: 'Find Jobs', path: '/jobs' },
-        { label: 'Startups', path: '/startups' },
-        { label: 'Investors', path: '/investors' },
         { label: 'Companies', path: '/companies' },
         { label: 'About', path: '/about' },
         { label: 'Dashboard', path: '/dashboard/candidate/profile' }
