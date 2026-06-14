@@ -399,10 +399,10 @@ const InvestorListing = () => {
                   <div
                     key={inv._id || inv.id}
                     className={styles.investorCard}
-                    onClick={() => navigate(`/company/${inv._id || inv.id}`)}
+                    onClick={() => navigate(`/company/${inv.companyId || inv._id || inv.id}`)}
                     role="button"
                     tabIndex={0}
-                    onKeyDown={e => e.key === 'Enter' && navigate(`/company/${inv._id || inv.id}`)}
+                    onKeyDown={e => e.key === 'Enter' && navigate(`/company/${inv.companyId || inv._id || inv.id}`)}
                   >
                     <div className={styles.cardHeader}>
                       <div className={styles.companyLogo}>
