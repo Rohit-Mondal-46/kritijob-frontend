@@ -130,12 +130,7 @@ const PostJob = ({ isAdmin = false }) => {
                         if (companyData.logoUrl) {
                             setLogoPreview(companyData.logoUrl);
                         }
- 
-                        const existingPitch = (jobsRes.data.data || []).find(j => j.isStartupPitch);
-                        if (existingPitch) {
-                            addToast('Startups are limited to posting exactly one pitch card. Redirecting to edit...', 'warning');
-                            navigate(`/dashboard/employer/jobs/edit/${existingPitch._id || existingPitch.id}`);
-                        }
+                        // Startups may publish multiple pitches — no redirect to edit.
                     } else if (type === 'investor') {
                         // Prefill investor specific company fields
                         setJobData(prev => ({
@@ -157,12 +152,7 @@ const PostJob = ({ isAdmin = false }) => {
                         if (companyData.logoUrl) {
                             setLogoPreview(companyData.logoUrl);
                         }
- 
-                        const existingFund = (jobsRes.data.data || []).find(j => !j.isStartupPitch && j.companyType === 'investor');
-                        if (existingFund) {
-                            addToast('Investors are limited to posting exactly one fund card. Redirecting to edit...', 'warning');
-                            navigate(`/dashboard/employer/jobs/edit/${existingFund._id || existingFund.id}`);
-                        }
+                        // Investors may publish multiple fund cards — no redirect to edit.
                     }
                 }
             } catch (err) {

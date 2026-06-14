@@ -144,7 +144,9 @@ const DashboardLayout = () => {
                     </div>
                     <div>
                         <h4>{user.name}</h4>
-                        <p>{user.role.charAt(0).toUpperCase() + user.role.slice(1)}</p>
+                        <p>{user.role === 'employer'
+                            ? (companyType === 'startup' ? 'Startup / Idea' : companyType === 'investor' ? 'Investor / VC' : 'Employer')
+                            : user.role.charAt(0).toUpperCase() + user.role.slice(1)}</p>
                     </div>
                 </div>
 

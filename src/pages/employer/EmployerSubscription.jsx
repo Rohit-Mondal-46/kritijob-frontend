@@ -77,21 +77,74 @@ const EmployerSubscription = () => {
 
   const isPremium = Boolean(status?.isPremium);
 
+  // Persona-specific copy so the plans read correctly for company / startup / investor.
+  const companyType = user?.companyType || user?.company_type || 'company';
+  const COPY = {
+    company: {
+      title: 'Scale Your Hiring With Premium',
+      subtitle: 'Unlock unlimited job posting and premium employer visibility.',
+      freeName: 'Free Employer',
+      premiumName: 'Premium Employer',
+      freeDesc: 'You are on the free tier. Upgrade for unlimited monthly job posts.',
+      usageLabel: 'Job Posts Used This Month',
+      basicTitle: 'Employer Basic',
+      premiumTitle: 'Employer Premium',
+      price: 999,
+      basicFeatures: ['Company Profile', 'Candidate Discovery', 'Up to 10 Job Posts / month'],
+      premiumFeatures: ['Everything in Employer Basic', 'Unlimited Job Posts', 'Premium Employer Badge', 'Priority Support'],
+    },
+    startup: {
+      title: 'Get Discovered By Investors',
+      subtitle: 'Unlock premium visibility for your startup pitch.',
+      freeName: 'Free Startup',
+      premiumName: 'Premium Startup',
+      freeDesc: 'You are on the free tier. Upgrade for premium startup visibility.',
+      usageLabel: 'Pitch Posts Used This Month',
+      basicTitle: 'Startup Basic',
+      premiumTitle: 'Startup Premium',
+      price: 1499,
+      basicFeatures: ['Startup Profile', 'Investor Discovery', 'Up to 2 Pitches / month'],
+      premiumFeatures: ['Everything in Startup Basic', 'Featured Startup Placement', 'Premium Startup Badge', 'Priority Support'],
+    },
+    investor: {
+      title: 'Discover Startups With Premium',
+      subtitle: 'Unlock unlimited connections and advanced discovery filters.',
+      freeName: 'Free Investor',
+      premiumName: 'Premium Investor',
+      freeDesc: 'You are on the free tier. Upgrade for unlimited connections and advanced filters.',
+      usageLabel: 'Fund Posts Used This Month',
+      basicTitle: 'Investor Basic',
+      premiumTitle: 'Investor Premium',
+      price: 1999,
+      basicFeatures: ['Investor Profile', 'Startup Discovery', '5 Active Connections', 'Up to 2 Posts / month'],
+      premiumFeatures: ['Everything in Investor Basic', 'Unlimited Connections', 'Advanced Filters & CSV Export', 'Priority Support'],
+    },
+  };
+  const copy = COPY[companyType] || COPY.company;
+
+  // GST-inclusive price → base + CGST + SGST breakdown (18% GST).
+  const gstBreakdown = (total) => {
+    const base = total / 1.18;
+    const half = (total - base) / 2;
+    return { base: base.toFixed(2), cgst: half.toFixed(2), sgst: half.toFixed(2) };
+  };
+  const gst = gstBreakdown(copy.price);
+
   return (
     <div className={styles.pageContainer}>
       <div className={styles.headerRow}>
-        <h1 className={styles.title}>Scale Your Hiring With Premium</h1>
-        <p className={styles.subtitle}>Unlock unlimited job posting and premium employer visibility.</p>
+        <h1 className={styles.title}>{copy.title}</h1>
+        <p className={styles.subtitle}>{copy.subtitle}</p>
       </div>
 
       <div className={styles.statusCard}>
         <div className={styles.statusCardTop}>
           <div className={styles.statusInfo}>
-            <h3>Current Plan: {isPremium ? 'Premium Employer' : 'Free Employer'}</h3>
+            <h3>Current Plan: {isPremium ? copy.premiumName : copy.freeName}</h3>
             {isPremium ? (
               <p>Your premium membership is active until {new Date(status.subscriptionExpiresAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}</p>
             ) : (
-              <p>You are on the free tier. Upgrade for unlimited monthly job posts.</p>
+              <p>{copy.freeDesc}</p>
             )}
           </div>
           <div className={styles.usageStats}>
@@ -101,7 +154,7 @@ const EmployerSubscription = () => {
                 : `${status?.currentMonthJobPosts || 0} / ${status?.jobPostLimit || 10}`}
             </span>
             <br />
-            <span className={styles.usageLabel}>Job Posts Used This Month</span>
+            <span className={styles.usageLabel}>{copy.usageLabel}</span>
           </div>
         </div>
 
@@ -109,12 +162,12 @@ const EmployerSubscription = () => {
 
       <div className={styles.pricingGrid}>
         <div className={styles.pricingCard}>
-          <h2 className={styles.planName}>Employer Basic</h2>
+          <h2 className={styles.planName}>{copy.basicTitle}</h2>
           <h3 className={styles.planPrice}>₹0 <span>/ month</span></h3>
           <ul className={styles.planFeatures}>
-            <li><i className="fas fa-check"></i> Company Profile</li>
-            <li><i className="fas fa-check"></i> Candidate Discovery</li>
-            <li><i className="fas fa-check"></i> Up to 10 Job Posts / month</li>
+            {copy.basicFeatures.map((feature, i) => (
+              <li key={i}><i className="fas fa-check"></i> {feature}</li>
+            ))}
           </ul>
           <button className={styles.actionBtn} disabled>
             {isPremium ? 'N/A' : 'Current Plan'}
@@ -123,18 +176,17 @@ const EmployerSubscription = () => {
 
         <div className={`${styles.pricingCard} ${styles.premium}`}>
           <div className={styles.popularBadge}>Most Popular</div>
-          <h2 className={styles.planName}>Employer Premium</h2>
+          <h2 className={styles.planName}>{copy.premiumTitle}</h2>
           <div className={styles.planPriceContainer}>
-            <h3 className={styles.planPrice} style={{ marginBottom: '0.5rem' }}>₹499 <span>/ month</span></h3>
+            <h3 className={styles.planPrice} style={{ marginBottom: '0.5rem' }}>₹{copy.price} <span>/ month</span></h3>
             <div className={styles.gstText}>
-              incl. 18% GST (Base ₹422.88 + CGST ₹38.06 + SGST ₹38.06)
+              incl. 18% GST (Base ₹{gst.base} + CGST ₹{gst.cgst} + SGST ₹{gst.sgst})
             </div>
           </div>
           <ul className={styles.planFeatures}>
-            <li><i className="fas fa-check"></i> Everything in Employer Basic</li>
-            <li><i className="fas fa-star"></i> <strong>Unlimited</strong> Job Posts</li>
-            <li><i className="fas fa-star"></i> Premium Employer Badge</li>
-            <li><i className="fas fa-star"></i> Priority Support</li>
+            {copy.premiumFeatures.map((feature, i) => (
+              <li key={i}><i className={`fas ${i === 0 ? 'fa-check' : 'fa-star'}`}></i> {feature}</li>
+            ))}
           </ul>
           <button
             className={`${styles.actionBtn} ${styles.primary}`}

@@ -13,47 +13,75 @@ import {
     HUBS
 } from '../../data/masterData';
 
+const pitchId = (p) => p?._id || p?.id;
+
+// Build a blank pitch form, pre-filled from the startup's company profile.
+const blankForm = (co) => ({
+    title: '',
+    location: co?.location || '',
+    tagline: '',
+    problem: '',
+    solution: '',
+    sector: co?.sector || '',
+    stage: co?.startupStage || 'Idea',
+    fundingStage: co?.fundingStage || 'Bootstrapped',
+    lookingFor: co?.lookingFor || [],
+    mrrInr: 0,
+    activeUsers: 0,
+    momGrowthPct: 0,
+    deckUrl: co?.deckUrl || '',
+    website: co?.website || '',
+    founderLinkedin: co?.founderLinkedin || '',
+    founderName: '',
+    contactEmail: '',
+    contactPhone: '',
+    foundingYear: new Date().getFullYear(),
+    teamSize: '1',
+    businessModel: 'SaaS',
+    salaryRange: '',
+});
+
+// Load an existing pitch into the form shape.
+const formFromPitch = (p, co) => ({
+    title: p.title || '',
+    location: p.location || co?.location || '',
+    tagline: p.tagline || '',
+    problem: p.problem || '',
+    solution: p.solution || '',
+    sector: p.sector || co?.sector || '',
+    stage: p.stage || co?.startupStage || 'Idea',
+    fundingStage: p.fundingStage || co?.fundingStage || 'Bootstrapped',
+    lookingFor: p.lookingFor || [],
+    mrrInr: p.mrrInr || 0,
+    activeUsers: p.activeUsers || 0,
+    momGrowthPct: p.momGrowthPct || 0,
+    deckUrl: p.deckUrl || '',
+    website: p.website || '',
+    founderLinkedin: p.founderLinkedin || '',
+    founderName: p.founderName || '',
+    contactEmail: p.contactEmail || '',
+    contactPhone: p.contactPhone || '',
+    foundingYear: p.foundingYear || new Date().getFullYear(),
+    teamSize: p.teamSize || '1',
+    businessModel: p.businessModel || 'SaaS',
+    salaryRange: p.salaryRange || '',
+});
+
 const StartupPitch = () => {
     const navigate = useNavigate();
     const { addToast } = useToast();
-    
+
     const [loading, setLoading] = useState(true);
     const [saveLoading, setSaveLoading] = useState(false);
     const [company, setCompany] = useState(null);
-    const [pitch, setPitch] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
+    const [pitches, setPitches] = useState([]);
+    const [editingPitch, setEditingPitch] = useState(null); // null when creating a new pitch
+    const [mode, setMode] = useState('list'); // 'list' | 'form'
+    const [formData, setFormData] = useState(blankForm(null));
 
-    // Pitch Form Data State
-    const [formData, setFormData] = useState({
-        title: '',
-        location: '',
-        tagline: '',
-        problem: '',
-        solution: '',
-        sector: '',
-        stage: 'Idea',
-        fundingStage: 'Bootstrapped',
-        lookingFor: [],
-        mrrInr: 0,
-        activeUsers: 0,
-        momGrowthPct: 0,
-        deckUrl: '',
-        website: '',
-        founderLinkedin: '',
-        founderName: '',
-        contactEmail: '',
-        contactPhone: '',
-        foundingYear: new Date().getFullYear(),
-        teamSize: '1',
-        businessModel: 'SaaS',
-        salaryRange: '' // Amount Seeking
-    });
-
-    // Fetch company & pitch on mount
     useEffect(() => {
         const loadPitchData = async () => {
             try {
-                // Fetch company profile first
                 const companyRes = await api.get('/company/me');
                 if (!companyRes.data.data) {
                     setCompany(null);
@@ -63,52 +91,17 @@ const StartupPitch = () => {
                 const co = companyRes.data.data;
                 setCompany(co);
 
-                // Fetch jobs to check if a pitch already exists
                 const jobsRes = await api.get('/jobs/my-jobs');
-                const existingPitch = (jobsRes.data.data || []).find(j => j.isStartupPitch);
+                const myPitches = (jobsRes.data.data || []).filter(j => j.isStartupPitch);
+                setPitches(myPitches);
 
-                if (existingPitch) {
-                    setPitch(existingPitch);
-                    setFormData({
-                        title: existingPitch.title || co.name || '',
-                        location: existingPitch.location || co.location || '',
-                        tagline: existingPitch.tagline || '',
-                        problem: existingPitch.problem || '',
-                        solution: existingPitch.solution || '',
-                        sector: existingPitch.sector || co.sector || '',
-                        stage: existingPitch.stage || co.startupStage || 'Idea',
-                        fundingStage: existingPitch.fundingStage || co.fundingStage || 'Bootstrapped',
-                        lookingFor: existingPitch.lookingFor || co.lookingFor || [],
-                        mrrInr: existingPitch.mrrInr || 0,
-                        activeUsers: existingPitch.activeUsers || 0,
-                        momGrowthPct: existingPitch.momGrowthPct || 0,
-                        deckUrl: existingPitch.deckUrl || co.deckUrl || '',
-                        website: existingPitch.website || co.website || '',
-                        founderLinkedin: existingPitch.founderLinkedin || co.founderLinkedin || '',
-                        founderName: existingPitch.founderName || '',
-                        contactEmail: existingPitch.contactEmail || '',
-                        contactPhone: existingPitch.contactPhone || '',
-                        foundingYear: existingPitch.foundingYear || new Date().getFullYear(),
-                        teamSize: existingPitch.teamSize || '1',
-                        businessModel: existingPitch.businessModel || 'SaaS',
-                        salaryRange: existingPitch.salaryRange || ''
-                    });
-                    setIsEditing(false);
+                if (myPitches.length === 0) {
+                    // No pitches yet — drop straight into the create form.
+                    setFormData(blankForm(co));
+                    setEditingPitch(null);
+                    setMode('form');
                 } else {
-                    // Pre-fill fields from Startup Profile if pitch is not yet created
-                    setFormData(prev => ({
-                        ...prev,
-                        title: co.name || '',
-                        location: co.location || '',
-                        sector: co.sector || '',
-                        stage: co.startupStage || 'Idea',
-                        fundingStage: co.fundingStage || 'Bootstrapped',
-                        lookingFor: co.lookingFor || [],
-                        founderLinkedin: co.founderLinkedin || '',
-                        website: co.website || '',
-                        deckUrl: co.deckUrl || ''
-                    }));
-                    setIsEditing(true);
+                    setMode('list');
                 }
             } catch (err) {
                 console.error(err);
@@ -120,19 +113,24 @@ const StartupPitch = () => {
         loadPitchData();
     }, [addToast]);
 
+    const refreshPitches = async () => {
+        try {
+            const jobsRes = await api.get('/jobs/my-jobs');
+            setPitches((jobsRes.data.data || []).filter(j => j.isStartupPitch));
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const toggleLookingFor = (option) => {
         setFormData(prev => {
             const current = prev.lookingFor || [];
             const exists = current.includes(option);
-            // Limit to 5 selections per spec.
             if (!exists && current.length >= 5) return prev;
             return {
                 ...prev,
@@ -141,12 +139,30 @@ const StartupPitch = () => {
         });
     };
 
-    const handleToggleVisibility = async () => {
-        if (!pitch) return;
+    const handlePostNew = () => {
+        setFormData(blankForm(company));
+        setEditingPitch(null);
+        setMode('form');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleEdit = (p) => {
+        setFormData(formFromPitch(p, company));
+        setEditingPitch(p);
+        setMode('form');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleCancel = () => {
+        setEditingPitch(null);
+        setMode('list');
+    };
+
+    const handleToggleVisibility = async (p) => {
         try {
-            const { data } = await api.put(`/jobs/${pitch._id || pitch.id}/toggle-visibility`);
+            const { data } = await api.put(`/jobs/${pitchId(p)}/toggle-visibility`);
             if (data.success) {
-                setPitch(data.data);
+                setPitches(prev => prev.map(x => (pitchId(x) === pitchId(p) ? data.data : x)));
                 addToast(`Pitch status updated to ${data.data.isActive ? 'Active' : 'Inactive'}`, 'success');
             }
         } catch (err) {
@@ -191,7 +207,6 @@ const StartupPitch = () => {
             addToast('Please select at least one option for "What you are looking for".', 'error');
             return;
         }
-        // Website is optional, but if provided must look like a URL.
         if (formData.website.trim()) {
             const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
             if (!urlPattern.test(formData.website.trim())) {
@@ -199,28 +214,24 @@ const StartupPitch = () => {
                 return;
             }
         }
-        
-        // URL validation for LinkedIn
+
         const linkedinPattern = /^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$/;
         if (!linkedinPattern.test(formData.founderLinkedin.trim())) {
             addToast('Please provide a valid LinkedIn URL (linkedin.com/in/username).', 'error');
             return;
         }
 
-        // Email validation
         const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailPattern.test(formData.contactEmail.trim())) {
             addToast('Please provide a valid contact email address.', 'error');
             return;
         }
 
-        // Phone validation (Optional)
         if (formData.contactPhone && !/^(\+91[\-\s]?)?[0-9]{10}$/.test(formData.contactPhone)) {
             addToast('Please provide a valid 10-digit Indian phone number.', 'error');
             return;
         }
 
-        // Pitch Deck URL (Optional)
         if (formData.deckUrl.trim()) {
             const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
             if (!urlPattern.test(formData.deckUrl.trim())) {
@@ -229,7 +240,6 @@ const StartupPitch = () => {
             }
         }
 
-        // Numeric checks
         if (Number(formData.mrrInr) < 0) {
             addToast('Monthly Revenue cannot be negative.', 'error');
             return;
@@ -272,19 +282,18 @@ const StartupPitch = () => {
                 isStartupPitch: true
             };
 
-            let res;
-            if (pitch) {
-                // Update Pitch
-                res = await api.put(`/jobs/${pitch._id || pitch.id}`, payload);
+            if (editingPitch) {
+                await api.put(`/jobs/${pitchId(editingPitch)}`, payload);
                 addToast('Startup Pitch updated successfully!', 'success');
             } else {
-                // Create Pitch
-                res = await api.post('/jobs', payload);
+                await api.post('/jobs', payload);
                 addToast('Startup Pitch published successfully!', 'success');
             }
 
-            setPitch(res.data.data);
-            setIsEditing(false);
+            await refreshPitches();
+            setEditingPitch(null);
+            setMode('list');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (err) {
             console.error(err);
             const msg = err.response?.data?.message || 'Failed to save pitch';
@@ -322,26 +331,19 @@ const StartupPitch = () => {
             {/* Header */}
             <div className={styles.pageHeader}>
                 <div>
-                    <h1 className={styles.pageTitle}>Startup Pitch</h1>
+                    <h1 className={styles.pageTitle}>{mode === 'form' ? (editingPitch ? 'Edit Pitch' : 'New Startup Pitch') : 'Startup Pitches'}</h1>
                     <p className={styles.pageSubtitle}>Publish details about the problem, solution, metrics, and funding target.</p>
                 </div>
-                {pitch && !isEditing && (
+                {mode === 'list' && (
                     <div className={styles.headerActions}>
-                        <button 
-                            onClick={handleToggleVisibility} 
-                            className={`${styles.toggleBtn} ${pitch.isActive ? styles.btnActive : styles.btnInactive}`}
-                        >
-                            <i className={pitch.isActive ? "fas fa-eye" : "fas fa-eye-slash"}></i>
-                            {pitch.isActive ? 'Active (Click to Pause)' : 'Paused (Click to Activate)'}
-                        </button>
-                        <button onClick={() => setIsEditing(true)} className={styles.editBtn}>
-                            <i className="fas fa-pencil-alt"></i> Edit Pitch
+                        <button onClick={handlePostNew} className={styles.editBtn}>
+                            <i className="fas fa-plus"></i> Post a New Pitch
                         </button>
                     </div>
                 )}
             </div>
 
-            {isEditing ? (
+            {mode === 'form' ? (
                 <form className={styles.pitchForm} onSubmit={handleSave}>
                     {/* Section 1: Pitch Basics */}
                     <div className={styles.formSection}>
@@ -349,7 +351,7 @@ const StartupPitch = () => {
                         <div className={styles.formGrid}>
                             <div className={styles.formField}>
                                 <label className={styles.fieldLabel}>Startup Name *</label>
-                                <input 
+                                <input
                                     type="text"
                                     name="title"
                                     value={formData.title}
@@ -386,7 +388,7 @@ const StartupPitch = () => {
                         </div>
                     </div>
 
-                    {/* Section 1b: Company & Categorisation */}
+                    {/* Section 2: Company & Categorisation */}
                     <div className={styles.formSection}>
                         <h3 className={styles.sectionTitle}>2. Company & Categorisation</h3>
                         <div className={styles.formGrid}>
@@ -493,13 +495,13 @@ const StartupPitch = () => {
                         </div>
                     </div>
 
-                    {/* Section 2: Problem & Solution */}
+                    {/* Section 3: Problem & Solution */}
                     <div className={styles.formSection}>
                         <h3 className={styles.sectionTitle}>3. Problem & Solution Statement</h3>
                         <div className={styles.formGrid}>
                             <div className={`${styles.formField} ${styles.fullWidth}`}>
                                 <label className={styles.fieldLabel}>Problem You Solve * (80 - 500 characters)</label>
-                                <textarea 
+                                <textarea
                                     name="problem"
                                     value={formData.problem}
                                     onChange={handleChange}
@@ -511,7 +513,7 @@ const StartupPitch = () => {
                             </div>
                             <div className={`${styles.formField} ${styles.fullWidth}`}>
                                 <label className={styles.fieldLabel}>Solution / Pitch * (150 - 1500 characters)</label>
-                                <textarea 
+                                <textarea
                                     name="solution"
                                     value={formData.solution}
                                     onChange={handleChange}
@@ -525,13 +527,13 @@ const StartupPitch = () => {
                         </div>
                     </div>
 
-                    {/* Section 3: Traction & Financials */}
+                    {/* Section 4: Traction & Financials */}
                     <div className={styles.formSection}>
                         <h3 className={styles.sectionTitle}>4. Metrics & Funding Ask</h3>
                         <div className={styles.formGrid}>
                             <div className={styles.formField}>
                                 <label className={styles.fieldLabel}>Monthly Revenue (₹) *</label>
-                                <input 
+                                <input
                                     type="number"
                                     name="mrrInr"
                                     value={formData.mrrInr}
@@ -543,7 +545,7 @@ const StartupPitch = () => {
                             </div>
                             <div className={styles.formField}>
                                 <label className={styles.fieldLabel}>Active Users *</label>
-                                <input 
+                                <input
                                     type="number"
                                     name="activeUsers"
                                     value={formData.activeUsers}
@@ -555,7 +557,7 @@ const StartupPitch = () => {
                             </div>
                             <div className={styles.formField}>
                                 <label className={styles.fieldLabel}>MoM Growth % *</label>
-                                <input 
+                                <input
                                     type="number"
                                     name="momGrowthPct"
                                     value={formData.momGrowthPct}
@@ -568,7 +570,7 @@ const StartupPitch = () => {
                             </div>
                             <div className={styles.formField}>
                                 <label className={styles.fieldLabel}>Amount Seeking *</label>
-                                <select 
+                                <select
                                     name="salaryRange"
                                     value={formData.salaryRange}
                                     onChange={handleChange}
@@ -581,7 +583,7 @@ const StartupPitch = () => {
                             </div>
                             <div className={styles.formField}>
                                 <label className={styles.fieldLabel}>Pitch Deck URL</label>
-                                <input 
+                                <input
                                     type="text"
                                     name="deckUrl"
                                     value={formData.deckUrl}
@@ -605,13 +607,13 @@ const StartupPitch = () => {
                         </div>
                     </div>
 
-                    {/* Section 4: Contact & Founder */}
+                    {/* Section 5: Contact & Founder */}
                     <div className={styles.formSection}>
                         <h3 className={styles.sectionTitle}>5. Founder & Contact Information</h3>
                         <div className={styles.formGrid}>
                             <div className={styles.formField}>
                                 <label className={styles.fieldLabel}>Founder Name *</label>
-                                <input 
+                                <input
                                     type="text"
                                     name="founderName"
                                     value={formData.founderName}
@@ -622,7 +624,7 @@ const StartupPitch = () => {
                             </div>
                             <div className={styles.formField}>
                                 <label className={styles.fieldLabel}>Founder LinkedIn *</label>
-                                <input 
+                                <input
                                     type="text"
                                     name="founderLinkedin"
                                     value={formData.founderLinkedin}
@@ -633,7 +635,7 @@ const StartupPitch = () => {
                             </div>
                             <div className={styles.formField}>
                                 <label className={styles.fieldLabel}>Contact Email *</label>
-                                <input 
+                                <input
                                     type="email"
                                     name="contactEmail"
                                     value={formData.contactEmail}
@@ -644,7 +646,7 @@ const StartupPitch = () => {
                             </div>
                             <div className={styles.formField}>
                                 <label className={styles.fieldLabel}>Contact Phone (Optional)</label>
-                                <input 
+                                <input
                                     type="text"
                                     name="contactPhone"
                                     value={formData.contactPhone}
@@ -657,106 +659,75 @@ const StartupPitch = () => {
                     </div>
 
                     <div className={styles.formActions}>
-                        {pitch && (
-                            <button 
-                                type="button" 
-                                onClick={() => setIsEditing(false)} 
+                        {pitches.length > 0 && (
+                            <button
+                                type="button"
+                                onClick={handleCancel}
                                 className={styles.cancelBtn}
                                 disabled={saveLoading}
                             >
                                 Cancel
                             </button>
                         )}
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className={styles.saveSubmitBtn}
                             disabled={saveLoading}
                         >
-                            {saveLoading ? 'Publishing...' : (pitch ? 'Update Pitch' : 'Publish Pitch')}
+                            {saveLoading ? 'Publishing...' : (editingPitch ? 'Update Pitch' : 'Publish Pitch')}
                         </button>
                     </div>
                 </form>
             ) : (
-                <div className={styles.pitchDetailsCard}>
-                    {/* Basic Meta Row */}
-                    <div className={styles.metaHeader}>
-                        <div className={styles.metaHeaderLeft}>
-                            <h2 className={styles.pitchTitle}>{pitch.title}</h2>
-                            <p className={styles.pitchTagline}>{pitch.tagline}</p>
-                        </div>
-                        <span className={`${styles.statusChip} ${pitch.isActive ? styles.statusActive : styles.statusInactive}`}>
-                            {pitch.isActive ? 'Live in Marketplace' : 'Draft / Paused'}
-                        </span>
-                    </div>
+                <div className={styles.pitchList}>
+                    {pitches.map(p => (
+                        <div className={styles.pitchDetailsCard} key={pitchId(p)} style={{ marginBottom: '1.5rem' }}>
+                            <div className={styles.metaHeader}>
+                                <div className={styles.metaHeaderLeft}>
+                                    <h2 className={styles.pitchTitle}>{p.title}</h2>
+                                    <p className={styles.pitchTagline}>{p.tagline}</p>
+                                </div>
+                                <span className={`${styles.statusChip} ${p.isActive ? styles.statusActive : styles.statusInactive}`}>
+                                    {p.isActive ? 'Live in Marketplace' : 'Draft / Paused'}
+                                </span>
+                            </div>
 
-                    {/* Highlights stats grid */}
-                    <div className={styles.metricsRow}>
-                        <div className={styles.metricCard}>
-                            <span className={styles.metricCardLabel}>HQ City</span>
-                            <span className={styles.metricCardValue}><i className="fas fa-map-marker-alt"></i> {pitch.location}</span>
-                        </div>
-                        <div className={styles.metricCard}>
-                            <span className={styles.metricCardLabel}>Monthly Revenue</span>
-                            <span className={styles.metricCardValue}>₹ {pitch.mrrInr?.toLocaleString() || '0'}</span>
-                        </div>
-                        <div className={styles.metricCard}>
-                            <span className={styles.metricCardLabel}>Active Users</span>
-                            <span className={styles.metricCardValue}>{pitch.activeUsers?.toLocaleString() || '0'}</span>
-                        </div>
-                        <div className={styles.metricCard}>
-                            <span className={styles.metricCardLabel}>Amount Seeking</span>
-                            <span className={styles.metricCardValue} style={{ color: 'var(--color-primary)' }}><i className="fas fa-wallet"></i> {pitch.salaryRange || '—'}</span>
-                        </div>
-                    </div>
+                            <div className={styles.metricsRow}>
+                                <div className={styles.metricCard}>
+                                    <span className={styles.metricCardLabel}>HQ City</span>
+                                    <span className={styles.metricCardValue}><i className="fas fa-map-marker-alt"></i> {p.location || '—'}</span>
+                                </div>
+                                <div className={styles.metricCard}>
+                                    <span className={styles.metricCardLabel}>Monthly Revenue</span>
+                                    <span className={styles.metricCardValue}>₹ {p.mrrInr?.toLocaleString() || '0'}</span>
+                                </div>
+                                <div className={styles.metricCard}>
+                                    <span className={styles.metricCardLabel}>Active Users</span>
+                                    <span className={styles.metricCardValue}>{p.activeUsers?.toLocaleString() || '0'}</span>
+                                </div>
+                                <div className={styles.metricCard}>
+                                    <span className={styles.metricCardLabel}>Amount Seeking</span>
+                                    <span className={styles.metricCardValue} style={{ color: 'var(--color-primary)' }}><i className="fas fa-wallet"></i> {p.salaryRange || '—'}</span>
+                                </div>
+                            </div>
 
-                    {/* Problem / Solution Text Sections */}
-                    <div className={styles.textSection}>
-                        <h3 className={styles.sectionHeading}>The Problem</h3>
-                        <p className={styles.sectionText}>{pitch.problem}</p>
-                    </div>
-
-                    <div className={styles.textSection}>
-                        <h3 className={styles.sectionHeading}>The Solution</h3>
-                        <p className={styles.sectionText}>{pitch.solution}</p>
-                    </div>
-
-                    {/* Metadata specs */}
-                    <div className={styles.metaSpecsGrid}>
-                        <div className={styles.specItem}>
-                            <span className={styles.specLabel}>Startup Stage</span>
-                            <span className={styles.specValue}>{pitch.stage}</span>
+                            <div className={styles.headerActions} style={{ marginTop: '1.25rem', flexWrap: 'wrap' }}>
+                                <button
+                                    onClick={() => handleToggleVisibility(p)}
+                                    className={`${styles.toggleBtn} ${p.isActive ? styles.btnActive : styles.btnInactive}`}
+                                >
+                                    <i className={p.isActive ? "fas fa-eye" : "fas fa-eye-slash"}></i>
+                                    {p.isActive ? 'Active (Click to Pause)' : 'Paused (Click to Activate)'}
+                                </button>
+                                <button onClick={() => handleEdit(p)} className={styles.editBtn}>
+                                    <i className="fas fa-pencil-alt"></i> Edit Pitch
+                                </button>
+                                <button onClick={() => navigate(`/jobs/${pitchId(p)}`)} className={styles.editBtn}>
+                                    <i className="fas fa-external-link-alt"></i> View
+                                </button>
+                            </div>
                         </div>
-                        <div className={styles.specItem}>
-                            <span className={styles.specLabel}>Funding Stage</span>
-                            <span className={styles.specValue}>{pitch.fundingStage}</span>
-                        </div>
-                        <div className={styles.specItem}>
-                            <span className={styles.specLabel}>Sector</span>
-                            <span className={styles.specValue}>{pitch.sector}</span>
-                        </div>
-                        <div className={styles.specItem}>
-                            <span className={styles.specLabel}>Pitch Deck</span>
-                            <span className={styles.specValue}>
-                                {pitch.deckUrl ? (
-                                    <a href={pitch.deckUrl.startsWith('http') ? pitch.deckUrl : `https://${pitch.deckUrl}`} target="_blank" rel="noopener noreferrer" className={styles.metaLink}>
-                                        View Deck <i className="fas fa-external-link-alt"></i>
-                                    </a>
-                                ) : 'Not provided'}
-                            </span>
-                        </div>
-                        <div className={styles.specItem}>
-                            <span className={styles.specLabel}>Founder Name</span>
-                            <span className={styles.specValue}>{pitch.founderName}</span>
-                        </div>
-                        <div className={styles.specItem}>
-                            <span className={styles.specLabel}>Founder LinkedIn</span>
-                            <span className={styles.specValue}>
-                                <a href={pitch.founderLinkedin.startsWith('http') ? pitch.founderLinkedin : `https://${pitch.founderLinkedin}`} target="_blank" rel="noopener noreferrer" className={styles.metaLink}>
-                                    LinkedIn <i className="fas fa-external-link-alt"></i>
-                                </a>
-                            </span>
-                        </div>
-                    </div>
+                    ))}
                 </div>
             )}
         </div>
