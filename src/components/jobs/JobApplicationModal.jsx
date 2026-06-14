@@ -16,14 +16,41 @@ const JobApplicationModal = ({ job, onClose }) => {
     resume: null
   });
   const [submitting, setSubmitting] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const setResumeFile = (file) => {
+    if (!file) return;
+    const isValid = /\.(pdf|doc|docx)$/i.test(file.name);
+    if (!isValid) {
+      addToast('Please upload a PDF or Word document (.pdf, .doc, .docx).', 'error');
+      return;
+    }
+    setFormData(prev => ({ ...prev, resume: file }));
+  };
+
   const handleFileChange = (e) => {
-    setFormData(prev => ({ ...prev, resume: e.target.files[0] }));
+    setResumeFile(e.target.files[0]);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    setResumeFile(e.dataTransfer.files?.[0]);
   };
 
   const handleSubmit = (e) => {
@@ -145,17 +172,26 @@ const JobApplicationModal = ({ job, onClose }) => {
             <div className={styles.formGroup}>
                 <label>Resume/CV <span className={styles.required}>*</span></label>
                 <div className={styles.fileUploadWrapper}>
-                    <input 
-                        type="file" 
-                        id="resumeUpload" 
+                    <input
+                        type="file"
+                        id="resumeUpload"
                         accept=".pdf,.doc,.docx"
                         onChange={handleFileChange}
                         className={styles.fileInput}
-                        required
                     />
-                    <label htmlFor="resumeUpload" className={styles.fileLabel}>
-                        <i className="fas fa-paperclip"></i>
-                        {formData.resume ? formData.resume.name : 'Attach Resume/CV (PDF, DOC)'}
+                    <label
+                        htmlFor="resumeUpload"
+                        className={`${styles.fileLabel} ${isDragging ? styles.dragging : ''}`}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                    >
+                        <i className={`fas ${formData.resume ? 'fa-paperclip' : 'fa-cloud-upload-alt'}`}></i>
+                        <span>
+                            {formData.resume
+                                ? formData.resume.name
+                                : 'Drag & drop your resume here, or click to browse (PDF, DOC)'}
+                        </span>
                     </label>
                 </div>
             </div>
