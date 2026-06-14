@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useContext } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import styles from './StartupListing.module.css';
 import Footer from '../../components/layout/Footer';
 import api from '../../utils/api';
+import { AuthContext } from '../../context/AuthContext';
 import { updateSEO } from '../../utils/seo';
 import {
   SECTORS,
@@ -47,6 +48,14 @@ const StartupListing = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [searchInput, setSearchInput] = useState(searchParams.get('keyword') || '');
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+
+  // Candidates cannot browse startups — route them back to job search.
+  useEffect(() => {
+    if (user?.role === 'candidate') {
+      navigate('/jobs', { replace: true });
+    }
+  }, [user, navigate]);
 
   const queryString = searchParams.toString();
 

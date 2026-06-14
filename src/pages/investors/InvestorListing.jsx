@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useContext } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import styles from './InvestorListing.module.css';
 import Footer from '../../components/layout/Footer';
 import api from '../../utils/api';
+import { AuthContext } from '../../context/AuthContext';
 import { updateSEO } from '../../utils/seo';
 import {
   INVESTOR_TYPES,
@@ -42,6 +43,14 @@ const InvestorListing = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [searchInput, setSearchInput] = useState(searchParams.get('keyword') || '');
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+
+  // Candidates cannot browse investors — route them back to job search.
+  useEffect(() => {
+    if (user?.role === 'candidate') {
+      navigate('/jobs', { replace: true });
+    }
+  }, [user, navigate]);
 
   const queryString = searchParams.toString();
 
