@@ -295,9 +295,13 @@ const JobDetails = () => {
                             job.companyId._id && 
                             job.companyId._id !== 'Gated - Connect to view';
 
+    // Where "Back" returns to depends on the listing type: startup pitches go
+    // Home, investor funds to the investor listing, jobs to the job listing.
+    const backPath = isStartupPitch ? '/' : (companyType === 'investor' ? '/investors' : '/jobs');
+
     return (
         <div className={`focused-container ${styles.container}`}>
-            <button onClick={() => navigate('/jobs')} className={styles.backButton}>
+            <button onClick={() => navigate(backPath)} className={styles.backButton}>
                 <i className="fas fa-arrow-left"></i> Back
             </button>
 
@@ -337,10 +341,14 @@ const JobDetails = () => {
                         </div>
 
                         <div className={styles.headerActions}>
-                            {isStartupPitch ? (
+                            {companyType === 'investor' ? (
+                                // Investor fund card — no Connect/Apply action. Connection
+                                // requests flow from investors to startups, not toward investors.
+                                null
+                            ) : isStartupPitch ? (
                                 <>
-                                    <button 
-                                        className={styles.applyButton} 
+                                    <button
+                                        className={styles.applyButton}
                                         onClick={() => {
                                             if (!user) {
                                                 addToast('Please login as an investor to connect', 'info');
