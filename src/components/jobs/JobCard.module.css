@@ -122,12 +122,11 @@
 }
 
 .actionSlot {
-    position: absolute;
-    bottom: 12px;
-    right: 14px;
     display: flex;
     align-items: center;
     gap: 4px;
+    flex-shrink: 0;
+    margin-left: auto;
 }
 
 /* Tags - hidden in compact view, shown in detail views */

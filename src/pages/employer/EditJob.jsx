@@ -146,17 +146,18 @@ const EditJob = () => {
                         teamSize: job.teamSize || '1',
                         sector: job.sector || '',
                         businessModel: job.businessModel || '',
-                        website: companyData.website || '',
-                        // Investor specific fields
-                        investorType: companyData.investorType || 'Angel',
-                        investorThesis: companyData.investorThesis || '',
-                        sectorsOfInterest: companyData.sectorsOfInterest || [],
-                        stagesFunded: companyData.stagesFunded || [],
-                        ticketSizeMin: companyData.ticketSizeMin || 500000,
-                        ticketSizeMax: companyData.ticketSizeMax || 10000000,
-                        geographyFocus: companyData.geographyFocus || [],
-                        portfolioCompanies: companyData.portfolioCompanies || [],
-                        contactPreference: companyData.contactPreference || 'In-app Connect'
+                        website: job.website || companyData.website || '',
+                        // Investor fund fields — read from the Job (independent per fund),
+                        // falling back to the company for any legacy funds.
+                        investorType: job.investorType || companyData.investorType || 'Angel',
+                        investorThesis: job.investorThesis || companyData.investorThesis || '',
+                        sectorsOfInterest: (job.sectorsOfInterest && job.sectorsOfInterest.length ? job.sectorsOfInterest : companyData.sectorsOfInterest) || [],
+                        stagesFunded: (job.stagesFunded && job.stagesFunded.length ? job.stagesFunded : companyData.stagesFunded) || [],
+                        ticketSizeMin: job.ticketSizeMin || companyData.ticketSizeMin || 500000,
+                        ticketSizeMax: job.ticketSizeMax || companyData.ticketSizeMax || 10000000,
+                        geographyFocus: (job.geographyFocus && job.geographyFocus.length ? job.geographyFocus : companyData.geographyFocus) || [],
+                        portfolioCompanies: (job.portfolioCompanies && job.portfolioCompanies.length ? job.portfolioCompanies : companyData.portfolioCompanies) || [],
+                        contactPreference: job.contactPreference || companyData.contactPreference || 'In-app Connect'
                     });
                     setCompanyId(companyData._id || companyData.id);
                     if (companyData.logoUrl) {
@@ -406,37 +407,9 @@ const EditJob = () => {
                 await api.put(`/company/${companyId}`, companyForm, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
-            } else if (jobData.companyType === 'investor' && companyId) {
-                const companyForm = new FormData();
-                companyForm.append('name', jobData.title);
-                companyForm.append('location', jobData.location);
-                companyForm.append('website', jobData.website || '');
-                companyForm.append('investorType', jobData.investorType);
-                companyForm.append('investorThesis', jobData.investorThesis);
-                companyForm.append('ticketSizeMin', Number(jobData.ticketSizeMin));
-                companyForm.append('ticketSizeMax', Number(jobData.ticketSizeMax));
-                companyForm.append('founderLinkedin', jobData.founderLinkedin);
-                companyForm.append('contactPreference', jobData.contactPreference);
-                
-                if (jobData.sectorsOfInterest && jobData.sectorsOfInterest.length > 0) {
-                    jobData.sectorsOfInterest.forEach(s => companyForm.append('sectorsOfInterest', s));
-                }
-                if (jobData.stagesFunded && jobData.stagesFunded.length > 0) {
-                    jobData.stagesFunded.forEach(s => companyForm.append('stagesFunded', s));
-                }
-                if (jobData.geographyFocus && jobData.geographyFocus.length > 0) {
-                    jobData.geographyFocus.forEach(g => companyForm.append('geographyFocus', g));
-                }
-                if (jobData.portfolioCompanies && jobData.portfolioCompanies.length > 0) {
-                    jobData.portfolioCompanies.forEach(p => companyForm.append('portfolioCompanies', p));
-                }
-                if (logoFile) {
-                    companyForm.append('logo', logoFile);
-                }
-                await api.put(`/company/${companyId}`, companyForm, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
             }
+            // Investor fund fields are saved on this fund's Job (below), not the
+            // shared company profile, so each fund is edited independently.
 
             // Prepare update payload
             const payload = {
@@ -469,6 +442,17 @@ const EditJob = () => {
             } else if (jobData.companyType === 'investor') {
                 payload.description = `<p><strong>Investment Thesis:</strong></p><p>${jobData.investorThesis}</p>`;
                 payload.salaryRange = formatTicket(Number(jobData.ticketSizeMin), Number(jobData.ticketSizeMax));
+                payload.investorType = jobData.investorType;
+                payload.investorThesis = jobData.investorThesis;
+                payload.ticketSizeMin = Number(jobData.ticketSizeMin || 0);
+                payload.ticketSizeMax = Number(jobData.ticketSizeMax || 0);
+                payload.sectorsOfInterest = jobData.sectorsOfInterest || [];
+                payload.stagesFunded = jobData.stagesFunded || [];
+                payload.geographyFocus = jobData.geographyFocus || [];
+                payload.portfolioCompanies = jobData.portfolioCompanies || [];
+                payload.contactPreference = jobData.contactPreference;
+                payload.founderLinkedin = jobData.founderLinkedin;
+                payload.website = jobData.website;
             } else {
                 payload.category = jobData.category;
                 payload.subcategory = jobData.subcategory;
