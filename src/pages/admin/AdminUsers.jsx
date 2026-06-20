@@ -4,6 +4,25 @@ import api from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
 import { format } from 'date-fns';
 
+// Resolve a user's real persona from role + companyType (all of company/startup/
+// investor share role 'employer', so the type lives in companyType).
+const getPersona = (user) => {
+    if (user.role === 'candidate') return { key: 'candidate', label: 'Candidate' };
+    if (user.role === 'admin') return { key: 'admin', label: 'Admin' };
+    const ct = user.companyType || user.company_type || 'company';
+    if (ct === 'startup') return { key: 'startup', label: 'Startup' };
+    if (ct === 'investor') return { key: 'investor', label: 'Investor / VC' };
+    return { key: 'company', label: 'Hiring Company' };
+};
+
+const PERSONA_COLORS = {
+    candidate: '#0d9488',
+    company: '#2563eb',
+    startup: '#7c3aed',
+    investor: '#ea580c',
+    admin: '#475569',
+};
+
 const AdminUsers = () => {
     const { addToast } = useToast();
     const [users, setUsers] = useState([]);
@@ -117,9 +136,9 @@ const AdminUsers = () => {
         }
     };
 
-    const filteredUsers = filter === 'all' 
-        ? users 
-        : users.filter(u => u.role === filter);
+    const filteredUsers = filter === 'all'
+        ? users
+        : users.filter(u => getPersona(u).key === filter);
 
     if (loading) return <div style={{padding:'20px', color:'var(--color-text-main)'}}>Loading Users...</div>;
 
@@ -136,7 +155,9 @@ const AdminUsers = () => {
                     >
                         <option value="all">All Roles</option>
                         <option value="candidate">Candidates</option>
-                        <option value="employer">Employers</option>
+                        <option value="company">Hiring Companies</option>
+                        <option value="startup">Startups</option>
+                        <option value="investor">Investors / VC</option>
                         <option value="admin">Admins</option>
                     </select>
                 </div>
@@ -257,9 +278,18 @@ const AdminUsers = () => {
                                 </td>
                                 <td>{user.email}</td>
                                 <td>
-                                    <span className={`${styles.badge} ${user.role === 'admin' ? styles.badgeAdmin : user.role === 'employer' ? styles.badgeEmployer : styles.badgeActive}`}>
-                                        {user.role}
-                                    </span>
+                                    {(() => {
+                                        const persona = getPersona(user);
+                                        const color = PERSONA_COLORS[persona.key];
+                                        return (
+                                            <span
+                                                className={styles.badge}
+                                                style={{ background: `${color}1A`, color, border: `1px solid ${color}33`, whiteSpace: 'nowrap', display: 'inline-block' }}
+                                            >
+                                                {persona.label}
+                                            </span>
+                                        );
+                                    })()}
                                 </td>
                                 <td>
                                     <span className={`${styles.badge} ${user.isPremium ? styles.badgePremium : styles.badgeBlocked}`}>

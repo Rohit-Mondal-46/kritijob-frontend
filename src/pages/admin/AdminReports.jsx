@@ -6,7 +6,17 @@ import {
 } from 'recharts';
 import api from '../../utils/api';
 
-const ROLE_COLORS = ['#34d399', '#818cf8', '#f59e0b'];
+const ROLE_COLORS = ['#34d399', '#f59e0b', '#2563eb', '#7c3aed', '#818cf8'];
+
+// Friendly labels for the persona buckets returned by /reports/stats.
+const ROLE_LABELS = {
+    candidate: 'Candidate',
+    company: 'Hiring Company',
+    startup: 'Startup',
+    investor: 'Investor / VC',
+    admin: 'Admin',
+    employer: 'Employer',
+};
 
 // Custom Tooltip for light theme
 const CustomTooltip = ({ active, payload, label }) => {
@@ -49,7 +59,7 @@ const AdminReports = () => {
                      // Helper to handle role data safely
                      const roleCounts = d.users.byRole || [];
                      setRoleData(roleCounts.map(r => ({
-                         name: r._id.charAt(0).toUpperCase() + r._id.slice(1),
+                         name: ROLE_LABELS[r._id] || (r._id ? r._id.charAt(0).toUpperCase() + r._id.slice(1) : 'Unknown'),
                          value: r.count
                      })));
 
@@ -186,14 +196,21 @@ const AdminReports = () => {
                         <h3 className={styles.chartTitle}>Jobs by Type</h3>
                     </div>
                     <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={jobStats}>
+                        <BarChart data={jobStats} margin={{ top: 5, right: 10, left: 0, bottom: 28 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
-                            <XAxis dataKey="name" stroke="var(--color-text-muted)" />
-                            <YAxis stroke="var(--color-text-muted)" />
+                            <XAxis
+                                dataKey="name"
+                                stroke="var(--color-text-muted)"
+                                interval={0}
+                                tick={{ fontSize: 11 }}
+                                angle={-30}
+                                textAnchor="end"
+                                height={70}
+                            />
+                            <YAxis stroke="var(--color-text-muted)" allowDecimals={false} />
                             <Tooltip content={<CustomTooltip />} />
-                            <Legend />
-                            {/* Simplified to single bar as backend aggregation is simple type count */}
-                            <Bar dataKey="count" fill="#34d399" />
+                            <Legend verticalAlign="top" height={28} />
+                            <Bar dataKey="count" fill="#34d399" maxBarSize={56} />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>

@@ -404,38 +404,10 @@ const PostJob = ({ isAdmin = false }) => {
                 await api.put(`/company/${companyId}`, companyForm, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
-            } else if (companyType === 'investor' && companyId) {
-                const companyForm = new FormData();
-                companyForm.append('name', jobData.title);
-                companyForm.append('location', jobData.location);
-                companyForm.append('website', jobData.website || '');
-                companyForm.append('investorType', jobData.investorType);
-                companyForm.append('investorThesis', jobData.investorThesis);
-                companyForm.append('ticketSizeMin', Number(jobData.ticketSizeMin));
-                companyForm.append('ticketSizeMax', Number(jobData.ticketSizeMax));
-                companyForm.append('founderLinkedin', jobData.founderLinkedin);
-                companyForm.append('contactPreference', jobData.contactPreference);
-                
-                if (jobData.sectorsOfInterest && jobData.sectorsOfInterest.length > 0) {
-                    jobData.sectorsOfInterest.forEach(s => companyForm.append('sectorsOfInterest', s));
-                }
-                if (jobData.stagesFunded && jobData.stagesFunded.length > 0) {
-                    jobData.stagesFunded.forEach(s => companyForm.append('stagesFunded', s));
-                }
-                if (jobData.geographyFocus && jobData.geographyFocus.length > 0) {
-                    jobData.geographyFocus.forEach(g => companyForm.append('geographyFocus', g));
-                }
-                // Send portfolio companies as strings
-                if (jobData.portfolioCompanies && jobData.portfolioCompanies.length > 0) {
-                    jobData.portfolioCompanies.forEach(p => companyForm.append('portfolioCompanies', p));
-                }
-                if (logoFile) {
-                    companyForm.append('logo', logoFile);
-                }
-                await api.put(`/company/${companyId}`, companyForm, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
             }
+            // Investor funds are independent: fund-specific fields (type, thesis,
+            // ticket, sectors, …) are stored on the Job below, NOT synced to the
+            // shared company profile — so each fund stands on its own.
 
             // Prepare Job payload
             const body = {
@@ -478,9 +450,23 @@ const PostJob = ({ isAdmin = false }) => {
                 body.businessModel = jobData.businessModel;
             }
 
+            if (companyType === 'investor') {
+                body.investorType = jobData.investorType;
+                body.investorThesis = jobData.investorThesis;
+                body.ticketSizeMin = Number(jobData.ticketSizeMin || 0);
+                body.ticketSizeMax = Number(jobData.ticketSizeMax || 0);
+                body.sectorsOfInterest = jobData.sectorsOfInterest || [];
+                body.stagesFunded = jobData.stagesFunded || [];
+                body.geographyFocus = jobData.geographyFocus || [];
+                body.portfolioCompanies = jobData.portfolioCompanies || [];
+                body.contactPreference = jobData.contactPreference;
+                body.founderLinkedin = jobData.founderLinkedin;
+                body.website = jobData.website;
+            }
+
             await api.post('/jobs', body);
 
-            addToast(companyType === 'startup' ? 'Startup pitch published successfully!' : 'Job posted successfully!', 'success');
+            addToast(companyType === 'startup' ? 'Startup pitch published successfully!' : companyType === 'investor' ? 'Fund listing published successfully!' : 'Job posted successfully!', 'success');
             navigate(isAdmin ? '/dashboard/admin/jobs' : '/dashboard/employer/jobs');
         } catch (err) {
             console.error(err);

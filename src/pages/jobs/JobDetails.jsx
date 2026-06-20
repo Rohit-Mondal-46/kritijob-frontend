@@ -299,6 +299,17 @@ const JobDetails = () => {
     // Home, investor funds to the investor listing, jobs to the job listing.
     const backPath = isStartupPitch ? '/' : (companyType === 'investor' ? '/investors' : '/jobs');
 
+    // Investor fund fields are stored per-fund on the Job; fall back to the
+    // firm's company profile for any legacy funds that predate this.
+    const pickList = (a, b) => (a && a.length ? a : (b || []));
+    const invType = job.investorType || job.companyId?.investorType || '';
+    const invGeography = pickList(job.geographyFocus, job.companyId?.geographyFocus);
+    const invLinkedin = job.founderLinkedin || job.companyId?.founderLinkedin || '';
+    const invContactPref = job.contactPreference || job.companyId?.contactPreference || '';
+    const invSectors = pickList(job.sectorsOfInterest, job.companyId?.sectorsOfInterest);
+    const invStages = pickList(job.stagesFunded, job.companyId?.stagesFunded);
+    const invPortfolio = pickList(job.portfolioCompanies, job.companyId?.portfolioCompanies);
+
     return (
         <div className={`focused-container ${styles.container}`}>
             <button onClick={() => navigate(backPath)} className={styles.backButton}>
@@ -436,7 +447,7 @@ const JobDetails = () => {
                             <div className={styles.highlightCard}>
                                 <div className={styles.highlightIcon}><i className="fas fa-user-tie"></i></div>
                                 <p className={styles.highlightLabel}>Investor Type</p>
-                                <p className={styles.highlightValue}>{job.companyId?.investorType || '—'}</p>
+                                <p className={styles.highlightValue}>{invType || '—'}</p>
                             </div>
                             <div className={styles.highlightCard}>
                                 <div className={styles.highlightIcon}><i className="fas fa-wallet"></i></div>
@@ -446,14 +457,14 @@ const JobDetails = () => {
                             <div className={styles.highlightCard}>
                                 <div className={styles.highlightIcon}><i className="fas fa-globe"></i></div>
                                 <p className={styles.highlightLabel}>Geography Focus</p>
-                                <p className={styles.highlightValue}>{job.companyId?.geographyFocus?.join(', ') || '—'}</p>
+                                <p className={styles.highlightValue}>{invGeography.length ? invGeography.join(', ') : '—'}</p>
                             </div>
                             <div className={styles.highlightCard}>
                                 <div className={styles.highlightIcon}><i className="fab fa-linkedin"></i></div>
                                 <p className={styles.highlightLabel}>LinkedIn</p>
                                 <p className={styles.highlightValue}>
-                                    {job.companyId?.founderLinkedin ? (
-                                        <a href={job.companyId.founderLinkedin.startsWith('http') ? job.companyId.founderLinkedin : `https://${job.companyId.founderLinkedin}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>
+                                    {invLinkedin ? (
+                                        <a href={invLinkedin.startsWith('http') ? invLinkedin : `https://${invLinkedin}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>
                                             Profile
                                         </a>
                                     ) : '—'}
@@ -462,7 +473,7 @@ const JobDetails = () => {
                             <div className={styles.highlightCard}>
                                 <div className={styles.highlightIcon}><i className="fas fa-envelope-open-text"></i></div>
                                 <p className={styles.highlightLabel}>How to Reach</p>
-                                <p className={styles.highlightValue}>{job.companyId?.contactPreference || '—'}</p>
+                                <p className={styles.highlightValue}>{invContactPref || '—'}</p>
                             </div>
                         </div>
                     ) : isStartupPitch ? (
@@ -553,33 +564,33 @@ const JobDetails = () => {
                     {/* Investor Specific Sections */}
                     {companyType === 'investor' && (
                         <>
-                            {job.companyId?.sectorsOfInterest && job.companyId.sectorsOfInterest.length > 0 && (
+                            {invSectors.length > 0 && (
                                 <section className={styles.section}>
                                     <h2 className={styles.sectionTitle}>Sectors of Interest</h2>
                                     <div className={styles.skillsContainer}>
-                                        {job.companyId.sectorsOfInterest.map(sector => (
+                                        {invSectors.map(sector => (
                                             <span key={sector} className={styles.skillTag}>{sector}</span>
                                         ))}
                                     </div>
                                 </section>
                             )}
 
-                            {job.companyId?.stagesFunded && job.companyId.stagesFunded.length > 0 && (
+                            {invStages.length > 0 && (
                                 <section className={styles.section}>
                                     <h2 className={styles.sectionTitle}>Stages Funded</h2>
                                     <div className={styles.skillsContainer}>
-                                        {job.companyId.stagesFunded.map(stage => (
+                                        {invStages.map(stage => (
                                             <span key={stage} className={styles.skillTag}>{stage}</span>
                                         ))}
                                     </div>
                                 </section>
                             )}
 
-                            {job.companyId?.portfolioCompanies && job.companyId.portfolioCompanies.length > 0 && (
+                            {invPortfolio.length > 0 && (
                                 <section className={styles.section}>
                                     <h2 className={styles.sectionTitle}>Notable Portfolio</h2>
                                     <div className={styles.skillsContainer}>
-                                        {job.companyId.portfolioCompanies.map(port => (
+                                        {invPortfolio.map(port => (
                                             <span key={port} className={styles.skillTag}>{port}</span>
                                         ))}
                                     </div>
