@@ -30,7 +30,7 @@ const FeaturedJobs = () => {
                     setLoading(false);
                 }
                 // Fetch fresh data (revalidate)
-                const { data } = await api.get('/jobs?limit=8');
+                const { data } = await api.get('/jobs?limit=8&type=company');
                 if (data.success) {
                     const filtered = (data.data || []).filter(job => {
                         const type = job.companyType || job.companyId?.companyType || job.company_type || job.companyId?.company_type;

@@ -109,7 +109,7 @@ body {
   background-color: var(--color-background);
   color: var(--color-text-main);
   min-height: 100vh;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.5;
   overflow-x: hidden;
 }

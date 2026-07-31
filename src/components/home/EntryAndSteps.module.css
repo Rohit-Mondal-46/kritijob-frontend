@@ -1,0 +1,214 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+    background-color: #fafbfc;
+    padding: 80px 20px;
+}
+
+.section {
+    max-width: 1560px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 48px;
+    max-width: 700px;
+}
+
+.badge {
+    color: #0A66C2;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+    display: inline-block;
+}
+
+.title {
+    font-size: 36px;
+    font-weight: 850;
+    color: #0f172a;
+    line-height: 1.2;
+    margin-bottom: 16px;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #475569;
+    line-height: 1.6;
+}
+
+/* ── ROLES GRID (CHOOSE ENTRY POINT) ── */
+.rolesGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    width: 100%;
+}
+
+.roleCard {
+    height: 280px;
+    border-radius: 20px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.roleCard:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.roleIcon {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.iconCandidate, .iconEmployer, .iconStartup, .iconInvestor { 
+    background-color: var(--color-secondary-light); 
+    color: var(--color-primary); 
+}
+
+.roleContent {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.roleTitle {
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 4px;
+}
+
+.roleSubtitle {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 12px;
+}
+
+.roleCta {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+}
+
+.arrow {
+    transition: transform 0.2s ease;
+}
+
+.roleCard:hover .arrow {
+    transform: translateX(4px);
+}
+
+/* ── STEPS GRID (LIVE IN 4 SIMPLE STEPS) ── */
+.stepsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    width: 100%;
+}
+
+.stepCard {
+    background-color: #ffffff;
+    border: 1px solid #f1f5f9;
+    border-radius: 20px;
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    transition: all 0.2s ease;
+}
+
+.stepCard:hover {
+    border-color: #e2e8f0;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.stepNumBadge {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background-color: #eff6ff;
+    color: #1e3a8a;
+    font-size: 13px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.stepTitle {
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 12px;
+}
+
+.stepDesc {
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.6;
+}
+
+/* Responsiveness */
+@media (max-width: 1024px) {
+    .rolesGrid, .stepsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .wrapper {
+        padding: 60px 16px;
+        gap: 60px;
+    }
+
+    .title {
+        font-size: 28px;
+    }
+
+    .rolesGrid, .stepsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .roleCard {
+        height: 240px;
+    }
+
+    .stepCard {
+        padding: 24px;
+    }
+}

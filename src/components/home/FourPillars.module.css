@@ -1,0 +1,279 @@
+.section {
+    padding: 80px 20px;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    max-width: 1560px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 100px;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+}
+
+.rowReverse {
+    flex-direction: row-reverse;
+}
+
+.textCol {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.imageCol {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.imageWrapper {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    padding: 12px;
+    box-sizing: border-box;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.image {
+    width: 100%;
+    height: 316px;
+    object-fit: cover;
+    display: block;
+    border-radius: 16px;
+    transition: transform 0.5s ease;
+}
+
+.imageWrapper:hover .image {
+    transform: scale(1.04);
+}
+
+/* Badges and Labels on Image */
+.badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.overlayLabel {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* Pillar Specific Badges */
+.bgCandidate { background-color: #f59e0b; }
+.bgEmployer { background-color: #10b981; }
+.bgStartup { background-color: #8b5cf6; }
+.bgInvestor { background-color: #f97316; }
+
+/* Subtitle and Typography */
+.subtitle {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.colorCandidate { color: #d97706; }
+.colorEmployer { color: #059669; }
+.colorStartup { color: #7c3aed; }
+.colorInvestor { color: #ea580c; }
+
+.title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.25;
+    margin-bottom: 16px;
+}
+
+.description {
+    font-size: 15px;
+    color: #475569;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+/* Bullet Checklist */
+.list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 32px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+.list li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.checkIcon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+}
+
+.bgCandidateCheck { background-color: rgba(245, 158, 11, 0.1); color: #d97706; }
+.bgEmployerCheck { background-color: rgba(16, 185, 129, 0.1); color: #059669; }
+.bgStartupCheck { background-color: rgba(139, 92, 246, 0.1); color: #7c3aed; }
+.bgInvestorCheck { background-color: rgba(249, 115, 22, 0.1); color: #ea580c; }
+
+/* Buttons & Actions */
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.btn {
+    border: none;
+    color: #ffffff;
+    font-weight: 700;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.btnCandidate { background-color: #f59e0b; }
+.btnCandidate:hover { background-color: #d97706; }
+
+.btnEmployer { background-color: #10b981; }
+.btnEmployer:hover { background-color: #059669; }
+
+.btnStartup { background-color: #8b5cf6; }
+.btnStartup:hover { background-color: #7c3aed; }
+
+.btnInvestor { background-color: #f97316; }
+.btnInvestor:hover { background-color: #ea580c; }
+
+.btnLink {
+    background: transparent;
+    border: none;
+    color: #475569;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 8px 12px;
+    transition: color 0.2s ease;
+}
+
+.btnLink:hover {
+    color: #0f172a;
+    text-decoration: underline;
+}
+
+/* Responsiveness */
+@media (max-width: 992px) {
+    .container {
+        gap: 80px;
+    }
+    
+    .row {
+        gap: 40px;
+    }
+
+    .title {
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 768px) {
+    .section {
+        padding: 60px 16px;
+    }
+
+    .container {
+        gap: 60px;
+    }
+
+    .row {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .rowReverse {
+        flex-direction: column;
+    }
+
+    .textCol {
+        width: 100%;
+        align-items: center;
+        text-align: center;
+    }
+
+    .list {
+        align-items: flex-start;
+        max-width: 380px;
+        margin: 0 auto 30px auto;
+    }
+
+    .actions {
+        width: 100%;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .btnLink {
+        width: 100%;
+        text-align: center;
+    }
+}
