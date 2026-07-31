@@ -76,11 +76,8 @@ const FourPillars = () => {
                             </li>
                         </ul>
                         <div className={styles.actions}>
-                            <button onClick={() => navigate('/pricing')} className={`${styles.btn} ${styles.btnEmployer}`}>
+                            <button onClick={() => navigate('/login')} className={`${styles.btn} ${styles.btnEmployer}`}>
                                 Start hiring &rarr;
-                            </button>
-                            <button onClick={() => navigate('/pricing')} className={styles.btnLink}>
-                                See pricing
                             </button>
                         </div>
                     </div>
@@ -123,9 +120,6 @@ const FourPillars = () => {
                             <button onClick={() => navigate('/startups')} className={`${styles.btn} ${styles.btnStartup}`}>
                                 List your startup &rarr;
                             </button>
-                            <button onClick={() => navigate('/about')} className={styles.btnLink}>
-                                How it works
-                            </button>
                         </div>
                     </div>
                     <div className={styles.imageCol}>
@@ -166,9 +160,6 @@ const FourPillars = () => {
                         <div className={styles.actions}>
                             <button onClick={() => navigate('/investors')} className={`${styles.btn} ${styles.btnInvestor}`}>
                                 Become an investor &rarr;
-                            </button>
-                            <button onClick={() => navigate('/investors')} className={styles.btnLink}>
-                                View deal flow
                             </button>
                         </div>
                     </div>
