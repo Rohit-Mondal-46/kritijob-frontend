@@ -57,6 +57,7 @@ const AdminContent = React.lazy(() => import('./pages/admin/AdminContent'));
 const AdminReports = React.lazy(() => import('./pages/admin/AdminReports'));
 import CandidateAuthGuard from './components/auth/CandidateAuthGuard';
 import CookieConsent from './components/common/CookieConsent';
+import ScrollToTop from './components/common/ScrollToTop';
 import './App.css';
 
 const NAVBAR_HEIGHT = 64;
@@ -141,6 +142,7 @@ function App() {
     <AuthProvider>
       <ToastProvider>
         <Router>
+            <ScrollToTop />
             <div className="app">
                <Navbar />
                <React.Suspense fallback={<NavbarAwareLoader />}>

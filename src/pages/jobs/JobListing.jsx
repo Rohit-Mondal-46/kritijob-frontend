@@ -235,6 +235,7 @@ const JobListing = ({ defaultType }) => {
     }
   }, [defaultType, userCompanyType, navigate]);
 
+
   useEffect(() => {
     const category = searchParams.get('category');
     const keyword = searchParams.get('keyword');
