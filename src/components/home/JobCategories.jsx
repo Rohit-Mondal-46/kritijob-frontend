@@ -4,8 +4,8 @@ import styles from './Home.module.css';
 import { JOB_CATEGORIES, getJobCategoryLabel } from '../../data/jobCategories';
 
 const CATEGORY_STYLES = {
-    civil_engineer_architect_jobs: { iconClass: 'fas fa-drafting-compass', iconColor: '#3b82f6', bgColor: '#eff6ff' },
-    machine_operator_jobs: { iconClass: 'fas fa-cogs', iconColor: '#4b5563', bgColor: '#f3f4f6' },
+    civil_engineer_architect: { iconClass: 'fas fa-drafting-compass', iconColor: '#3b82f6', bgColor: '#eff6ff' },
+    machine_operator: { iconClass: 'fas fa-cogs', iconColor: '#4b5563', bgColor: '#f3f4f6' },
     nursing: { iconClass: 'fas fa-user-nurse', iconColor: '#ec4899', bgColor: '#fdf2f8' },
     anesthesiology: { iconClass: 'fas fa-syringe', iconColor: '#06b6d4', bgColor: '#ecfeff' },
     cardiovascular_medicine: { iconClass: 'fas fa-heartbeat', iconColor: '#ef4444', bgColor: '#fef2f2' },
