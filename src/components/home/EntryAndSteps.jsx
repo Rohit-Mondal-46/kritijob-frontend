@@ -1,6 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './EntryAndSteps.module.css';
+import candidatesImg from '../../assets/images/pillar_candidates.jpg';
+import employersImg from '../../assets/images/pillar_employers.jpg';
+import startupsImg from '../../assets/images/pillar_startups.jpg';
+import investorsImg from '../../assets/images/pillar_investors.jpg';
 
 const EntryAndSteps = () => {
     const navigate = useNavigate();
@@ -11,7 +15,7 @@ const EntryAndSteps = () => {
             subtitle: "Find & track your next role",
             icon: "fas fa-compass",
             iconClass: styles.iconCandidate,
-            bgImage: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&auto=format&fit=crop&q=80",
+            bgImage: candidatesImg,
             path: "/jobs",
             cta: "Get started"
         },
@@ -20,7 +24,7 @@ const EntryAndSteps = () => {
             subtitle: "Hire faster with built-in ATS",
             icon: "fas fa-handshake",
             iconClass: styles.iconEmployer,
-            bgImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&auto=format&fit=crop&q=80",
+            bgImage: employersImg,
             path: "/login",
             cta: "Start hiring"
         },
@@ -29,7 +33,7 @@ const EntryAndSteps = () => {
             subtitle: "Pitch & raise your round",
             icon: "fas fa-rocket",
             iconClass: styles.iconStartup,
-            bgImage: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&auto=format&fit=crop&q=80",
+            bgImage: startupsImg,
             path: "/startups",
             cta: "List startup"
         },
@@ -38,7 +42,7 @@ const EntryAndSteps = () => {
             subtitle: "Curated startup deal flow",
             icon: "fas fa-chart-line",
             iconClass: styles.iconInvestor,
-            bgImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&auto=format&fit=crop&q=80",
+            bgImage: investorsImg,
             path: "/investors",
             cta: "Find deals"
         }
